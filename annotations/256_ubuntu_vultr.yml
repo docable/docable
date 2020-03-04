@@ -1,0 +1,33 @@
+# https://www.vultr.com/docs/install-lighttpd-and-php-on-ubuntu
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2002
+    privateKey: id_rsa
+
+../tutorials/256_ubuntu_vultr.html:
+  steps:
+    - run: "Update the server to the latest packages/updates."
+      user: root
+    - run: 
+        select: "Install lighttpd and PHP."
+        input: "Do you want to continue? => yes"
+    
+    
+    - run: "Enable the fastcgi module and fastcgi PHP support."
+    - run: "Restart your lighttpd service to apply the fastcgi changes."
+
+    # skipping vi command
+
+    # conditional update
+    - file: "You may prefer to host your sites out of a different folder, such as /var/websites. => /etc/lighttpd/lighttpd.conf"
+      user: root
+
+    # conditional update
+    - file: "Add the following to lighttpd.conf to host a domain or subdomain. => /etc/lighttpd/lighttpd.conf"
+      user: root
+
+    # conditional update
+    - file: "If you would like to disable directory listings => /etc/lighttpd/lighttpd.conf"
+      user: root
+
+    - run: "file and restart the lighttpd service."

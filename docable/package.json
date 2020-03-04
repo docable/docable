@@ -1,0 +1,35 @@
+{
+  "name": "docable",
+  "version": "0.1.0",
+  "description": "CI for documentation. Running documentation.",
+  "bin": "index.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/docable/docable.git"
+  },
+  "keywords": [
+    "documentation",
+    "CI"
+  ],
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/docable/docable/issues"
+  },
+  "homepage": "https://github.com/docable/docable#readme",
+  "dependencies": {
+    "chalk": "^2.4.2",
+    "cheerio": "^1.0.0-rc.3",
+    "highlight.js": "^9.15.8",
+    "infra.connectors": "github:ottomatica/infra.connectors",
+    "js-yaml": "^3.13.1",
+    "marked": "^0.6.3",
+    "md5": "^2.2.1",
+    "mustache": "^3.0.1",
+    "simple-git": "^1.118.0",
+    "yargs": "^13.2.4"
+  }
+}

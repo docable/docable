@@ -1,0 +1,85 @@
+# https://www.vultr.com/docs/how-to-install-neos-cms-on-ubuntu-18-04-lts
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2003
+    privateKey: id_rsa
+
+../tutorials/153_ubuntu18_vultr.html:
+  steps:
+    - run: "Check the Ubuntu version."
+    # the command block itself contains the expected output ^
+
+    - run: "Create a new non-root user account with sudo access and switch to it."
+    - run: "Ensure that your system is up to date."
+    
+    
+    # #unrunnable this is an interactive step which uses dialog box so I have to skip it    
+    # - run: "Set up the timezone."
+
+    - run: "Install build tools and packages required for finishing this tutorial."
+
+    - run: "Install PHP 7.2 and required PHP extensions."
+
+    - run: "Check the version."
+    # the command block itself contains the expected output ^
+
+    - run: "Restart PHP-FPM."
+
+    - run: "Install MySQL."
+
+    # duplicate selector
+    - run: "Check the version.2"
+    # the command block itself contains the expected output ^
+
+    #unrunnable
+    # this will probably fail because of prompts? but the tutorial doesn't mention any details about the prompts
+    # - run: 
+    #     select: "Run mysql_secure_installation to improve security"
+    #     input: 
+    #       - "any other key for No => y"
+    #       - "Please enter 0 => 0"
+    #       - "New password => password"
+    #       - "Re-enter new password => password"
+    #       - "Do you wish to continue with the password provided => y"
+    #       - "Remove anonymous users? => y"
+    #       - "Disallow root login remotely? => y"
+    #       - "Remove test database and access to it? => y"
+    #       - "Reload privilege tables now? => y"
+    
+    # #unrunnable skipping interactive program shell command
+    # #unrunnable skipping interactive program shell command
+
+    - run: "Install Nginx."
+
+    # duplicate selector
+    - run: "Check the version.3"
+    # the command block itself contains the expected output ^
+
+    - file: "and set up Nginx virtual server for Neos CMS. => /etc/nginx/sites-available/neos.conf"
+    - run: "Activate the new neos.conf configuration by linking the file to the"
+
+    - run: "Test the configuration."
+
+    - run: "Reload Nginx."
+
+    - run: "Install Composer globally by issuing the following commands."
+
+    # duplicate selector
+    - run: "Check the version.4"
+    # the command block itself contains the expected output ^
+
+
+    - run: "Create a document root directory."
+
+    - run: "Change the ownership of the /var/www/neos directory to"
+
+    - run: "Go to your document root directory."
+      persistent: p1
+
+    - run: "Install Neos CMS and all of its dependencies."
+      persistent: p1
+
+    - run: "Change ownership of the /var/www/neos directory to"
+      persistent: p1
+
+    # GUI step to open and see in browser

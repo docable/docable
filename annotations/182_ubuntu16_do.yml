@@ -1,0 +1,22 @@
+# https://www.digitalocean.com/community/tutorials/how-to-move-an-nginx-web-root-to-a-new-location-on-ubuntu-16-04
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2003
+    privateKey: id_rsa
+
+../tutorials/182_ubuntu16_do.html:
+  steps:
+    - run: 
+        select: "will print both the line with the root directive and the filename in its output"
+        expectblock: "are likely to be different on an existing installation"
+    - run: "provides verbose output so you can follow the progress"
+
+    # skipping nano command
+
+    - file: "find the line that begins with root and update it with the new location => /etc/nginx/sites-enabled/default"
+      user: root
+    - run: 
+        select: "Once you’ve finished the configuration changes, you can make sure the syntax is correct with this command"
+        expectblock: "If everything is in order, it should return:"
+    - run: "Once the test passes, restart Nginx:"
+    - run: "Once you’re comfortable everything is in order, don’t forget to remove the original copy of the data"

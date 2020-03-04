@@ -1,0 +1,63 @@
+# https://www.vultr.com/docs/enable-http-2-in-nginx-on-ubuntu-16-04
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2002
+    privateKey: id_rsa
+
+../tutorials/34_ubuntu16_vultr.html:
+  steps:
+    - run: "used by the package manager to verify the authenticity of packages downloaded from the repository."
+    - run: "Delete the PGP key from the file system:"
+    - run: "Add new repository"
+    - run: "Update your package list and install Nginx:"
+      user: root
+    - run: "To verify Nginx version we can use the following:"
+    # the command block itself contains the expected output ^
+
+    - run: 
+        select: "Generate private key:"
+        input: 
+          - "pass => pass"
+          - "pass => pass"
+
+    - run: 
+        select: "Remove passphrase from private key:"
+        input: "pass => pass"
+
+    #unrunnable
+    # - run: 
+    #     select: "Generate Certificate Signing Request (CSR):"
+    #     input:
+    #       - "Country Name => AU"
+    #       - "State or Province Name => state"
+    #       - "Locality Name => city"
+    #       - "Organization Name => org"
+    #       - "Organizational Unit Name => section"
+    #       - "Common Name => name"
+    #       - "Email Address => example@example.com"
+    #       - "A challenge password => pass"
+    #       - "An optional company name => comp"
+
+    - run: "Create certificate:"
+
+    - run: "Sort out certificate and private key:"
+
+    - run: "Make nginx virtual host directories"
+
+    - file: "Below this directive add include => /etc/nginx/nginx.conf"
+
+    - file: "and copy/paste the following code => /etc/nginx/sites-available/example.com.conf"
+
+    - run: "Create a symbolic link for /etc/nginx/sites-available"
+    - run: "Test configuration syntax"
+    - run: "Restart Nginx to apply your changes:"
+    - run: "Add example.com domain to /etc/hosts file"
+    - run: 
+        select: "To install elinks use the following command:"
+        input: "Do you want to continue? => yes"
+
+    - run: "To test your example.com virtual host run:"
+
+    - run: 
+        select: "To see what protocols server advertises the easiest way is to use openssl toolkit."
+        expectblock: "In the output of this command you should see something like this:"

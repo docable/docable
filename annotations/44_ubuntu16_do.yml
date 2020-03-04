@@ -1,0 +1,50 @@
+# https://www.digitalocean.com/community/tutorials/how-to-proxy-digitalocean-spaces-with-nginx-on-ubuntu-16-04
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2002
+    privateKey: id_rsa
+
+../tutorials/44_ubuntu16_do.html:
+  steps:
+    # external service step (GUI)
+
+    # skipping nano command
+
+    - file: "making sure to replace the highlighted portions with your own domain name and Spaces URL => /etc/nginx/sites-available/assets.example.com"
+      user: root
+
+    - run: "Now that our configuration is set, we need to enable it. This is done by creating a link to the configuration file in the /etc/nginx/sites-enabled/ directory:"
+    - run: "To check our configuration syntax, run nginx -t as root:"
+
+    # skipping expect block because there is no text behind it.
+
+    - run: "Finally, reload Nginx to pick up the new configuration:"
+    - run: "First, fetch an object directly from your Space using the digitaloceanspaces.com URL. We’ll use our example.png file:"
+
+    # skipping expect block because there is no text behind it.
+
+    - run: "Now fetch the same file through the proxy:"
+
+    # skipping expect block because there is no text behind it.
+
+    # skipping nano command
+
+    - file: "Paste in the following line, then save and close the file: => /etc/nginx/conf.d/example-cache.conf"
+      user: root
+
+    # skipping nano command
+
+    - file: "Add the following to the end of your => /etc/nginx/sites-available/assets.example.com"
+      user: root
+
+    - run: "We’re now ready to verify that our configuration has no errors, and if that’s successful, reload Nginx:"
+
+    # template
+    - run: "To make sure the cache is working, we can use curl again, and look for the X-Cache-Status header:"
+
+    # skipping expect block because there is no text behind it.
+    
+    # template
+    - run: "The first request should be a MISS. Try it a second time:"
+
+    # skipping expect block because there is no text behind it.

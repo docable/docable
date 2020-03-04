@@ -1,0 +1,42 @@
+# https://www.vultr.com/docs/how-to-deploy-multiple-wordpress-sites-using-virtualmin-and-ansible-on-ubuntu-16-04
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2003
+    privateKey: id_rsa
+
+../tutorials/54_ubuntu16_vultr.html:
+  steps:
+    - run: "Install Ansible on your local machine or another server."
+      persistent: p1
+
+    - run: "Ansible works by logging into your server via SSH"
+      persistent: p1
+
+    - run: "Ansible's automation files are called"
+      persistent: p1
+
+    - file: "Edit the hosts file to contain the following, substituting the => ~/ansible/hosts"
+
+    - file: "Edit the deploy.yml file to contain the following => ~/ansible/deploy.yml"
+
+    - file: "Edit the /group_vars/all file to contain the following => ~/ansible/group_vars/all"
+
+    - file: "Edit the common/handlers/main.yml file => ~/ansible/roles/common/handlers/main.yml"
+
+    - run: "Ansible automation is easier to understand"
+
+    - file: "should point to each file containing the Ansible commands => ~/ansible/roles/common/tasks/main.yml"
+
+    - file: "The first step in setting up a new server is to update the repo cache and set the timezone. => ~/ansible/roles/common/handlers/setup.yml"
+
+    - file: "Now, we'll give the root user a password (which we will need to access the virtualmin web interface) => ~/ansible/roles/common/tasks/users.yml"
+
+    - file: "For security, we need a firewall. We'll use the Uncomplicated Firewall to allow SSH access on port => ~/ansible/roles/common/tasks/ufw.yml"
+
+    - file: "Optionally, you can include a swap file. This is essential if your server has less than 2GB RAM => ~/ansible/roles/common/tasks/swap.yml"
+
+    - file: "Virtualmin has its own installer file which can be downloaded and run by Ansible => ~/ansible/roles/common/tasks/virtualmin.yml"
+
+    - run: 
+        select: "The first time you connect you'll get an SSH key warning, just type"
+        input: "key => yes"

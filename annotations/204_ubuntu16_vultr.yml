@@ -1,0 +1,135 @@
+# https://www.vultr.com/docs/how-to-install-textpattern-cms-4-6-2-on-ubuntu-16-04-lamp-vps
+# this was the worst tutorial so far
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2003
+    privateKey: id_rsa
+
+../tutorials/204_ubuntu16_vultr.html:
+  steps:
+
+    # skipping target change
+
+    # the tutorial says you will be prompted for first name and "some other details" but doesn't say how many prompts or what they are
+    - run: 
+        select: "Add a new user called user1 (or your preferred username):"
+        input: 
+          - "pass => pass"
+          - ": => pass"
+          - ": => pass"
+          - ": => pass"
+          - ": => pass"
+
+    # #unrunnable skipping visudo command because it opens in a text editor
+    # skipping expect block because its to check content of the file using the text editor ^
+
+    - run: "Next we need to add user1 to the sudo group:"
+    - run: "We can verify the user1 group membership and check that the usermod command worked with"
+
+    - run: "Now use the su command to switch to the new sudo user user1 account:"
+    - run: "You can verify this with the whoami command:"
+    - run: "you can login via ssh with the new non-root sudo user account you have just created:"
+    - run: "Exit the user1 account:"
+
+    - run: "Exit the root account (which will disconnect your ssh session)."
+
+
+    # skipping target change
+    
+    # #unrunnable skipping visudo command because it opens in a text editor
+    # skipping expect block because its to check content of the file using the text editor ^
+
+    
+    # #unrunnable
+    # multiline command, but says you can use one of the following commands
+    # - run: "you can use one of the following commands:"
+
+    - run: "You can exit the root account and return back to your sudo user account any time by simply typing:"
+
+    - run: "Make sure you are logged in to the server using a non-root sudo user and run the following commands:"
+    - run: "Install the Apache web server:"
+
+    - run: "Use the systemctl command to start and enable Apache to execute automatically at boot time."
+
+    # skipping vi command
+
+    - file: "The DocumentRoot configuration option should look like this: => /etc/apache2/sites-enabled/000-default.conf"
+
+    - file: "Apache directives just before the closing => /etc/apache2/sites-enabled/000-default.conf"
+
+    - run: "Now save and exit the file, and enable the mod_rewrite Apache module:"
+
+    - run: "Apache regularly during installation and configuration is certainly a good habit, so let's do that now."
+
+    - run: "We can now install PHP 7.0 along with all of the necessary PHP modules required by TextPattern CMS."
+
+    # #unrunnable this shows a dialog which we can't handle
+    # this will be GUI...
+    # - run: "Install MySQL database server with"
+
+    - run: "Start and enable MySQL server to execute automatically at boot time."
+
+    # #unrunnable I updated the prompt below but still can't match these and it gets stuck...
+    # tutorial says answer yes to everything but doesn't say what are the prompts or how many they are...
+    # - run: 
+    #     select: "Secure your MySQL server installation."
+    #     input: 
+    #       - "Press y|Y for Yes, any other key for No: => y"
+    #       - "Please enter 0 = LOW, 1 = MEDIUM and 2 = STRONG: => 0"
+    #       - "New password: => 1234"
+    #       - "Re-enter new password: => 1234"
+    #       - "Do you wish to continue with the password provided?(Press y|Y for Yes, any other key for No) : => Y"
+    #       - "Remove anonymous users? (Press y|Y for Yes, any other key for No) : => N"
+    #       - "Disallow root login remotely? (Press y|Y for Yes, any other key for No) : => N"
+    #       - "Remove test database and access to it? (Press y|Y for Yes, any other key for No) : => N"
+    #       - "Reload privilege tables now? (Press y|Y for Yes, any other key for No) : => Y"
+
+    # #unrunnable skipping interactive program shell (MYSQL)
+    # #unrunnable skipping interactive program shell (MYSQL)
+
+    - run: "Change your current working directory to the default web directory."
+      persistent: p2
+    
+    # condition
+    - run: "If you get an error message saying something like 'No such file or directory' then try the following command:"
+      persistent: p2
+
+    - run: "You can check this with the pwd (print working directory) command:"
+      persistent: p2
+
+    - run: "Now use wget to download the TextPattern CMS installation package."
+      persistent: p2
+
+    - run: "List the current directory to check that you have successfully downloaded the file."
+      persistent: p2
+
+    - run: "Quickly install unzip so we can unzip the file."
+      persistent: p2
+
+    - run: "Now uncompress the zip archive."
+      persistent: p2
+
+    - run: "Move all of the installation files to the web root directory:"
+      persistent: p2
+
+    - run: "Change ownership of the web files to avoid any permissions problems."
+      persistent: p2
+
+    - run: Restart Apache once more.
+
+    # skipping presentation code block
+
+    # skipping presentation code blocks related to GUI steps
+    # skipping presentation code blocks related to GUI steps
+
+    # skipping vi command
+
+    - file: "Copy the text on the installation page into the => /var/www/html/textpattern/config.php"
+
+    # more inline GUI steps
+
+    # skipping presentation code blocks related to GUI steps
+
+    - run: "For security purposes, you should return to the terminal and delete the"
+
+    # skipping presentation code block

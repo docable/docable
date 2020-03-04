@@ -1,0 +1,47 @@
+# https://www.vultr.com/docs/how-to-install-opensips-control-panel-on-ubuntu-16-04
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2003
+    privateKey: id_rsa
+
+../tutorials/164_ubuntu16_vultr.html:
+  steps:
+    - run: "you will need to update your system to the latest stable version by running the following commands:"
+
+    #unrunnable
+    # have to skip this because we can't respond to mysql GUI dialog...
+    # - run: "Install Apache, MySQL, PHP and other required dependencies on your server"
+
+    - run: "Once the installation is complete, start Apache and MySQL services and enable them to start at boot:"
+    - run: "Download the latest stable version of the Opensips-CP."
+    - run: "Once the download has completed, extract the downloaded file with the following command:"
+    - run: "Next, move the extracted directory to the Apache web root directory:"
+    - run: "Next, give proper permissions to the opensips directory:"
+
+    # skipping nano command
+
+    - file: "Add the following lines at the end of the file: => /etc/apache2/apache2.conf"
+
+    # skipping nano command
+
+    - file: "Change the following line: => /etc/php/7.0/cli/php.ini"
+
+    - run: "Save the file and restart the Apache service:"
+
+    # #unrunnable skipping interactive program shell
+    # #unrunnable skipping interactive program shell
+
+    - run: "Install the ocp_admin_privileges table schema from the opensips folder:"
+    - run: Next, insert a "first login user" into the table with the following command
+
+    # skipping nano command
+
+    - file: "Change the lines as shown below: => /var/www/html/opensips/config/db.inc.php"
+
+    # skipping nano command
+
+    - file: "Change the following lines: => /var/www/html/opensips/config/tools/users/user_management/local.inc.php"
+
+    - run: "Save and close the file, then restart Apache and MySQL service:"
+
+    # GUI steps to check its working in browser

@@ -1,0 +1,16 @@
+# https://www.vultr.com/docs/using-tango-on-ubuntu-14-04
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2003
+    privateKey: id_rsa
+
+../tutorials/390_ubuntu14_vultr.html:
+  steps:
+    - run: "This may be needed if you are downloading libraries from a version control system that is using one of those protocols."
+
+    - run: "To install Tango, run the following command:"
+    - file: "To use Tango, create a file called server.go and populate it => server.go"
+    
+    # the next command is inline: go run server.go
+
+    # One last GUI step to check this is working in browser

@@ -1,0 +1,63 @@
+# https://www.digitalocean.com/community/tutorials/how-to-block-advertisements-at-the-dns-level-using-pi-hole-and-openvpn-on-ubuntu-16-04
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2003
+    privateKey: id_rsa
+
+../tutorials/117_ubuntu16_do.html:
+  steps:
+
+    - run: 
+        select: "First, use the ip command with the addr and show subcommands to identify the IP address of tun0, the network interface that your VPN tunnel is active on."
+        expectblock: "The output provides in-depth information about the interface."
+
+    - run: 
+        select: "Pipe the routing table information to grep which will parse and search the output for the string, default. default indicates the default gateway used by the server."
+        expectblock: "that the gateway is reachable on the eth0 interface, and that the gateway’s onlink option is turned on, which is the default with tunneled connections"
+
+    - run: 
+        select: "Change to your home directory and clone the repository."
+        expectblock: "Git expected to copy as well as the number it actually did copy."
+      persistent: p1
+
+    - run: "directory where you’ll find Pi-hole’s installation script."
+      persistent: p1
+
+    # skipping nano command
+
+    - run: "Pi-hole installation and configuration takes place with the help of a terminal-based wizard. Start the wizard with the following command:"
+
+    # a few GUI steps here
+
+    - run: 
+        select: " This will cause the request to pass through Pi-hole’s filters."
+        expectblock: "you know that google.com did not match any domains on the block lists or blacklist."
+
+    # partial expect...
+    - run:
+        select: "Now, try the host command again, this time passing it pagead2.googlesyndication.com, a known ad-serving domain."
+        expectblock: "This means that Pi-hole successfully identified the ad-serving domain and then responded by dropping the request."
+      
+    # skipping nano command
+
+    - file: "Find the following lines: => /etc/openvpn/server.conf"
+      user: root
+
+    - file: "Now, add the new setting telling OpenVPN to direct clients to use Pi-hole, located at 10.8.0.1, for all DNS requests. => /etc/openvpn/server.conf"
+      user: root
+
+    - run: "To apply the changes, reload OpenVPN."
+
+    - run:
+        select: "Finally, test that OpenVPN successfully started back up."
+        expectblock: "If everything worked, the output will tell you that OpenVPN is active (running)."
+
+    - run: "Now that Pi-hole and OpenVPN are both configured and running, open port 53 to allow DNS requests that passed Pi-hole’s filters to continue on to the upstream DNS server."
+    - run: "For web browsing to work correctly, open up the firewall for HTTP and HTTPS traffic."
+    - run: "This will allow DNS queries from the VPN’s IP range to pass to Pi-hole for filtering."
+    - run: "Similarly, allow web traffic originating in the 10.8.0.0/24 IP range to pass through the VPN server at 10.8.0.1 on port 80."
+    - run: 
+        select: "To apply the changes, reload UFW."
+        expectblock: "If successful, the output will read:"
+    
+    # many GUI steps here...

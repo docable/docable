@@ -1,0 +1,26 @@
+# https://www.digitalocean.com/community/tutorials/how-to-install-mongodb-on-ubuntu-16-04
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2003
+    privateKey: id_rsa
+
+../tutorials/255_ubuntu16_do.html:
+  steps:
+
+    - run: 
+        select: "so we first have to import they key for the official MongoDB repository."
+        expectblock: "After successfully importing the key, you will see:"
+
+    - run: "Issue the following command to create a list file for MongoDB."
+    - run: "After adding the repository details, we need to update the packages list."
+    - run: "Now we can install the MongoDB package itself."
+    - run: "Next, start MongoDB with systemctl."
+    - run: "You can also use systemctl to check that the service has started properly."
+
+    # skipping expect output because there are no text behind it.
+
+    - run: "The last step is to enable automatically starting MongoDB when the system starts."
+    - run: "default port while specifying the IP address of another server that will be explicitly allowed to connect."
+    - run: 
+        select: "You can verify the change in firewall settings with ufw."
+        expectblock: "the IP address of the allowed location will be listed instead of Anywhere in the output."

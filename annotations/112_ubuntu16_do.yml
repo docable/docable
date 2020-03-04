@@ -1,0 +1,36 @@
+# https://www.digitalocean.com/community/tutorials/how-to-set-up-a-jekyll-development-site-on-ubuntu-16-04
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2003
+    privateKey: id_rsa
+
+../tutorials/112_ubuntu16_do.html:
+  steps:
+    - run: "We’ll start by updating our package list"
+    - run: 
+        select: "Then we’ll install Ruby and its development libraries"
+        input: "Do you want to continue? => yes"
+
+    # skipping nano command
+
+    - file: "At the bottom of the file, add the following lines => ~/.bashrc"
+
+    - run: "To activate the exports"
+    - run: "we’ll use gem to install Jekyll itself as well as Bundler, which manages Gem dependencies"
+    - run: 
+        select: "We’ll begin by checking the firewall status to see if it’s enabled"
+        expectblock: "In this case, only SSH is allowed through"
+    - run: "You may have other rules in place or no firewall rules at all"
+    - run: 
+        select: "Let’s double-check the status"
+        expectblock: "Now our firewall rules look like"
+    - run: 
+        select: "From our home directory, we’ll use Jekyll’s new command"
+        expectblock: "Following successful installation, you should see output like the following"
+    
+    # skipping presentation code block
+
+    - run: "If you are working on a local machine, you can run"
+    # skipping expect block because there is no text behind it
+
+    # skipping presentation code block

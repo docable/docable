@@ -1,0 +1,36 @@
+# https://www.vultr.com/docs/how-to-install-and-configure-cyberpanel-on-ubuntu-18-04-lts
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2002
+    privateKey: id_rsa
+
+../tutorials/65_ubuntu18_vultr.html:
+  steps:
+    - run: "Update the packages installed on the system and install wget:"
+      user: root
+    - run: "Download the installer to the /root directory:"
+      persistent: p1
+      user: root
+
+    - run: 
+        select: "Set the executable bit and run the installer:"
+        input: 
+          - "enter the number => 1"
+          - "enter the number => 1"
+          - "Use mirror server => y"
+          - "Please select => y"
+          - "Please select => y"
+          - "Please select => y"
+          - "Please select => y"
+          - "Please select => y"
+        persistent: p1
+
+    # skipping presentation block
+    # skipping interactive prompt, because its covered above ^
+    # skipping interactive prompt, because its covered above ^
+          
+    # #unrunnable expectblock: "The installer will output your administrator details:"
+          
+
+    
+    # a few inline GUI steps

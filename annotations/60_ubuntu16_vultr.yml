@@ -1,0 +1,27 @@
+# https://www.vultr.com/docs/how-to-install-ajenti-and-ajenti-v-on-ubuntu-14-04-and-16-04
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2003
+    privateKey: id_rsa
+
+../tutorials/60_ubuntu16_vultr.html:
+  steps:
+    - run: 
+        select: "First, add the repo key. This is used to validate the packages you will install."
+        input: "? => yes"
+
+    - run: "Add the actual repo to your sources list."
+    - run: 
+        select: "Now update your packages and start the install."
+        input: "Do you want to continue? => yes"
+
+    - run: "When it finishes its installation, start the Ajenti server."
+
+    # skipping presentation code block
+
+    - run: "In the console, restart Ajenti, then log in with your new password."
+    - run: 
+        select: "Download and install Ajenti V and its dependencies."
+        input: "Do you want to continue? => yes"
+    - run: "Now restart Ajenti."
+

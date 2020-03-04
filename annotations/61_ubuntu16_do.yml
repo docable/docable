@@ -1,0 +1,117 @@
+# https://www.digitalocean.com/community/tutorials/how-to-ensure-code-quality-with-sonarqube-on-ubuntu-16-04
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2003
+    privateKey: id_rsa
+
+../tutorials/61_ubuntu16_do.html:
+  steps:
+    - run: "First, create a sonarqube user:"
+    - run: "Next, create the directory that will hold the SonarQube files:"
+      persistent: p1
+    - run: "Once the directory is created, update the permissions so that the sonarqube user will be able to read and write files in this directory:"
+      persistent: p1
+    - run: 
+        select: "SonarQube releases are packaged in a zipped format, so install the  "
+        input: "Do you want to continue? => yes"
+
+    - run: "Next, we need to create a database and credentials that SonarQube will use"
+
+    # #unrunnable skipping interactive program shell (MySQL) 
+    # #unrunnable skipping interactive program shell (MySQL)
+    # #unrunnable skipping interactive program shell (MySQL)
+    # #unrunnable skipping interactive program shell (MySQL)
+
+    - run: "Start by changing the current working directory to the SonarQube installation directory:"
+      persistent: p1
+    - run: "After getting the link, download the file:"
+      persistent: p1
+    - run: "Then unzip the file:"
+      persistent: p1
+    - run: "Once the files extract, delete the downloaded zip file, as you no longer need it:"
+      persistent: p1
+
+    # skipping nano command
+
+    - file: "First, change the username and password that SonarQube will use => /opt/sonarqube/sonarqube-7.0/conf/sonar.properties"
+      user: root
+
+    - file: "Next, tell SonarQube to use MySQL as the database driver: => /opt/sonarqube/sonarqube-7.0/conf/sonar.properties"
+      user: root
+
+    - file: "Finally, tell SonarQube to run in server mode and only listen to the local address: => /opt/sonarqube/sonarqube-7.0/conf/sonar.properties"
+      user: root
+
+    # skipping nano command
+
+    - file: "Add the following content to the file which specifies how the SonarQube service should start and stop: => /etc/systemd/system/sonarqube.service"
+      user: root
+
+    - run: "Close and save the file, then start the SonarQube service:"
+      user: root
+
+    - run: 
+        select: "Check the status of the SonarQube service to ensure that it has started and is running as expected:"
+        expectblock: "If the service has successfully started, you’ll see a line that says “Active” similar to this:"
+
+    - run: "Next, configure the SonarQube service to start automatically on boot:"
+
+    # skipping nano command
+
+    - file: "Add this configuration so that Nginx will be able to route incoming traffic to SonarQube: => /etc/nginx/sites-enabled/sonarqube"
+      user: root
+
+    - run: "Next, make sure your configuration file has no syntax errors:"
+    - run: "If you see errors, fix them and run sudo nginx -t again. Once there are no errors, restart Nginx:"
+
+    - run:
+        select: "Use certbot to create the certificate for Nginx:"
+        input: "email => email@example.com"
+
+    # a few GUI steps
+
+    - run: "Start by creating a directory for the scanner and changing into the new directory:"
+      persistent: p2
+    - run: "Then download the SonarQube scanner for Linux using wget:"
+      persistent: p2
+    - run: "Extract the scanner, then delete the zip archive file:"
+      persistent: p2
+
+    # skipping nano command
+
+    - file: "Uncomment the line starting with sonar.host.url and set it to the URL of your SonarQube server: => /opt/sonarscanner/sonar-scanner-3.0.3.778-linux/conf/sonar.properties"
+      user: root
+
+    - run: "Save and close the file. Now make the scanner binary executable:"
+    - run: "Then create a symbolic link so that you can call the scanner without specifying the path:"
+
+    - run: "Creating a new working directory in your home directory, then change to the directory:"
+      persistent: p3
+    - run: "Download the example project:"
+      persistent: p3
+    - run: "Unzip the project and delete the archive file:"
+      persistent: p3
+    - run: "Next, switch to the example project directory:"
+      persistent: p3
+
+    # template
+    - run: 
+        select: "Run the scanner, passing it the token you created earlier:"
+        expectblock: "Once the scan is complete, you’ll see something like this on the console:"
+
+    # GUI step
+
+    # skipping nano command
+
+    - file: "You can use anything you’d like, but this ID must be unique for your SonarQube instance: => ~/sonar-test/sonar-scanning-examples-master/sonarqube-scanner/sonar-project.properties"
+      user: root
+    - file: "Then, specify the project name and version so that SonarQube will be able to display this information in the dashboard: => ~/sonar-test/sonar-scanning-examples-master/sonarqube-scanner/sonar-project.properties"
+      user: root
+    - file: "Note that this is relative to the directory that the configuration file resides. Set it to the current directory: => ~/sonar-test/sonar-scanning-examples-master/sonarqube-scanner/sonar-project.properties"
+      user: root
+
+    # template
+    - run: 
+        select: "You’re ready to run a code quality analysis on your own code. Run sonar-scanner again, passing it your token:"
+        expectblock: "Once the scan is complete, you’ll see a summary screen similar to this:"
+      persistent: p3

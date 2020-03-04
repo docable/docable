@@ -1,0 +1,33 @@
+# https://www.vultr.com/docs/setting-up-git-on-ubuntu-14-04
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2003
+    privateKey: id_rsa
+
+../tutorials/336_ubuntu14_vultr.html:
+  steps:
+    - run:
+        select: "We can install Git without having to add any repositories."
+        input: "Do you want to continue? => yes"
+      user: root
+
+    - run: "You can set these options in Git with the following commands:"
+
+    - run: "First, create a directory for your project:"
+      persistent: p1
+
+    - run: "Now create a couple of files, like:"
+      persistent: p1
+
+    - run: 
+        select: "You can now start the process of making this a Git project by executing the git init command while in the project directory:"
+        expectblock: This will return the following response
+
+    - run: "and we would want to add it to Git, we would type:"
+      persistent: p1
+
+    - run: "Luckily, we can use . which adds all files not currently in Git:"
+      persistent: p1
+
+    - run: "This can be anything you want; it's good practice to use something that you will understand though."
+      persistent: p1

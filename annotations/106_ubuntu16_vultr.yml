@@ -1,0 +1,37 @@
+# https://www.vultr.com/docs/how-to-install-countly-analytics-on-ubuntu-16-10
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2003
+    privateKey: id_rsa
+
+../tutorials/106_ubuntu16_vultr.html:
+  steps:
+    - run: "Login using the sudo user and run the following commands to update the system."
+    
+    #unrunnable
+    # because it contains su -c which requires a password.
+    # in our env, the root user doesn't have a password, which aparently is different from empty string
+    # only way to make this run is by setting a root password which requires changing environment.
+    # - run: 
+    #     select: "Countly server can be installed directly using the following command."
+    #     input: 
+    #       - "Do you want to continue? => yes"
+    #       - "Password => vagrant"
+
+    - run: "Run the following commands to install Certbot on your system."
+
+    # template
+    - run: 
+        select: "Initiate the Certbot script to obtain SSL certificates for you"
+        input: "email => example@example.com"
+
+    - run: "Generate strong Diffie-Hellman parameters using following command."
+
+    # skipping nano command
+
+    - file: "Replace the existing configuration with the following. => /etc/nginx/sites-available/default"
+      user: root
+
+    - run: "Now restart the Countly server and the Nginx web server."
+
+    # skipping presentation code block

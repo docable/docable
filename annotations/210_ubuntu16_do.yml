@@ -1,0 +1,41 @@
+# https://www.digitalocean.com/community/tutorials/how-to-use-apache-as-a-reverse-proxy-with-mod_proxy-on-ubuntu-16-04
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2003
+    privateKey: id_rsa
+
+../tutorials/210_ubuntu16_do.html:
+  steps:
+    - run: "To enable these four modules, execute the following commands in succession"
+    - run: "To put these changes into effect, restart Apache"
+    - run: "Update the packages list first"
+    - run: "Then install Pip, the recommended Python package manager"
+    - run: "Use Pip to install Flask"
+
+    # skipping nano command
+
+    - file: "Copy the following code into the file, then save and close it => ~/backend1.py"
+    - run: "so start by duplicating the first file"
+
+    # skipping nano command
+
+    - file: "Change the message to be returned from Hello world! to Howdy world => ~/backend2.py"
+    - serve: "Use the following command to start the first background server on port"
+    - serve: "Similarly, use this command to start the second server on port"
+    - run: "Test the first server"
+    - run: "Test the second server"
+
+    # skipping nano command
+
+    # search and replace
+    - file: "Replace all the contents within VirtualHost block with the following => /etc/apache2/sites-available/000-default.conf"
+      user: root
+
+    # duplicate selector
+    - run: "To put these changes into effect, restart Apache.2"
+ 
+    - file: "Replace all the contents within the VirtualHost block with the following, so your configuration file looks like this => /etc/apache2/sites-available/000-default.conf"
+      user: root
+
+    # duplicate selector
+    - run: "To put these changes into effect, restart Apache.3"

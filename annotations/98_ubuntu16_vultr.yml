@@ -1,0 +1,74 @@
+# https://www.vultr.com/docs/how-to-install-bookstack-on-ubuntu-16-04
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2003
+    privateKey: id_rsa
+
+../tutorials/98_ubuntu16_vultr.html:
+  steps:
+    - run: "Check the Ubuntu version."
+
+    # the command block itself contains the expected output ^
+
+    - run: "Create a new non-root user account with sudo access and switch to it."
+    
+    # #unrunnable this opens a dialog which we can't support.
+    # - run: "Set up the timezone."
+
+    - run: "Ensure that your system has been updated."
+
+    - run: "Install the necessary packages."
+
+    - run: 
+        select: "Install PHP and necessary PHP extensions."
+        input: "continue => yes"
+    
+    - run: "Check the version."
+
+    
+    # #unrunnable this opens a dialog which we can't support.
+    # - run: "Install MySQL."
+
+    # duplicate selector
+    - run: "Check the version.2"
+
+    - run: "Run mysql_secure installation script to improve MySQL's security."
+
+    # #unrunnable skipping interactive program shell 
+    # #unrunnable skipping interactive program shell
+    # #unrunnable skipping interactive program shell
+
+    - run: "Install Nginx."
+
+    # duplicate selector
+    - run: "Check the version.3"
+
+    - file: "Configure Nginx for BookStack. Run => /etc/nginx/sites-available/bookstack.conf"
+      user: root
+
+    - run: "Activate the new bookstack.conf configuration by linking the file to the sites-enabled directory."
+    - run: "Test the configuration."
+
+    - run: "Reload Nginx."
+
+    - run: "Install Composer."
+
+    # duplicate selector
+    - run: "Check the version.4"
+    - run: "Create a document root folder."
+    - run: "Change ownership of the /var/www/bookstack directory to johndoe."
+
+    - run: "Clone the release branch of the BookStack GitHub repository into the document root folder."
+      persistent: p1
+
+    - run: "Run the composer install command"
+      persistent: p1
+
+    - run: "Copy the .env.example file to .env and populate it with your own database and mail details."
+      persistent: p1
+
+    # changed directory implicitly
+    - run: "In the application root, run the following command."
+      persistent: p1
+
+    - run: "Change ownership of the /var/www/bookstack directory to www-data"

@@ -1,0 +1,39 @@
+# https://linuxize.com/post/how-to-install-pip-on-ubuntu-18.04/
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2003
+    privateKey: id_rsa
+
+../tutorials/110_ubuntu18_linuxize.html:
+  steps:
+    - run: "Start by updating the package list using the following command:"
+    - run: 
+        select: "Use the following command to install pip for Python 3:"
+        input: "Do you want to continue? => yes"
+
+    - run:
+        select: "Once the installation is complete, verify the installation by checking the pip version:"
+        expectblock: "The version number may vary, but it will look something like this:"
+
+    - run: "Update the package index by running the following command:"
+    - run: 
+        select: "Install pip for Python 2 with:"
+        input: "Do you want to continue? => yes"
+
+    - run:
+        select: "Verify the installation by printing the pip version number:"
+        expectblock: "The version number may vary, but it will look something like this:2"
+
+    - run: "To view the list of all pip commands and options, type:"
+
+    # expected block is show in a screenshot...
+
+    - run: "For example to get more information about the install command, type:"
+    - run: "To install the latest version of the package you need to run the following command:"
+
+    - run: "To install a specific version of the package you would issue the following command:"
+
+    - run: "Use the following command to install a list of requirements specified in a file:"
+    - run: "To list all the installed pip packages use the command below:"
+    - run: "To upgrade an already installed package to the latest version use the following command:"
+    - run: "To uninstall a package run:"

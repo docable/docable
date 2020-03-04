@@ -1,0 +1,107 @@
+# https://www.digitalocean.com/community/tutorials/deploying-react-applications-with-webhooks-and-slack-on-ubuntu-16-04
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2003
+    privateKey: id_rsa
+
+../tutorials/31_ubuntu16_do.html:
+  steps:
+
+    - run: "On your local machine, add the create-react-app node module to your global repository and make the create-react-app command available in your shell environment:"
+    - run: "Next, run create-react-app to create a project called do-react-example-app:"
+    - run: "Navigate to the directory do-react-example-app:"
+      persistent: p1
+
+    # skipping nano command
+
+    - file: "The file should look like this: => ~/do-react-example-app/package.json"
+
+    - run: "Back in your do-react-example-app directory, initialize the repository with git:"
+      persistent: p1
+
+    - run: "Next, add the remote origin with your GitHub URL:"
+      persistent: p1
+
+    - run: "Stage all of the files in the project directory:"
+      persistent: p1
+
+    - run: "Commit them:"
+      persistent: p1
+
+    - run: "And push them to repository:"
+      persistent: p1
+
+    - run: "Log into your server, go to your home directory, and clone your repository:"
+    - run: "Go to the cloned project:"
+      persistent: p1
+    - run: "The yarn command will download all of the required node modules for your project:"
+      persistent: p1
+
+    - run: "while making it available to Nginx to serve from the /var/www directory:"
+
+    - run: "Some permissions should be set on the symlink so Nginx can serve it properly:"
+
+    # skipping nano command
+
+    - file: "Copy the following configuration, replacing your_server_ip_or_domain with your IP or domain (if applicable): => /etc/nginx/sites-available/test-server"
+    - run: "Next, make a symlink in the sites-enabled directory:"
+    - run: "Check if the configuration is valid:"
+    - run: "Finally, restart Nginx to apply the new configuration:"
+
+    - run: "Make sure you are in your home directory on your server:"
+    - run: "Then download the webhook:"
+    - run: "Extract it:"
+    - run: "Make the binary available in your environment by moving it to /usr/local/bin:"
+    - run: "Last, clean up the downloaded files:"
+    - run: 
+        select: "Test the availability of webhook in your environment by typing:"
+        expectblock: "The output should display the webhook version:"
+    
+    - run: "First, create the directories:"
+    - run: "Then transfer the ownership to your $USER:"
+
+    # skipping nano command
+
+    - file: "our file will need a JSON array of rules. These rules consist of the following properties: => /opt/hooks/hooks.json"
+    - file: "The /opt/hooks/hooks.json file should include the following information: => /opt/hooks/hooks.json"
+
+    - file: "Add the following code to define the trigger-rule, replacing your-github-secret with a password of your choosing: => /opt/hooks/hooks.json"
+    - file: "In full, /opt/hooks/hooks.json will look like this: => /opt/hooks/hooks.json"
+
+    - run: "To see a list of your current firewall rules, type:"
+    - run: "If port 9000 is not included in the list, enable it:"
+
+    # there are a few GUI steps here + external service (GitHub)
+
+    # skipping nano command
+
+    - file: "Slack if the redeploy didn’t go through successfully: => /opt/scripts/redeploy.sh"
+
+    - file: "Next, extract the parameters that webhook passes to the script when executing it: => /opt/scripts/redeploy.sh"
+    - file: "Last, let’s call the commands necessary for redeploying the application: => /opt/scripts/redeploy.sh"
+    - file: "The script in full will look like this: => /opt/scripts/redeploy.sh"
+
+    - run: "Make the script executable so the hook can execute it:"
+    - serve: "Now we are ready to test the configuration. Let’s run the webhook server:"
+      
+    # skipping expect block because we don't support expect block for selectAndServe commands
+
+    - run: "navigate back to your local machine and type the following:"
+      persistent: p1
+
+    - run: 
+        select: "Push the commit to the master branch:"
+        expectblock: "You will see output like this on your server:"
+      persistent: p1
+
+    # skipping nano command
+
+    - file: "Note that you will need to replace your_slack_webhook_url with the Webhook URL you noted earlier: => /opt/scripts/redeploy.sh"
+
+    - run: "Leaving the webhook server running, navigate back to this directory and create the empty commit:"
+      persistent: p1
+
+    - run:
+        select: "Push the commit to the master branch to trigger the build:"
+        expectblock: "The output, including build information, will look like this:"
+      persistent: p1

@@ -1,0 +1,46 @@
+# https://www.vultr.com/docs/setup-a-codeigniter-application-on-ubuntu-16-04
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2003
+    privateKey: id_rsa
+
+../tutorials/339_ubuntu16_vultr.html:
+  steps:
+
+    - run: "First, go to your Apache root folder."
+      persistent: p1
+
+    - run: "Download the latest stable release of Codeigniter."
+      persistent: p1
+
+    - run: "Extract the downloaded file."
+      persistent: p1
+
+    - run: 
+        select: "If you get an error: The program 'unzip' is currently not installed., you have to install unzip."
+        input: "Do you want to continue? => yes"
+
+    - run: "Note a new directory called CodeIgniter-3.1.5. Rename this folder to codeigniter."
+      persistent: p1
+
+    - file: "Codeigniter is now up and running and you should do some initial configuration => /var/www/html/application/config/database.php"
+
+    # skipping presentation code blocks
+
+    - file: "Let's now test this configuration by adding the following method to the index method in => /var/www/html/application/controllers/Welcome.php"
+
+    # now open this in browser
+
+    # some inline instructions
+
+    - run: "First, let's check if mod_rewrite is already enabled by running the following command."
+
+    - run: "If you see rewrite_module in the list you can move on, otherwise enable it."
+
+    - run: "Restart the Apache server."
+
+    - file: "Now create the .htaccess file at /var/www/html/codeigniter/ and put the following content in it. => /var/www/html/codeigniter/.htaccess"
+    - file: " in the virtual hosts file, or in your global apache configuration. => /var/www/html/codeigniter/.htaccess"
+
+    - file: "Find the following code, =>  /var/www/html/application/config/config.php"
+    - file: "And replace it with this. => /var/www/html/application/config/config.php"

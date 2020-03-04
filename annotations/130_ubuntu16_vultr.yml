@@ -1,0 +1,94 @@
+# https://www.vultr.com/docs/how-to-install-invoice-ninja-on-ubuntu-16-04
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2002
+    privateKey: id_rsa
+
+../tutorials/130_ubuntu16_vultr.html:
+  steps:
+    - run: "Before installing any packages on Ubuntu server instance"
+    - run: "install Nginx and MariaDB with the following command"
+    - run: "Once the installation is complete, start the Nginx and MariaDB services and enable them to start on boot"
+    - run: 
+        select: "You can install PHP-FPM and the other required PHP extensions with the following command"
+        input: "continue => Y"
+
+    # skipping nano command
+
+    - file: "Change the following line => /etc/php/7.0/fpm/php.ini"
+      user: root
+
+    - run:
+        select: "the MariaDB installation has not been secured"
+        input:
+          - "Enter current password for root => "
+          - "Set root password? => Y"
+          - "New password => 123456789"
+          - "Re-enter new password => 123456789"
+          - "Remove anonymous users? => Y"
+          - "Disallow root login remotely? => Y"
+          - "Remove test database and access to it? => Y"
+          - "Reload privilege tables now? => Y"
+
+    # skipping presentation/interactive prompts
+
+    #unrunnable
+    # - run: "When all is done, connect using the MySQL shell with the following command"
+
+    
+    # #unrunnable skipping interactive shell
+
+    # skipping nano command
+
+    - file: "Add the following lines: => /etc/php/7.0/fpm/pool.d/www-data.conf"
+      user: root
+
+    - run: "Save and close the file when you are finished, then restart PHP-FPM to apply these changes"
+
+    - run: "You can download the latest stable version of Invoice Ninja from the GitHub repository with the following command"
+
+    - run: "You will also need to install Composer, a dependency manager for PHP. You can install it with the following command"
+
+    - run: "install all of the Invoice Ninja dependencies using the"
+      persistent: p1
+
+    - run: "Once the installation is done, rename the"
+      persistent: p1
+
+    - file: "Change the lines as shown below => /var/www/html/ninja/.env"
+
+    - run: "then run the following command to prepare the database"
+
+    - run: 
+        select: "seed the database with records as shown below"
+        input:
+          - "enter => yes"
+
+    - run: "change ownership of the"
+
+    - run: "create a directory for SSL"
+
+    #unrunnable
+    # - run: 
+    #     select: "generate an SSL certificate with the following command"
+    #     input:
+    #       - "Country Name => AU"
+    #       - "State or Province Name => Some-State"
+    #       - "Locality Name => city"
+    #       - "Organization Name => Test"
+    #       - "Organizational Unit Name => section"
+    #       - "Common Name => Test"
+    #       - "Email Address => test@example.com"
+
+    - run: "Give proper permissions to the certificate file"
+
+    # skipping nano command
+
+    # duplicate selector
+    - file: "Add the following lines:2 => /etc/nginx/conf.d/ninja.conf"
+
+    - run: "Then enable the virtual host with the following command"
+
+    - run: "restart the Nginx web server"
+
+    - run: "Before accessing Invoice Ninja web interface, you will need to allow HTTP and HTTPS services"

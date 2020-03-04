@@ -1,0 +1,31 @@
+# https://www.digitalocean.com/community/tutorials/how-to-secure-apache-with-let-s-encrypt-on-ubuntu-16-04
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2003
+    privateKey: id_rsa
+
+../tutorials/264_ubuntu16_do.html:
+  steps:
+    - run:
+        select: "First, add the repository"
+        input: "to continue => yes\n"
+
+    - run: "list to pick up the new repository’s package information"
+    - run: 
+        select: "And finally, install Certbot from the new repository with"
+        input: "Do you want to continue? => yes\r"
+
+    # these are interactive prompts, but tutorial doesn't say what the prompts are
+    - run: 
+        select: "To execute the interactive installation and obtain a certificate that covers only a single domain"
+        input: 
+          - "cancel): => f@aaa.io"
+          - "(A)gree/(C)ancel: => A"
+          # - "(Enter 'c' to cancel): => c"
+          - "(Y)es/(N)o: => Y"
+
+    - run: "followed by any additional subdomains or aliases"
+
+    # skipping presentation code block
+
+    - run: "To test the renewal process, you can do a dry run with certbot"

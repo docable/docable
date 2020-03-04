@@ -1,0 +1,18 @@
+# https://linuxize.com/post/how-to-install-the-latest-eclipse-ide-on-ubuntu-18-04/
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2003
+    privateKey: id_rsa
+
+../tutorials/73_ubuntu18_linuxize.html:
+  steps:
+
+    - run: 
+        select: "Eclipse is a Java-based application and it requires a Java runtime environment (JRE) to be installed in order to run"
+        input: "Do you want to continue? => yes"
+
+    - run: 
+        select: "To download and install the Eclipse snap package on your system, type:"
+        expectblock: "On successful installation of Eclipse, you should see the following output:"
+
+    # GUI steps...

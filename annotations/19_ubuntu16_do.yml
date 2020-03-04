@@ -1,0 +1,50 @@
+# https://www.digitalocean.com/community/tutorials/how-to-gather-infrastructure-metrics-with-packetbeat-and-elk-on-ubuntu-16-04
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2003
+    privateKey: id_rsa
+
+../tutorials/19_ubuntu16_do.html:
+  steps:
+
+    # skipping target change
+
+    - run: "Once logged in, download the Packetbeat index template to your home directory"
+    - run: 
+        select: "Then load the template with this command"
+        expectblock: "You’ll see the output if the template was loaded successfully"
+    - run: "Locate the IP address of your client server"
+    
+
+    # skipping target change
+
+    - run: "Once logged in, copy the ELK server’s SSL certificate into the /etc/pki/tls/certs directory"
+    
+    # skipping nano command
+    
+    - file: "If you’ve previously installed shippers, this file may already contain the following line => /etc/apt/source.list.d/beats.list"
+      user: root
+    - run: "To install this source, we’ll need a GPG key"
+    - run: 
+        select: "Now, install the Packetbeat package"
+        input: "Do you want to continue? => yes"
+    
+    # skipping nano command
+
+    - file: "Select the network interface from which to capture the traffic => packetbeat.yml"
+    - file: "Otherwise, the default values should do just fine => packetbeat.yml"
+    - file: "Start deleting here => packetbeat.yml"
+    - file: "And keep deleting until you find this line => packetbeat.yml"
+    - file: "The section of the configuration file should look like this => packetbeat.yml"
+    - file: "Then uncomment the line that specifies certificate_authorities, and change its value to => packetbeat.yml"
+    - file: "If you want to double-check your configuration file, compare yours with this example => packetbeat.yml"
+
+    - run: "Now restart Packetbeat to put your changes into place"
+    - run: "And configure Packetbeat to start when your server restarts"
+    - run: "On your client server, use curl to make a request to http://www.elastic.co"
+    
+    - run:
+        select: "Then, on your ELK server, verify that Elasticsearch is indeed receiving the data by querying for the Packetbeat index with this command"
+        expectblock: "You should see a bunch of output that looks like this"
+
+    # gui steps

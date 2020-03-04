@@ -1,0 +1,25 @@
+# https://www.vultr.com/docs/how-to-install-phantomjs-on-ubuntu-16-04
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2003
+    privateKey: id_rsa
+
+../tutorials/171_ubuntu16_vultr.html:
+  steps:
+    - run: "You can do this with the following command:"
+
+    - run: "Before installing PhantomJS, you will need to install some required packages on your system"
+
+    - run: "Next, you will need to download the PhantomJS."
+    - run: "Once the download is complete, extract the downloaded archive file to desired system location:"
+    - run: "Next, create a symlink of PhantomJS binary file to systems bin dirctory:"
+
+    - run: 
+        select: "PhantomJS is now installed on your system."
+        expectblock: "You should see the following output:"
+
+    - run: "You can also find the version of the PhantomJS from PhantomJS prompt as shown below:"
+
+    # #unrunnable skipping interactive program shell...
+    # #unrunnable skipping interactive program shell...
+    # #unrunnable skipping interactive program shell output...

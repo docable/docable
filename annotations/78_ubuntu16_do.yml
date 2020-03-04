@@ -1,0 +1,84 @@
+# https://www.digitalocean.com/community/tutorials/how-to-install-concourse-ci-on-ubuntu-16-04
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2003
+    privateKey: id_rsa
+
+../tutorials/78_ubuntu16_do.html:
+  steps:
+    - run: 
+        select: "Afterwards, install the postgresql and postgresql-contrib packages from Ubuntu’s default repositories"
+        input: "Do you want to continue? => yes"
+
+    - run: "To create this user, we will use sudo to act as the postgres system user"
+    - run: "We can create this database and assign ownership to the concourse database user to provide appropriate access"
+
+    # template
+    - run: "On your server, switch to the /tmp directory and then use curl to download the link you copied"
+
+    # template
+    - run: "On your server, download the copied link to /tmp again with curl"
+  
+    - run: "Check that the files are actually binary executables by typing"
+
+    # skipping expect block because there is no text behind it
+
+    - run: "move them to the /usr/local/bin directory by typing"
+    - run: "Asking for the version of each program will serve as a small check to make sure everything is operating correctly:"
+
+    # skipping expect block because there is no text behind it
+
+    - run: "Before we begin, create a configuration directory where we can keep all of the relevant files:"
+    - run: "We can create each of these key pairs in the /etc/concourse directory by typing:"
+    - run: "If we check in the concourse directory, we can see that three public and three private keys are now available"
+
+    # skipping expect block because there is no text behind it
+
+    - run: "Since this is our only worker, we can just copy the file over:"
+
+    # skipping nano command
+
+    - file: "the file defining the authorized workers, and the PostgreSQL socket location => /etc/concourse/web_environment"
+    - file: "You can change the admin credentials at any time by modifying these values and restarting the service => /etc/concourse/web_environment"
+
+    # skipping nano command
+
+    - file: "You can use the values below without modification: => /etc/concourse/worker_environment"
+    - run: "Create a system user and group called concourse by typing"
+    - run: "We can give the new user ownership over the /etc/concourse directory and its contents by typing:"
+    - run: "Adjust the permissions of the environment files so that regular users cannot read or modify the values in those files:"
+
+    # skipping nano command
+
+    - file: "Inside, paste the following contents: => /etc/systemd/system/concourse-web.service"
+      user: root
+    
+    # skipping nano command
+
+    # duplicate selector
+    - file: "Inside, paste the following contents:2 => /etc/systemd/system/concourse-worker.service"
+      user: root
+
+    - run: "The web process will listen for connections on port 8080, so we need to open access to that port in the ufw firewall:"
+    - run: "The containers used by the worker process require forwarding access so that they can correctly reach the internet and resolve DNS queries"
+    - run: "We can now start our services by typing:"
+    - run: "We can check that both services were started correctly by typing:"
+
+    # skipping expect block because there is no text behind it
+
+    - run: "If the services started successfully, enable them so that they will start each time the server boots:"
+    - run: 
+        select: "We will call our target “local” to log into the local Concourse server:"
+        input: 
+          - "username => sammy"
+          - "password => sammy"
+
+    # skipping presentation/expected output of interactive prompts. We don't explicitly run it here but it runs in the previous step
+
+    - run: "While we are here, let’s verify that the worker process was able to successfully register to the TSA component by typing"
+
+    # skipping expect block because there is no text behind it
+
+    # skipping presentation blocks
+
+    # GUI steps

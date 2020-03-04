@@ -1,0 +1,70 @@
+# https://www.digitalocean.com/community/tutorials/how-to-test-ansible-roles-with-molecule-on-ubuntu-16-04
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2003
+    privateKey: id_rsa
+
+../tutorials/84_ubuntu16_do.html:
+  steps:
+    - run: "Start by logging in as your non-root user and making sure your repositories are up-to-date"
+    - run: "This will ensure that your package repository includes the latest version of the"
+    - run: "Use pip to install the virtualenv Python module"
+    - run: "Next, let’s create and activate the virtual environment"
+    - run: "Activate it to ensure that your actions are restricted to that environment"
+      persistent: p1
+    - run: "Install molecule and docker using pip"
+      persistent: p1
+    - run: "Create a new role called ansible-apache"
+      persistent: p1
+    - run: "Change into the directory of the newly created role"
+      persistent: p1
+    - run: "Test the default role to check if Molecule has been set up properly"
+      persistent: p1
+
+    # skipping expect block
+    # skipping expect block
+
+    # skipping nano command
+
+    - file: "HTML defaults, and firewall settings => ~/ansible-apache/tasks/main.yml"
+
+    - run: "Next, let’s create a templates directory for the index.html.j2 template page"
+      persistent: p1
+
+    # skipping nano command
+
+    - file: "Paste in the following boilerplate code => ~/ansible-apache/templates/index.html.j2"
+
+    # skipping nano command
+
+    - file: "Paste over the default content with the following code, which specifies pkg_list and svc_list => ~/ansible-apache/vars/main.yml"
+
+    # skipping nano command
+
+    - file: "Add the highlighted platform information => ~/ansible-apache/molecule/default/molecule.yml"
+
+    # skipping nano command
+
+    - file: "Start by importing the required Python modules => ~/ansible-apache/molecule/default/tests/test_default.py"
+
+    - file: "Under the module imports, paste in the following code, which uses the Ansible backend to return the current host instance => ~/ansible-apache/molecule/default/tests/test_default.py"
+    - file: "The first test will ensure that httpd and firewalld are installed => ~/ansible-apache/molecule/default/tests/test_default.py"
+    - file: "The next test checks whether or not httpd and firewalld are running and enabled. It takes test_svc as a parameter => ~/ansible-apache/molecule/default/tests/test_default.py"
+    - file: "The last test checks that the files and contents passed to parametrize() exist => ~/ansible-apache/molecule/default/tests/test_default.py"
+    - file: "The finished file looks like this => ~/ansible-apache/molecule/default/tests/test_default.py"
+
+    - run: "Run the test for the default scenario again"
+      persistent: p1
+
+    # skipping partial expect block #unrunnable
+    # skipping partial expect block
+    # skipping partial expect block
+    # skipping partial expect block
+    # skipping partial expect block
+    # skipping partial expect block
+    # skipping partial expect block
+    # skipping partial expect block
+    # skipping partial expect block
+    # skipping partial expect block
+    # skipping partial expect block
+    # skipping partial expect block

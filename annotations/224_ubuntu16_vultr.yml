@@ -1,0 +1,34 @@
+# https://www.vultr.com/docs/how-to-set-up-a-mail-server-using-iredmail-on-ubuntu-16-04
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2003
+    privateKey: id_rsa
+
+../tutorials/224_ubuntu16_vultr.html:
+  steps:
+    - run: 
+        select: "Before getting started with the installation, you should update your system."
+        input: "continue => yes"
+
+    # skipping nano command
+
+    - file: "Add your short hostname to the file, not your FQDN => /etc/hostname"
+      user: root
+
+    - file: "Next, open /etc/hosts and add your FQDN => /etc/hosts"
+      user: root
+
+    - run: "Reboot your server."
+
+    - run: "You can now verify your hostname."
+    - run: "You can find the latest build by visiting the"
+
+    - run: "Next, extract the tarball and then cd to the directory."
+    - run: "Then, add permission to the script and run it with sudo."
+    
+    # duplicate selector
+    - run: "Reboot your server.2"
+
+    # template values
+    - run: "for information on using this service. Once the certificate is obtained you will need to replace the self-signed certs."
+    - run: "Restart all services using the key. If you've used Nginx for your web server "

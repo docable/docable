@@ -1,0 +1,59 @@
+# https://www.vultr.com/docs/how-to-install-and-configure-otrs-on-ubuntu-16-04
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2003
+    privateKey: id_rsa
+
+../tutorials/71_ubuntu16_vultr.html:
+  steps:
+    - run: "You can install all of them by running the following command:"
+    - run: "update your system to the latest version by running the following command:"
+
+    - run: "Next, restart your system to apply all the updates:"
+
+    - run: "You can install them by running the following command:"
+    - run: "start Apache and MariaDB server and enable them to start on boot time with the following command:"
+
+    # #unrunnable skipping interactive program shell 
+    # #unrunnable skipping interactive program shell
+    # #unrunnable skipping interactive program shell
+    # #unrunnable skipping interactive program shell
+    # #unrunnable skipping interactive program shell
+
+    # skipping nano command
+
+    - file: "Add the following lines under: => /etc/mysql/my.cnf"
+      user: root
+
+    - run: "Save the file then restart MariaDB service to apply these changes:"
+    - run: "OTRS is written in Perl and uses number of Perl modules."
+    - run: "Once all the modules are installed, then activate the Perl module for apache"
+    - run: "To do so, run the following command:"
+
+    - run: "extract the downloaded file with the following command:"
+    - run: "Next, move the extracted directory to the /opt/:"
+    - run: "Finally, you can check the missing modules by running the following script:"
+    - run: "Next, create a OTRS user with the following command:"
+
+    - run: "You can do this by running the following command:"
+
+    - file: "Change the following lines: => /opt/otrs/Kernel/Config.pm"
+      user: root
+
+    # skipping nano command
+
+    - file: "Change the file as shown below: => /opt/otrs/scripts/apache2-perl-startup.pl"
+      user: root
+
+    - run: "Next, you will need to give proper permissions to the /opt/otrs directory."
+    - run: "Once everything is configured, you will need to create a symlink for OTRS to the Apache web"
+    - run: "Next, enable the OTRS virtual host with the following command:"
+    - run: "Next, you will also need to enable some Apache modules required by the OTRS"
+    - run: "Finally, restart the Apache web server to apply all the changes:"
+    
+    # skipping. have to skip this because ufw blocks new ssh connections...
+    # - run: 
+    #     select: "Before starting, you will need to allow port 80 through firewall."
+    #     input: "Command may disrupt existing ssh connections. Proceed with operation (y|n)? => y"
+
+    - run: "Once the installation is complete, start the OTRS daemon and activate its cronjob with the following command"

@@ -1,0 +1,66 @@
+# https://linuxize.com/post/how-to-install-drupal-on-ubuntu-18-04/
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2003
+    privateKey: id_rsa
+
+../tutorials/108_ubuntu18_linuxize.html:
+  steps:
+    - run: "Update the package index and system packages to the latest versions:"
+    - run: 
+        select: "if not you can install the MySQL 5.7 server package from the Ubuntu’s default repositories by typing:"
+        input: "Do you want to continue? => yes"
+
+    # #unrunnable skipping interactive program shell step
+    # #unrunnable skipping interactive program shell step
+
+    - run: 
+        select: "To install all required PHP modules run the following command:"
+        input: "Do you want to continue? => yes"
+
+    - run: 
+        select: "start after the installation process is complete, you can verify it by printing the service status"
+        expectblock: "The output should indicate that the fpm service is active and running."
+
+    - run: "To install composer globally download the Composer installer with curl and move the file to the /usr/local/bin directory:"
+    - run: 
+        select: "Verify the installation by printing the composer version:"
+        expectblock: "The output should look something like this:"
+
+    - run: 
+        select: "create a new Drupal project using the composer template inside /var/www/my_drupal directory:"
+        expectblock: "The process may take few minutes and if it is successful the end of the output should look like the following:"
+
+    - run: 
+        select: "In the command below we are passing the MySQL database and user information created in step 1"
+        input: "You are about to DROP all tables in your 'drupal' database. Do you want to continue? (yes/no) => yes"
+
+    # skipping the interactive prompt because it is covered in the command above ^
+    # skipping the interactive output
+
+    - run: "Both Nginx and PHP are running as www-data user and www-data group, so we need to issue the following command"
+    
+
+    # skipping nano command
+
+    # skipping content block because there is no text before it
+    
+    - run: "Enable the server block by creating a symbolic link to the sites-enabled directory:"
+    - run: 
+        select: "Before restarting the Nginx service make a test to be sure that there are no syntax errors:"
+        expectblock: "If there are no errors the output should look like this:"
+
+    - run: "Finally, restart the Nginx service by typing:"
+
+    # GUI step in browser
+
+    - run: "For example, if we want to install the Pathauto module, we need to run the following command:"
+    
+    # skipping the expect block because there is no text before it
+
+    - run: "To back up the installation files you can use the following rsync command, of course"
+    - run: "To back up the database we can either use the standard mysqldump command:"
+    - run: "or drush sql-dump:"
+
+    - run: "Now that we created a backup we can continue and update all Drupal core files by running the following command:"
+

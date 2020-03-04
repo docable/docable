@@ -1,0 +1,27 @@
+# https://linuxize.com/post/how-to-add-and-delete-users-on-ubuntu-18-04/
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2003
+    privateKey: id_rsa
+
+../tutorials/30_ubuntu18_linuxize.html:
+  steps:
+
+    - run: 
+        select: "To create a new user account named username using the adduser command you would run:"
+        input: 
+          - "Enter new UNIX password: => pass"
+          - "Retype new UNIX password: => pass"
+          - "Is the information correct? [Y/n]? => Y"
+    # skipping the expected output because there is a text missing above the block
+    # skipping presentation block for responding to prompts
+
+    - run: "If you want the newly created user to have administrative rights"
+
+    # a few GUI steps
+
+    - run: "To delete the user, without deleting the user files, run:"
+
+    - run: "If you want to delete and the user’s home directory and mail spool use the --remove-home flag:"
+
+    # a few GUI steps

@@ -1,0 +1,81 @@
+# https://www.digitalocean.com/community/tutorials/how-to-install-django-and-set-up-a-development-environment-on-ubuntu-16-04
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2002
+    privateKey: id_rsa
+
+../tutorials/192_ubuntu16_do.html:
+  steps:
+    - run: "Remove the flag if you’d like the upgrade to stop for each prompt."
+    - run: 
+        select: " we can install Python 3 by using the following command:"
+        input: "Do you want to continue? => yes"
+
+    - run: 
+        select: "To verify the successful installation of Python 3, run a version check with the"
+        expectblock: "The resulting output will look similar to this:"
+
+    - run: "need pip in order to install packages from PyPi, Python’s package repository."
+    - run: 
+        select: "To verify that pip was successfully installed, run the following command:"
+        expectblock: "You should see output similar to this:"
+      
+    - run: "To install virtualenv, we will use the"
+    - run:
+        select: "Once it is installed, run a version check to verify that the installation has completed successfully:"
+        expectblock: "We should see the following output, or something similar:"
+    
+    - run: "Then navigate to the directory."
+      persistent: p1
+
+    - run: "directory, create your virtual environment.  Let’s call it"
+      persistent: p1
+
+    - run: "Now, activate the virtual environment with the following command:"
+      persistent: p1
+
+    # skipping presentation code block (showing the shell prompt after adding virtualenv)
+
+    - run: "To learn more about Django, read our tutorial series on Django Development."
+      persistent: p1
+
+    - run: 
+        select: "Once installed, verify your Django installation by running a version check:"
+        expectblock: "This, or something similar, will be the resulting output:"
+      persistent: p1
+
+    - run: "you can open the port with the following command:"
+
+    - run: "While in the django-apps directory, run the following command:"
+      persistent: p1
+
+    - run: "Navigate to the testsite directory then list the contents of that directory to see what files were created"
+      persistent: p1
+
+    # skipping a command, because there is no text behind it
+    # skipping output because we didn't run the command
+
+    # skipping less command
+
+    - run: "Now navigate to the testsite directory to view the other files that were created:"
+      persistent: p1
+
+    - run: 
+        select: "Then run the following command to list the contents of the directory:"
+        expectblock: "You will see four files:"
+      persistent: p1
+
+    # skipping nano command
+
+    - file: "IP address inside the square brackets within single or double quotes => ~/django-apps/testsite/testsite/settings.py"
+    - run: "With this completed, be sure to navigate back to the directory where manage.py is located:"
+      persistent: p1
+
+    # template value
+    - run: "Now, run the following command replacing the your-server-ip text with the IP of your server:"
+      persistent: p1
+
+    # skipping presentation code block
+
+    - run: "When you are ready to leave your Python environment, you can run the deactivate command:"
+      persistent: p1

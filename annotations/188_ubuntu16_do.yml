@@ -1,0 +1,36 @@
+# https://www.digitalocean.com/community/tutorials/how-to-install-go-1-6-on-ubuntu-16-04
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2003
+    privateKey: id_rsa
+
+../tutorials/188_ubuntu16_do.html:
+  steps:
+    # skipping taget change
+    
+    - run: "Make sure you’re in your home directory, and use curl to retrieve the tarball"
+    - run: "Next, you can use sha256sum to verify the tarball"
+    # skipping expect block because there is no text behind it...
+
+    - run: "Next, use tar to extract the tarball"
+    - run: "You should now have a directory called go in your home directory"
+
+    # skipping nano command
+
+    - file: "At the end of the file, add this line => ~/.profile"
+    - file: "If you chose an alternate installation location for Go => ~/.profile"
+
+    - run: "Next, refresh your profile by running"
+    - run: "Create a new directory for your Go workspace, which is where Go will build its files"
+    - run: "your folder structure could be something different, like"
+
+    # skipping nano command
+
+    - file: "Inside your editor, paste the code below => ~/work/src/github.com/user/hello/hello.go"
+
+    - run: 
+        select: "Save and close the file, then compile it by invoking the Go command"
+        expectblock: "With the file compiled, you can run it by simply executing the command"
+
+    - run: "You can see where the compiled hello binary is installed by using the which command"
+    # skipping the expect block because there is no text behind it

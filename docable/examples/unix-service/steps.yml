@@ -1,0 +1,19 @@
+setup:
+  local: {}
+  # ssh: 
+  #   host: vagrant@127.0.0.1:2005
+  #   privateKey: id_rsa
+
+unix-service.md:
+  steps:
+    - file: ROT13 transformation => /tmp/server.php
+    # - serve: "start it:"
+    # - selectAndExpect: "another terminal:"
+    - file: "create a file called => /etc/systemd/system/rot13.service"
+      user: root
+    - run: "start the service:"
+      user: root
+    - run: "start on boot:"
+      user: root
+    - serve: "start it:"
+    - selectAndExpect: "another terminal:"

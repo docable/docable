@@ -1,0 +1,30 @@
+# https://linuxize.com/post/how-to-change-hostname-on-ubuntu-18-04/
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2003
+    privateKey: id_rsa
+
+../tutorials/96_ubuntu18_linuxize.html:
+  steps:
+    - run: "To view the current hostname, enter the following command:"
+
+    # expected output is shown in a screenshot
+
+    - run: "For example, to change the system static hostname to linuxize, you would use the following command:"
+    - file: "Open the /etc/hosts file and change the old hostname to the new one. => /etc/hosts"
+      user: root
+
+    - run: 
+        select: "To check if the package is installed run the following ls command:"
+        expectblock: "If the package is installed the output will look like the following"
+
+    # skipping expect block which will be shown based on a condition
+
+    # skipping nano command
+
+    - file: "Search for preserve_hostname and change the value from false to true: => /etc/cloud/cloud.cfg"
+      user: root
+
+    - run: "To verify that the hostname was successfully changed, once again use the hostnamectl command:"
+
+    # skipping expect block because there is no text behind it

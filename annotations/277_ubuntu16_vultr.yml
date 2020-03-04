@@ -1,0 +1,69 @@
+# https://www.vultr.com/docs/installing-and-configuring-supervisor-on-ubuntu-16-04
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2003
+    privateKey: id_rsa
+
+../tutorials/277_ubuntu16_vultr.html:
+  steps:
+    - run: 
+        select: "First, update your local packages list and then install python setuptools."
+        input: "Do you want to continue? => yes"
+
+    - run: "Now we can install supervisor."
+    - run: "Once the installation is complete, we have to generate our configuration file."
+
+    - run: "And then execute the following."
+
+    - run: "This is due to the redirection. To overcome this, login as root."
+      persistent: p1
+
+    - run: "Then you can run the command again."
+      persistent: p1
+
+    - file: "Find this section, uncomment it and then edit it to look like the following. => /etc/supervisor/supervisord.conf"
+
+    - run: "Now for each program we want to add, we will be creating a"
+
+    - run: "To do so, create a file called"
+
+    - file: "Add the following contents to the file. => /etc/systemd/system/supervisord.service"
+
+    - run: "Activate the supervisord service."
+
+    - run: "You can check the status of the service."
+
+    - run: "Also, you can check out the logs."
+
+    - run: "First, let's create a simple script that logs a timestamp."
+
+    - file: "Now, put the following contents into it => ~/hello_supervisor.sh"
+
+    - run: "Now make it executable"
+
+    - run: "In practical terms this script is pretty much useless."
+
+    - file: "Now put the following contents into this file. => /etc/supervisor/conf.d/hello_supervisor.conf"
+
+    # skipping file content because it's for presentation and explaining each part of this ^ file
+    # skipping file content because it's for presentation and explaining each part of this ^ file
+    # skipping file content because it's for presentation and explaining each part of this ^ file
+    # skipping file content because it's for presentation and explaining each part of this ^ file
+
+    - run: "After adding a new program, we should run the following two commands"
+    
+
+    # #unrunnable skipping interactive program shell
+    # #unrunnable skipping interactive program shell
+    # #unrunnable skipping interactive program shell
+    # #unrunnable skipping interactive program shell
+    # #unrunnable skipping interactive program shell
+    # #unrunnable skipping interactive program shell
+    # #unrunnable skipping interactive program shell
+
+    # skipping nano command
+
+    # template values
+    - file: "Now update this section's configuration with the following. => /etc/supervisor/supervisord.conf"
+
+    - run: "with your desired credentials, save your modifications and the restart supervisord service."

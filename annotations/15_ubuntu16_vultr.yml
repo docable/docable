@@ -1,0 +1,69 @@
+# https://www.vultr.com/docs/configure-apache-with-select-signed-tls-ssl-certificate-on-ubuntu-16-04
+setup:
+  ssh: 
+    host: vagrant@127.0.0.1:2003
+    privateKey: id_rsa
+
+../tutorials/15_ubuntu16_vultr.html:
+  steps:
+    - run: "First, let's create a place to store the file."
+      persistent: p1
+
+    - run: 
+        select: "Generate CSR and private key."
+        input: 
+          - "Country Name (2 letter code) [AU]: => US"
+          - "State or Province Name (full name) [Some-State]: => FL"
+          - "Locality Name (eg, city) []: => Miami"
+          - "Organization Name (eg, company) [Internet Widgits Pty Ltd]: => My Company"
+          - "Organizational Unit Name (eg, section) []: => 1"
+          - "Common Name (e.g. server FQDN or YOUR name) []: => 203.0.113.122"
+          - "Email Address []: => webmaster@example.com"
+
+    # skipping interactive prompts presentation
+    # skipping interactive prompts presentation
+
+    - run: "Now, move the certificate to Apache configuration folder."
+    
+    # skipping. Command may disrupt existing ssh connections. Proceed with operation (y|n)?
+    #       this really does disrupt ssh connections (new ones)
+    # - run: 
+    #     select: "Make sure UFW is enabled."
+    #     input: "Command may disrupt existing ssh connections. Proceed with operation (y|n)? => y"
+ 
+    - run: "Now allow the predefined Apache settings for the firewall."
+
+    # skipping an expect block because its command is given inline
+
+    - run: "You should also allow OpenSSH here for future connections."
+
+    # skipping nano command
+
+    - file: "This file tells the server where to look for the SSL certificate. => /etc/apache2/sites-available/default-ssl.conf"
+      user: root
+
+    - file: "Edit this line: => /etc/apache2/sites-available/default-ssl.conf"
+      user: root
+
+    # template
+    - file: "Add this right below the ServerAdmin line: => /etc/apache2/sites-available/default-ssl.conf"
+      user: root
+
+    - file: "Now, edit these lines with our certificate location: => /etc/apache2/sites-available/default-ssl.conf"
+      user: root
+    
+    - file: "Our final file should resemble this: => /etc/apache2/sites-available/default-ssl.conf"
+      user: root
+
+    - run: "Enable the SSL module by typing:"
+    - run: "Now enable the site we have just edited:"
+    - run: "Restart Apache:"
+
+    # skipping presentation code block
+
+    # skipping nano command
+
+    - file: "Add this line inside the => /etc/apache2/sites-available/000-default.conf"
+      user: root
+
+    - run: "Reload Apache configuration:"
