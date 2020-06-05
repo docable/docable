@@ -4,7 +4,7 @@ setup:
     host: vagrant@127.0.0.1:2003
     privateKey: id_rsa
 
-../tutorials/60_ubuntu16_vultr.html:
+../tutorials/docable/60_ubuntu16_vultr.html:
   steps:
     - run: 
         select: "First, add the repo key. This is used to validate the packages you will install."

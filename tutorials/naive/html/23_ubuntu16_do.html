@@ -1,0 +1,1941 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Webinar Series: Building Blocks for Doing CI/CD with Kubernetes  | DigitalOcean</title>
+
+<meta name="description" content="If you are getting started with containers, you will likely want to know how to automate the processes of building, testing, and deployment. In this first article of the CI/CD with Kubernetes series, we will cover key topics for working with Kubernete">
+<meta name="keywords" content="Microservices Kubernetes Docker Terraform CI/CD">
+
+<meta name="og:title" content="Webinar Series: Building Blocks for Doing CI/CD with Kubernetes  | DigitalOcean">
+<meta name="og:description" content="If you are getting started with containers, you will likely want to know how to automate the processes of building, testing, and deployment. In this first article of the CI/CD with Kubernetes series, we will cover key topics for working with Kubernete">
+<meta name="og:site_name" content="DigitalOcean">
+<meta name="og:type" content="article">
+<meta name="og:image" content="https://community-cdn-digitalocean-com.global.ssl.fastly.net/assets/tutorials/images/large/Kubernetes_CI-CD_-_Blog_Header.png?1540325447">
+
+<meta name="twitter:site" content="DigitalOcean">
+<meta name="twitter:title" content="Webinar Series: Building Blocks for Doing CI/CD with Kubernetes  | DigitalOcean">
+<meta name="twitter:description" content="If you are getting started with containers, you will likely want to know how to automate the processes of building, testing, and deployment. In this first article of the CI/CD with Kubernetes series, we will cover key topics for working with Kubernete">
+<meta name="twitter:creator" content="DigitalOcean">
+<meta name="twitter:card" content="photo" />
+<meta name="twitter:url" content="https://www.digitalocean.com/community/tutorials/webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes"/>
+<meta name="twitter:image" content="https://community-cdn-digitalocean-com.global.ssl.fastly.net/assets/tutorials/images/large/Kubernetes_CI-CD_-_Blog_Header.png?1540325447">
+
+  <link rel='canonical' href='https://www.digitalocean.com/community/tutorials/webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes'>
+
+<link rel="preconnect" href="https://digitalocean.cdn.prismic.io">
+<link rel="preconnect" href="https://hello.myfonts.net">
+
+
+    <link rel="stylesheet" media="all" href="/assets/community/application-b828e623bec3c41208f9f701850222a0.css" />
+
+    
+    <meta name="csrf-param" content="authenticity_token" />
+<meta name="csrf-token" content="ME7eUJy/w6SwdIia6s3X8I7830ZakIyb/LaFx9OWQfkwAqi1UVZpzmsH4NSe0uVE2uBS69MtRZ6AiC2bseC8YQ==" />
+    <script src="/assets/community/prerequisites-9a51dfaadf0d3629cc636286133a958d.js"></script>
+    <script>
+//<![CDATA[
+
+  window.cookieDomain = '.digitalocean.com';
+
+//]]>
+</script><script src="https://assets.digitalocean.com/cookieConsent/cookieConsent.js"></script>
+<link rel="stylesheet" href="https://assets.digitalocean.com/cookieConsent/cookieConsent.css">
+
+    <script type="text/javascript">
+  if(window.analytics=window.analytics||[],window.analytics.included)window.console&&console.error&&console.error("analytics.js included twice");else{window.analytics.included=!0,window.analytics.methods=["identify","group","track","page","pageview","alias","ready","on","once","off","trackLink","trackForm","trackClick","trackSubmit"],window.analytics.factory=function(a){return function(){var n=Array.prototype.slice.call(arguments);return n.unshift(a),window.analytics.push(n),window.analytics}};for(var i=0;i<window.analytics.methods.length;i++){var key=window.analytics.methods[i];window.analytics[key]=window.analytics.factory(key)}window.analytics.load=function(a){var n=document.createElement("script");n.type="text/javascript",n.async=!0,n.src=("https:"===document.location.protocol?"https://":"http://")+"cdn.segment.com/analytics.js/v1/"+a+"/analytics.min.js";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(n,t)},window.analytics.SNIPPET_VERSION="2.0.9",window.analytics.load("puo3uv968t")}
+  window.analytics.page();
+</script>
+
+<!-- Google Tag Manager -->
+<script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-KHWBBT');
+</script>
+<!-- End Google Tag Manager -->
+
+<script src="/assets/community/internalCookies-d2a3579f6b37d00c8045b16853b90462.js"></script>
+
+      <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="/community/tutorials/feed">
+    <script>
+      window.comApp = {
+        prefix: '/community',
+        svgIconPath: 'https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg',
+        railsEnv: 'production',
+        rootUrl: 'https://www.digitalocean.com/community',
+        algolia_application_id: '6ZHEUVKJ88',
+        algolia_api_key: 'c5470567eae7fa1177d43222e18ba086'
+      };
+    </script>
+      <script src="https://go.digitalocean.com/js/forms2/js/forms2.min.js"></script>
+
+    <script src="/assets/community/application-dd2f12c7d68945c016e67a784d8785fc.js"></script>
+  </head>
+  <body class="feature-filter-bar feature-upvotes tutorials-controller tutorial-single" data-env="production" data-prefix="/community" data-user-id="" data-facebook-app-id="694818843983011"   data-completed-tutorial-id="" data-tutorial-id="2820" data-js="tutorial"
+  data-upvote="null"
+  data-flagged=""
+>
+    
+
+    <div class='outside_viewport'>
+        <div id="contents-modal" class="modal fade mini-modal" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1>Contents</h1>
+          <button class="close-button icon icon-close-light" data-dismiss="modal" aria-label="close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="table-of-contents-modal"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="share-modal" class="modal fade mini-modal" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1>Share</h1>
+        <button type="button" class="close-button icon icon-close-light" aria-label="close" data-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="social-sharing social-sharing-container">
+          <ul class="top ">
+            <li class="shareBtn" id="sbTwitter">
+              <a href="http://twitter.com/share?text=Webinar Series: Building Blocks for Doing CI/CD with Kubernetes&amp;url=https://www.digitalocean.com/community/tutorials/webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes?utm_content=webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes&amp;utm_medium=community&amp;utm_source=twshare" class="share-icon share-popup" title="Share on Twitter" target="_blank">
+                <span class="sIcon icon-bird"></span>
+              </a>
+              <a href="http://twitter.com/share?text=Webinar Series: Building Blocks for Doing CI/CD with Kubernetes&amp;url=https://www.digitalocean.com/community/tutorials/webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes?utm_content=webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes&amp;utm_medium=community&amp;utm_source=twshare" class="share-link share-popup" title="Share on Twitter" target="_blank">
+                Twitter
+              </a>
+            </li>
+            <li class="shareBtn" id="sbFacebook">
+              <a class="share-icon share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes?utm_content=webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+                <span class="sIcon icon-facebook-B"></span>
+              </a>
+
+              <a class="share-link share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes?utm_content=webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+                Facebook
+              </a>
+            </li>
+            <li class="shareBtn" id="sbYC">
+              <a href="https://news.ycombinator.com/submitlink?t=Webinar Series: Building Blocks for Doing CI/CD with Kubernetes&amp;u=https://www.digitalocean.com/community/tutorials/webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes?utm_content=webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes&amp;utm_medium=community&amp;utm_source=hnshare" class="share-icon share-popup" target="_blank" title="Submit to Hacker News">
+                <span class="sIcon icon-hacker-news"></span>
+              </a>
+              <a href="https://news.ycombinator.com/submitlink?t=Webinar Series: Building Blocks for Doing CI/CD with Kubernetes&amp;u=https://www.digitalocean.com/community/tutorials/webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes?utm_content=webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes&amp;utm_medium=community&amp;utm_source=hnshare" class="share-link share-popup" target="_blank" title="Submit to Hacker News">
+                Hacker News
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <div class="table-of-contents">
+    <div data-js="tableOfContentsDesktop"></div>
+  </div>
+  
+  
+  
+  <div id="share-modal" class="modal fade mini-modal" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1>Share</h1>
+        <button type="button" class="close-button icon icon-close-light" aria-label="close" data-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="social-sharing social-sharing-container">
+          <ul class="bottom ">
+            <li class="shareBtn" id="sbTwitter">
+              <a href="http://twitter.com/share?text=Webinar Series: Building Blocks for Doing CI/CD with Kubernetes&amp;url=https://www.digitalocean.com/community/tutorials/webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes?utm_content=webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes&amp;utm_medium=community&amp;utm_source=twshare" class="share-icon share-popup" title="Share on Twitter" target="_blank">
+                <span class="sIcon icon-bird"></span>
+              </a>
+              <a href="http://twitter.com/share?text=Webinar Series: Building Blocks for Doing CI/CD with Kubernetes&amp;url=https://www.digitalocean.com/community/tutorials/webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes?utm_content=webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes&amp;utm_medium=community&amp;utm_source=twshare" class="share-link share-popup" title="Share on Twitter" target="_blank">
+                Twitter
+              </a>
+            </li>
+            <li class="shareBtn" id="sbFacebook">
+              <a class="share-icon share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes?utm_content=webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+                <span class="sIcon icon-facebook-B"></span>
+              </a>
+
+              <a class="share-link share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes?utm_content=webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+                Facebook
+              </a>
+            </li>
+            <li class="shareBtn" id="sbYC">
+              <a href="https://news.ycombinator.com/submitlink?t=Webinar Series: Building Blocks for Doing CI/CD with Kubernetes&amp;u=https://www.digitalocean.com/community/tutorials/webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes?utm_content=webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes&amp;utm_medium=community&amp;utm_source=hnshare" class="share-icon share-popup" target="_blank" title="Submit to Hacker News">
+                <span class="sIcon icon-hacker-news"></span>
+              </a>
+              <a href="https://news.ycombinator.com/submitlink?t=Webinar Series: Building Blocks for Doing CI/CD with Kubernetes&amp;u=https://www.digitalocean.com/community/tutorials/webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes?utm_content=webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes&amp;utm_medium=community&amp;utm_source=hnshare" class="share-link share-popup" target="_blank" title="Submit to Hacker News">
+                Hacker News
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div id="newsletter-signup-dialog" class="newsletter-signups-dialog" data-newsletter-signup-dialog data-article-target=".content-body">
+  <div class="form-message">
+  <div class="pull-right">
+    <a href="javascript:;" class="newsletter-signups-dialog-dismiss" data-newsletter-signup-dismiss>&times;</a>
+
+  </div>
+  <h4 class="newsletter-signups-dialog-title">
+    Sign up for our newsletter.
+  </h4>
+  <p class="newsletter-signups-dialog-description">
+    Get the latest tutorials on SysAdmin and open source topics.
+  </p>
+  <form class="newsletter-signup" id="new_newsletter_signup" data-newsletter-signup="true" action="/community/newsletter" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="&#x2713;" />
+
+  <input data-newsletter-signup-field="url" type="hidden" name="newsletter_signup[url]" id="newsletter_signup_url" />
+  <input data-newsletter-signup-field="title" type="hidden" name="newsletter_signup[title]" id="newsletter_signup_title" />
+
+  <div class="newsletter-signup-ajax-error" data-newsletter-signup-ajax-error></div>
+
+
+  <div class="form-group">
+    <input placeholder="Enter your email address" required="required" class="field" type="email" name="newsletter_signup[email]" id="newsletter_signup_email" />
+  </div>
+
+  <button data-disable-with="Sign Up" class="button blue-button">
+    Sign Up
+  </button>
+
+</form>
+
+</div>
+
+<div class="thanks-message hidden" data-newsletter-signup-successful> 
+  <div class='pull-right'> 
+    <a href='javascript:;' class='newsletter-signups-dialog-dismiss icon icon-close-light' data-newsletter-signup-dismiss></a> 
+  </div> 
+
+  <span class='newsletter-signups-dialog-success'> 
+    Thanks for signing up! 
+  </span> 
+</div>
+
+</div>
+
+
+      
+    </div>
+
+      
+      
+<div style="display: none;">
+  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <symbol id="do_nav-logo" xmlns="http://www.w3.org/2000/svg"> <title>DigitalOcean home</title> <g fill="currentColor" fill-rule="evenodd"> <path d="M14.4942 29v-5.5674c5.9572 0 10.5633-5.8478 8.2892-12.059-.8425-2.3006-2.693-4.1355-5.0126-4.9706-6.262-2.2534-12.1564 2.3135-12.1573 8.2207 0 0-.0006.0014-.0014.0014H0C0 5.2123 9.1687-2.1167 19.1138.9624c4.3459 1.3457 7.7993 4.7708 9.1561 9.081C31.3742 19.9068 23.985 29 14.4942 29"></path> <path d="M14.507 23.4468H8.9103v-5.549s.0005-.0011.0011-.0011h5.5949c.0006 0 .0009.0006.0009.0006v5.5495M8.9093 27.7118H4.6105l-.0012-.0012v-4.2638h4.3009v4.2638l-.0009.0012M4.6125 23.4468H1.0088c-.0015 0-.0026-.0012-.0026-.0012v-3.5724s.0011-.0025.0026-.0025h3.601c.0015 0 .0027.0011.0027.0011v3.575M43.2806 9.6357h1.649c1.8346 0 3.345.358 4.49 1.0647 1.2714.7603 1.9164 2.2069 1.9164 4.2991 0 2.1554-.6465 3.6671-1.9207 4.4942h-.0008c-1.0971.7196-2.5981 1.0846-4.462 1.0846h-1.6719V9.6357zm8.324-1.0736c-1.6598-1.142-3.7252-1.721-6.1387-1.721h-5.2537V23.373h5.2537c2.4074 0 4.4737-.6113 6.1407-1.8157.907-.6382 1.6197-1.5304 2.1185-2.651.4962-1.1144.7479-2.4288.7479-3.9067 0-1.4605-.2517-2.758-.7482-3.857-.4988-1.104-1.212-1.972-2.1202-2.5804zM58.1303 6.6376c-.5051 0-.9403.1777-1.2906.5254-.3546.335-.5346.7597-.5346 1.2618 0 .501.1791.9322.532 1.2825.3529.35.788.528 1.2932.528.5042 0 .9394-.178 1.2928-.528.3535-.3508.5324-.7821.5324-1.2825 0-.5015-.18-.926-.5324-1.2592-.3534-.3503-.7886-.528-1.2928-.528M56.6247 23.3729h2.9538V11.7294h-2.9538zM69.5321 19.5787c-.5162.5814-1.1793.8635-2.0264.8635-.8471 0-1.5064-.282-2.015-.863-.5065-.5777-.7637-1.3439-.7637-2.2773 0-.9479.2572-1.7238.764-2.3058.502-.576 1.1796-.8683 2.0147-.8683.8465 0 1.5096.284 2.0262.8695.5142.582.7751 1.3573.7751 2.3046 0 .9328-.2609 1.6988-.7749 2.2768zm.775-6.8767c-.8908-.7858-1.8858-1.2444-2.9614-1.2444-1.6305 0-2.9859.5598-4.0276 1.662-1.0555 1.0932-1.5907 2.5006-1.5907 4.1823 0 1.644.5269 3.0464 1.568 4.1709 1.0498 1.088 2.4123 1.6396 4.0503 1.6396 1.139 0 2.1182-.3144 2.9157-.9356v.268c0 .9662-.2608 1.7176-.7751 2.234-.5137.5154-1.226.7764-2.1173.7764-1.3637 0-2.2183-.5314-3.2589-1.9262l-2.0115 1.917.0542.0754c.4346.605 1.1 1.197 1.9785 1.7594.8787.5603 1.9832.8447 3.2832.8447 1.7536 0 3.1726-.5363 4.2172-1.5933 1.0506-1.0628 1.5835-2.486 1.5835-4.2286V11.7294H70.307v.9726zM75.7434 23.3729h2.9541V11.7294h-2.9541zM77.249 6.6376c-.5052 0-.94.1777-1.2906.5254-.3547.335-.5344.7597-.5344 1.2618 0 .501.1789.9322.532 1.2825.353.35.7878.528 1.293.528.5045 0 .9396-.178 1.2928-.528.3535-.3508.5323-.7821.5323-1.2825 0-.5015-.1797-.926-.5323-1.2592-.3532-.3503-.7883-.528-1.2929-.528M85.1724 8.5831h-2.9082v3.1463h-1.6888v2.6702h1.6888v4.8365c0 1.5134.3047 2.5964.9064 3.2181.6031.6247 1.6741.9414 3.1831.9414.48 0 .963-.0156 1.4354-.0463l.133-.0088v-2.6683l-1.013.0526c-.7033 0-1.1728-.1226-1.3961-.3637-.226-.245-.3406-.7636-.3406-1.5404v-4.421h2.7497v-2.6703h-2.7497V8.583M101.7735 23.3729h2.9544V6.8412h-2.9544zM134.5728 19.2094c-.5286.5874-1.0693 1.0966-1.4855 1.3613v.0005c-.4085.2599-.924.3918-1.532.3918-.8703 0-1.5703-.3144-2.1405-.9621-.567-.644-.8545-1.4716-.8545-2.4613s.2838-1.8162.8436-2.4556c.5625-.6434 1.2588-.9562 2.1285-.9562.9515 0 1.9548.5869 2.8145 1.5947l1.9525-1.8568c-1.273-1.6433-2.897-2.4081-4.8352-2.4081-1.622 0-3.028.5862-4.1788 1.7411-1.1446 1.147-1.7251 2.6074-1.7251 4.3409 0 1.7335.58 3.1977 1.7234 4.352 1.1447 1.1557 2.5514 1.7417 4.1805 1.7417 2.139 0 3.8651-.9158 5.029-2.5935l-1.9204-1.8304M140.2405 16.0973c.1422-.5567.401-1.0207.7714-1.381.4005-.3906.9214-.5885 1.5489-.5885.716 0 1.2702.2019 1.6474.6014.3495.3696.5467.8296.588 1.368h-4.5557zm6.4569-2.7414c-.4191-.5788-.9896-1.0448-1.6965-1.3854-.7047-.3404-1.526-.513-2.441-.513-1.6489 0-2.9982.6037-4.0113 1.7946-.9836 1.182-1.4818 2.651-1.4818 4.3665 0 1.7648.547 3.2253 1.6254 4.341 1.0727 1.1105 2.5083 1.6737 4.267 1.6737 1.992 0 3.627-.799 4.8587-2.3752l.0666-.0847-1.9273-1.837c-.1789.2139-.4317.4561-.6628.6722-.2918.273-.5659.4842-.8588.6289-.4415.218-.9369.3255-1.4907.3255-.8187 0-1.4964-.2388-2.0147-.71-.4847-.4403-.768-1.0345-.843-1.7683h7.8265l.0264-1.0693c0-.7569-.1038-1.4862-.3088-2.1677a6.312 6.312 0 0 0-.934-1.8918zM152.797 18.9234c.3352-.2318.8085-.3483 1.4073-.3483.7112 0 1.4654.1413 2.2426.421v1.1421c-.6421.592-1.4996.8922-2.5499.8922-.5114 0-.909-.1126-1.1822-.3355-.2683-.218-.3985-.4955-.3985-.847 0-.3994.1571-.7022.4808-.9245zm5.2452-6.3229h-.0003c-.8952-.758-2.1328-1.143-3.678-1.143-.9829 0-1.902.2144-2.7336.6324-.7691.387-1.5245 1.0275-2.0043 1.8662l.0298.0358 1.8917 1.796c.7791-1.2322 1.6454-1.66 2.7941-1.66.6172 0 1.1298.1643 1.5234.4881.3916.3216.5819.7304.5819 1.249v.5652c-.7324-.221-1.4629-.333-2.1738-.333-1.47 0-2.6663.3432-3.555 1.0193-.9.6852-1.3562 1.665-1.3562 2.9125 0 1.094.3847 1.9829 1.1461 2.6433.7677.6372 1.7275.961 2.8524.961 1.1246 0 2.177-.4495 3.132-1.2191v.9587h2.9089v-7.4852c0-1.4173-.4572-2.523-1.3591-3.2872zM170.7656 12.8285c-.8227-.9092-1.9791-1.371-3.4371-1.371-1.172 0-2.1236.3338-2.8357.9926v-.7207h-2.897v11.6435h2.954v-6.4215c0-.8823.2119-1.5828.6293-2.0826.4162-.4987.989-.741 1.75-.741.6691 0 1.1765.2167 1.5506.662.3759.4474.5662 1.0638.5662 1.8335v6.7496H172v-6.7496c0-1.6127-.415-2.889-1.2344-3.7948M92.8158 18.9234c.3351-.2318.8087-.3483 1.4075-.3483.7112 0 1.4652.1413 2.2426.421v1.1421c-.6421.592-1.4998.8922-2.5502.8922-.5114 0-.9087-.1126-1.1819-.3355-.2683-.218-.3988-.4955-.3988-.847 0-.3994.1574-.7022.4808-.9245zm5.2451-6.3229h-.0003c-.8952-.758-2.1328-1.143-3.6776-1.143-.983 0-1.902.2144-2.7337.6324-.7694.387-1.5247 1.0275-2.0043 1.8662l.0295.0358 1.8917 1.796c.7792-1.2322 1.6458-1.66 2.7941-1.66.6172 0 1.1298.1643 1.5234.4881.3916.3216.5822.7304.5822 1.249v.5652c-.7327-.221-1.4631-.333-2.174-.333-1.47 0-2.6664.3432-3.555 1.0193-.8999.6852-1.3562 1.665-1.3562 2.9125 0 1.094.3847 1.9829 1.1463 2.6433.7677.6372 1.7272.961 2.8524.961 1.1246 0 2.1766-.4495 3.1318-1.2191v.9587H99.42v-7.4852c0-1.4173-.457-2.523-1.359-3.2872zM115.4464 9.5808c-3.0682 0-5.5645 2.4755-5.5645 5.5188s2.4963 5.5188 5.5645 5.5188c3.0682 0 5.5645-2.4755 5.5645-5.5188s-2.4963-5.5188-5.5645-5.5188zm0 14.0408c-4.7383 0-8.5928-3.8228-8.5928-8.522 0-4.6994 3.8545-8.5223 8.5928-8.5223 4.738 0 8.5925 3.8229 8.5925 8.5223 0 4.6992-3.8545 8.522-8.5925 8.522z"></path> </g> </symbol>
+    <symbol id="do_nav-community_logo" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 532.2 99.8" fill="currentColor"> <path class="st0" d="M98.5,23c15.5,0,27.7,12.1,27.7,28.2c0,16.1-12.3,28.1-27.7,28.1c-15.6,0-27.7-11.9-27.7-28.1 C70.8,35.1,82.9,23,98.5,23z M98.5,67.9c8.7,0,14.9-7,14.9-16.8c0-9.8-6.2-16.8-14.9-16.8c-8.8,0-15,7-15,16.8 C83.5,60.9,89.7,67.9,98.5,67.9z"/> <path class="st0" d="M166.8,45.9c0-7-3.5-11.6-9.9-11.6c-7.2,0-11.1,5.3-11.1,13.1V78h-12.5V24.3h12.3V29c2.4-2.8,7-6,13.9-6 c7.3,0,12.2,3.1,15,7c4.4-4.9,10-7,16.8-7c14.4,0,21.4,8.5,21.4,23.8V78h-12.5V45.9c0-7-3.5-11.6-9.9-11.6 c-7.2,0-11.2,5.3-11.2,13.1V78h-12.4V45.9z"/> <path class="st0" d="M255.5,45.9c0-7-3.5-11.6-9.9-11.6c-7.2,0-11.1,5.3-11.1,13.1V78h-12.5V24.3h12.3V29c2.4-2.8,7-6,13.9-6 c7.3,0,12.2,3.1,15,7c4.4-4.9,10-7,16.8-7c14.4,0,21.4,8.5,21.4,23.8V78h-12.5V45.9c0-7-3.5-11.6-9.9-11.6 c-7.2,0-11.2,5.3-11.2,13.1V78h-12.4V45.9z"/> <path class="st0" d="M322.5,56.4c0,7,3.6,11.6,10.1,11.6c7.2,0,11.2-5.6,11.2-13.5V24.3h12.5V78h-12.3v-4.4 c-3.4,3.7-8.1,5.6-13.9,5.6c-11.9,0-20.1-8.4-20.1-23.7V24.3h12.5V56.4z"/> <path class="st0" d="M378.2,78h-12.5V24.3h12.3v4.4c2.7-3.1,7.7-5.7,13.9-5.7c13.1,0,21.3,8.5,21.3,23.8V78h-12.5V46.8 c0-7.5-3.7-12.5-10.6-12.5c-7.8,0-11.8,5.6-11.8,14V78z"/> <path class="st0" d="M427.8,0.2c4.4,0,7.9,3.4,7.9,7.8s-3.5,7.9-7.9,7.9c-4.4,0-7.9-3.5-7.9-7.9S423.4,0.2,427.8,0.2z M421.4,24.3 h12.5V78h-12.5V24.3z"/> <path class="st0" d="M446.7,59.1V35.5h-6.5V24.3h6.5v-15H459v15h12.2v11.2H459v21.7c0,7.8,1.8,9.8,8.8,9.8c1.2,0,4.1-0.2,4.1-0.2 v11.2c0,0-2.4,0.2-6.7,0.2C451.2,78.1,446.7,72.7,446.7,59.1z"/> <path class="st0" d="M497.3,78.7l-21.3-54.4h14.2l14,38.8l14.2-38.8h13.6l-24.1,60.2c-3.7,9.4-7.2,15.3-21.3,15.3 c-2.5,0-4.8-0.1-4.8-0.1V88c0,0,1.5,0.1,2.8,0.1c7.6,0,9.8-2.3,11.8-7.8L497.3,78.7z"/> <path class="st0" d="M62.4,55.9c-5.3,7-12.2,11.4-22.1,11.4c-15.6,0-27-11.7-27-27.5c0-16.1,11.4-27.8,26.5-27.8 c10,0,16.8,4.8,21.3,11.3l8.4-8.8C63.1,5.7,53.3,0,39.7,0C17.1,0,0,15.9,0,39.8c0,23.4,17.1,39.4,40.1,39.4c13.1,0,22-4.9,28.6-12.2 L62.4,55.9z"/> </symbol>
+    <symbol id="do_nav-control_panel_icon" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M19.6875 23.4862C19.6885 23.9722 19.4965 24.4388 19.1537 24.7833C18.8109 25.1279 18.3454 25.3222 17.8594 25.3237H3.23438C2.99366 25.3232 2.75539 25.2753 2.53321 25.1827C2.31102 25.09 2.10927 24.9545 1.93949 24.7839C1.7697 24.6132 1.63522 24.4108 1.54373 24.1881C1.45223 23.9655 1.40552 23.727 1.40626 23.4862V3.25498C1.40577 3.01417 1.45271 2.77562 1.54441 2.55295C1.63611 2.33028 1.77077 2.12785 1.9407 1.95722C2.11063 1.7866 2.31251 1.65111 2.5348 1.5585C2.75709 1.46589 2.99545 1.41797 3.23626 1.41748L17.8613 1.44186C18.347 1.44384 18.812 1.63843 19.1544 1.98292C19.4968 2.32741 19.6885 2.79366 19.6875 3.27936V23.4862Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M43.5863 12.27C43.5828 12.7516 43.3883 13.212 43.0456 13.5503C42.7028 13.8885 42.2397 14.0768 41.7582 14.0738H27.1332C26.8947 14.0755 26.6582 14.0302 26.4372 13.9405C26.2162 13.8507 26.015 13.7183 25.8453 13.5508C25.6755 13.3833 25.5404 13.1839 25.4477 12.9642C25.355 12.7444 25.3065 12.5085 25.3051 12.27V3.24565C25.308 2.76461 25.5019 2.30442 25.8439 1.96621C26.186 1.62799 26.6484 1.43941 27.1294 1.4419L41.7544 1.41753C42.2365 1.41403 42.7002 1.60205 43.0437 1.94027C43.3872 2.27849 43.5823 2.73924 43.5863 3.22128V12.27Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M19.6875 41.7956C19.686 42.0347 19.6375 42.2712 19.5446 42.4915C19.4518 42.7118 19.3164 42.9117 19.1463 43.0797C18.9762 43.2477 18.7747 43.3806 18.5532 43.4707C18.3318 43.5609 18.0947 43.6065 17.8556 43.605L3.23063 43.5806C2.74908 43.5826 2.28644 43.3934 1.94436 43.0545C1.60228 42.7155 1.40873 42.2547 1.40625 41.7731V32.7563C1.40748 32.5175 1.45575 32.2813 1.54831 32.0612C1.64087 31.8412 1.7759 31.6415 1.94569 31.4736C2.11547 31.3057 2.31667 31.173 2.53779 31.0829C2.75892 30.9929 2.99562 30.9473 3.23438 30.9488H17.8594C18.3414 30.9463 18.8047 31.1352 19.1475 31.4742C19.4903 31.8131 19.6845 32.2742 19.6875 32.7563V41.7956Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M27.1349 43.605C26.894 43.6045 26.6555 43.5565 26.433 43.4638C26.2106 43.3711 26.0087 43.2354 25.8387 43.0646C25.6688 42.8937 25.5341 42.6911 25.4426 42.4682C25.351 42.2453 25.3042 42.0066 25.3049 41.7656V21.5381C25.3042 21.2973 25.3509 21.0587 25.4424 20.8359C25.5338 20.6132 25.6683 20.4106 25.8381 20.2398C26.0078 20.069 26.2095 19.9333 26.4317 19.8405C26.6539 19.7476 26.8923 19.6995 27.1331 19.6987H41.7581C41.9989 19.6995 42.2372 19.7476 42.4594 19.8405C42.6816 19.9333 42.8833 20.069 43.0531 20.2398C43.2228 20.4106 43.3573 20.6132 43.4488 20.8359C43.5402 21.0587 43.5869 21.2973 43.5862 21.5381V41.7412C43.5872 42.2271 43.3955 42.6935 43.0532 43.0383C42.7109 43.3831 42.2458 43.5781 41.7599 43.5806L27.1349 43.605Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+    <symbol id="do_nav-community_icon" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#clip0)"> <path d="M12.6562 10.5469C12.6562 9.85155 12.8624 9.17184 13.2487 8.5937C13.635 8.01556 14.1841 7.56495 14.8265 7.29886C15.4689 7.03277 16.1758 6.96315 16.8577 7.0988C17.5397 7.23445 18.1661 7.56929 18.6578 8.06095C19.1495 8.55262 19.4843 9.17905 19.6199 9.86101C19.7556 10.543 19.686 11.2499 19.4199 11.8922C19.1538 12.5346 18.7032 13.0837 18.1251 13.47C17.5469 13.8563 16.8672 14.0625 16.1719 14.0625" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M16.1719 18.2812C16.0328 18.2812 15.8969 18.3225 15.7812 18.3997C15.6656 18.477 15.5755 18.5868 15.5223 18.7153C15.4691 18.8438 15.4551 18.9852 15.4823 19.1215C15.5094 19.2579 15.5764 19.3832 15.6747 19.4816C15.773 19.5799 15.8983 19.6469 16.0347 19.674C16.1711 19.7011 16.3125 19.6872 16.4409 19.634C16.5694 19.5808 16.6792 19.4906 16.7565 19.375C16.8338 19.2594 16.875 19.1234 16.875 18.9844C16.875 18.7979 16.8009 18.6191 16.6691 18.4872C16.5372 18.3553 16.3584 18.2812 16.1719 18.2812Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M32.3438 4.21875V12.6562" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M29.5312 1.40625C30.2772 1.40625 30.9925 1.70257 31.52 2.23001C32.0474 2.75746 32.3438 3.47283 32.3438 4.21875" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M4.21875 1.40625H29.5312" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M1.40625 4.21875C1.40625 3.47283 1.70257 2.75746 2.23001 2.23001C2.75746 1.70257 3.47283 1.40625 4.21875 1.40625" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M1.40625 23.9062V4.21875" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M4.21875 26.7188C3.47283 26.7187 2.75746 26.4224 2.23001 25.895C1.70257 25.3675 1.40625 24.6522 1.40625 23.9062" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M9.84375 26.7188H4.21875" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M9.84375 35.1562V26.7188" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M15.4688 30.9375L9.84375 35.1562" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M43.5938 35.1562H37.9688V43.5938L29.5312 35.1562H21.0938V18.2812H43.5938V35.1562Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M32.3438 23.9062V29.5312" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </g> <defs> <clipPath id="clip0"> <rect width="45" height="45" fill="white"/> </clipPath> </defs> </symbol>
+    <symbol id="do_nav-search" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M15.7 13.3l-3.81-3.83A5.93 5.93 0 0 0 13 6c0-3.31-2.69-6-6-6S1 2.69 1 6s2.69 6 6 6c1.3 0 2.48-.41 3.47-1.11l3.83 3.81c.19.2.45.3.7.3.25 0 .52-.09.7-.3a.996.996 0 0 0 0-1.41v.01zM7 10.7c-2.59 0-4.7-2.11-4.7-4.7 0-2.59 2.11-4.7 4.7-4.7 2.59 0 4.7 2.11 4.7 4.7 0 2.59-2.11 4.7-4.7 4.7z"></path></symbol>
+    <symbol id="do_nav-logomark" x="0px" y="0px" viewBox="65.2 173.5 180 180" fill="currentColor"><path d="M155.2,351.7v-34.2c36.2,0,64.3-35.9,50.4-74c-5.1-14.1-16.4-25.4-30.5-30.5c-38.1-13.8-74,14.2-74,50.4l0,0H67c0-57.7,55.8-102.7,116.3-83.8c26.4,8.3,47.5,29.3,55.7,55.7C257.9,295.9,213,351.7,155.2,351.7z"/> <polygon points="155.3,317.6 121.3,317.6 121.3,283.6 121.3,283.6 155.3,283.6 155.3,283.6"/> <polygon points="121.3,343.8 95.1,343.8 95.1,343.8 95.1,317.6 121.3,317.6"/> <path d="M95.1,317.6H73.2l0,0v-21.9l0,0h21.9l0,0V317.6z"/></symbol>
+    <symbol id="do_nav-write4do" viewBox="0 0 30 30" fill="none" stroke="currentColor"> <path d="M16.3063 17.67L11.6663 18.3338L12.3288 13.6925L24.2613 1.76002C24.7887 1.23257 25.5041 0.936249 26.25 0.936249C26.6194 0.936249 26.9851 1.009 27.3263 1.15034C27.6675 1.29168 27.9776 1.49885 28.2388 1.76002C28.4999 2.02118 28.7071 2.33123 28.8484 2.67246C28.9898 3.01369 29.0625 3.37942 29.0625 3.74877C29.0625 4.11811 28.9898 4.48384 28.8484 4.82507C28.7071 5.1663 28.4999 5.47635 28.2388 5.73752L16.3063 17.67Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M22.935 3.08624L26.9125 7.06374"  stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M23.4375 17.8125V27.1875C23.4375 27.6848 23.24 28.1617 22.8883 28.5133C22.5367 28.865 22.0598 29.0625 21.5625 29.0625H2.8125C2.31522 29.0625 1.83831 28.865 1.48667 28.5133C1.13504 28.1617 0.9375 27.6848 0.9375 27.1875V8.4375C0.9375 7.94022 1.13504 7.46331 1.48667 7.11167C1.83831 6.76004 2.31522 6.5625 2.8125 6.5625H12.1875" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+    <symbol id="do_nav-meetups" viewBox="0 0 30 30" fill="none" stroke="currentColor"> <path d="M27.1901 4.6875H2.81506C1.77953 4.6875 0.940063 5.52697 0.940063 6.5625V27.1875C0.940063 28.223 1.77953 29.0625 2.81506 29.0625H27.1901C28.2256 29.0625 29.0651 28.223 29.0651 27.1875V6.5625C29.0651 5.52697 28.2256 4.6875 27.1901 4.6875Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M0.940063 12.1875H29.0651" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M8.44006 7.5V0.9375" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M21.5651 7.5V0.9375" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+    <symbol id="do_nav-hacktoberfest" viewBox="0 0 30 30" fill="none" stroke="currentColor"> <path d="M19.2063 24.9918L16.5714 22.3569V14.4854L13.986 17.0708V23.5755L12.5615 25L11.1371 23.5591V8.44175L10.7419 8.04652L8.93042 9.8662L8 8.94401L11.9358 5.00823L11.944 5.01647L12.1005 5.16468L13.9778 7.04199V13.8431L16.5632 11.2577V8.42528L15.2705 7.12433L17.3948 5L19.4286 7.03376V20.9572L20.4249 21.9535L21.6352 20.7431L22.5492 21.6571L19.2063 24.9918Z" fill="currentcolor"/> <rect x="0.75" y="0.75" width="28.5" height="28.5" rx="2.25" stroke-width="1.5" stroke="currentColor"/> </symbol>
+    <symbol id="do_nav-build" viewBox="0 0 16 16" fill="none" stroke="currentColor"> <path d="M1.5 14.5C1.23478 14.5 0.98043 14.3946 0.792893 14.2071C0.605357 14.0196 0.5 13.7652 0.5 13.5V2.57667C0.500879 2.29139 0.614596 2.01804 0.81632 1.81632C1.01804 1.6146 1.29139 1.50088 1.57667 1.5H14.4287C14.7125 1.50088 14.9845 1.61403 15.1852 1.81476C15.386 2.01548 15.4991 2.28747 15.5 2.57133V13.4233C15.4991 13.7086 15.3854 13.982 15.1837 14.1837C14.982 14.3854 14.7086 14.4991 14.4233 14.5H1.5Z" stroke-linecap="round" stroke-linejoin="round"/> <path d="M15.5 4.5H0.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M11 7.5L13 9.5L11 11.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M5 7.5L3 9.5L5 11.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M9 7.5L7 11.5" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+  </svg>
+</div>
+
+<nav class="do_nav" role="navigation" aria-label="Navigation">
+  <ul role="menubar" class="utility">
+    <li role="banner" data-flex="grow" data-show="always">
+    </li>
+    <li role="menuitem">
+      <a href="/products/">Products</a>
+    </li>
+    <li role="menuitem">
+      <a href="/pricing/">Pricing</a>
+    </li>
+    <li role="menuitem" aria-haspopup="true" tabindex="0">
+      <span class="expander">Docs</span>
+      <div class="mini" aria-expanded="false">
+        <ul role="menu">
+          <li role="menuitem">
+            <a href="/docs/">Product Docs</a>
+          </li>
+          <li role="menuitem">
+            <a href="https://developers.digitalocean.com/documentation/">API Docs</a>
+          </li>
+        </ul>
+      </div>
+    </li>
+      <li role="menuitem" aria-haspopup="true" tabindex="0">
+      <span class="expander">Log in</span>
+        <div class="mini" aria-expanded="false">
+          <header>Log in to</header>
+          <ul role="menu">
+            <li role="menuitem">
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <use xlink:href="#do_nav-community_icon"></use>
+              </svg>
+              <a id="log-in" href="/community/auth/digitalocean">Community</a>
+            </li>
+            <li role="menuitem">
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <use xlink:href="#do_nav-control_panel_icon"></use>
+              </svg>
+              <a href="https://cloud.digitalocean.com/registrations/new">Control Panel</a>
+            </li>
+          </ul>
+        </div>
+      </li>
+  </ul>
+
+  <ul role="menubar" class="primary">
+    <li role="menuitem" data-show="always">
+      <a href="https://www.digitalocean.com/">
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" shape-rendering="auto">
+          <use xlink:href="#do_nav-logomark"></use>
+        </svg>
+      </a>
+    </li>
+    <li role="menuitem" data-show="always">
+      <a role="home" title="DigitalOcean Community Home" href="/community">
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="120px" height="24px"
+             shape-rendering="auto">
+          <use xlink:href="#do_nav-community_logo"></use>
+        </svg>
+</a>    </li>
+    <li role="menuitem">
+      <a data-activatable="true" href="/community/tutorials">Tutorials</a>
+    </li>
+    <li role="menuitem">
+      <a data-activatable="true" href="/community/questions">Questions</a>
+    </li>
+    <li role="menuitem" aria-haspopup="true" class="mega_parent" tabindex="0">
+      <span class="expander">Get Involved</span>
+      <div class="mega" aria-expanded="false">
+        <div class="section column">
+          <header>Participate</header>
+          <ul role="menu">
+            <li role="menuitem">
+              <a href="https://www.digitalocean.com/write-for-donations/" class="with_image">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <use xlink:href="#do_nav-write4do"></use>
+                </svg>
+                <p>
+                  <strong>Write for DigitalOcean</strong>
+                  You get paid, we donate to tech non-profits.
+                </p>
+              </a>
+            </li>
+            <li role="menuitem">
+              <a href="https://www.meetup.com/pro/digitalocean" class="with_image">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <use xlink:href="#do_nav-meetups"></use>
+                </svg>
+                <p>
+                  <strong>DigitalOcean Meetups</strong>
+                  Find and meet other developers in your city.
+                </p>
+              </a>
+            </li>
+            <li role="menuitem">
+              <a href="https://hacktoberfest.digitalocean.com" class="with_image">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <use xlink:href="#do_nav-hacktoberfest"></use>
+                </svg>
+                <p>
+                  <strong>Hacktoberfest</strong>
+                  Contribute to Open Source
+                </p>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="section column">
+          <header>
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+              <use xlink:href="#do_nav-build"></use>
+            </svg>
+            Build with DigitalOcean
+          </header>
+          <ul role="menu" class="indent">
+            <li role="menuitem">
+              <a title="Community-built tools and integrations that use the DigitalOcean API" href="/community/tools">Community Tools and Integrations</a>
+            </li>
+            <li role="menuitem"><a href="https://www.digitalocean.com/hatch/" title="Build your startup on DigitalOcean.">Hatch Startup Program</a></li>
+            <li role="menuitem"><a href="https://marketplace.digitalocean.com/vendors/" title="List your open source One-Click Application in the DigitalOcean Marketplace">Marketplace Partner Program</a></li>
+            <li role="menuitem"><a href="https://www.digitalocean.com/droplets-for-demos/" title="DigitalOcean credits to fund research for conference and meetup presentations">Presentation Grants</a></li>
+            <li role="menuitem"><a href="https://github.com/digitalocean">DigitalOcean on GitHub</a></li>
+          </ul>
+        </div>
+      </div>
+    </li>
+    <li role="menuitem" data-show="mobile" data-flex="grow" class="right">
+      <a href="javascript:void(0);" data-js="modal_toggle">
+        <span class="icon-menu-thin"></span>
+      </a>
+    </li>
+    <li role="menuitem" aria-haspopup="true" data-flex="grow">
+      <form name="do_nav-search" method="GET" action="https://www.digitalocean.com/community/search">
+        <label for="q">
+          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" shape-rendering="auto"
+               width="14px" height="14px">
+            <use xlink:href="#do_nav-search"></use>
+          </svg>
+        </label>
+        <input type="text" name="q" id="q" title="Search" placeholder="Search DigitalOcean" autocomplete="off" spellcheck="false" class="search" />
+        </form>
+        <div class="mini search-results-dropdown" aria-expanded="false">
+            <div class="header-search-results-list"></div>
+            <div id="btn-wrap">
+              <a class="more-search-results" data-search-path="/community/search" href="/community/search">
+                View All Results
+              </a>
+            </div>
+        </div>
+        <script type='text/template' id='autocomplete-hits-template'>
+          <div class="inner-search">
+            <ul>
+              <li class="section">
+                <p>{{section}}</p>
+              </li>
+
+              {{#hits}}
+                <li>
+                  <span class='icon icon-{{css_name}}'></span>
+                  <a href='{{url}}'>{{title}}</a>
+                </li>
+              {{/hits}}
+            </ul>
+
+            {{#hasMoreResults}}
+              <a href="/community/search?q={{query}}">View All Results</a>
+            {{/hasMoreResults}}
+          </div>
+        </script>
+    </li>
+    <li role="menuitem">
+      <a class="button primary" href="/community/auth/digitalocean?display=sessionless+register">Sign Up</a>
+    </li>
+  </ul>
+
+  <div class="mobile_nav_bg" data-js="modal_toggle"></div>
+  <div class="mobile_nav">
+    <a data-dismiss='modal' aria-label="close" href="javascript:void(0);" data-js="modal_toggle"><span class="icon-close"></span></a>
+    <div class="mobile_nav_content">
+      <header>Community</header>
+      <ul role="menu">
+        <li role="menuitem">
+          <a data-activatable="true" href="/community/tutorials">Tutorials</a>
+        </li>
+        <li role="menuitem">
+          <a data-activatable="true" href="/community/questions">Questions</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.meetup.com/pro/digitalocean">Meetups</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/write-for-donations/">Write for us</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://hacktoberfest.digitalocean.com">Hacktoberfest</a>
+        </li>
+        <li role="menuitem">
+          <a href="/community/tools">Community Projects</a>
+        </li>
+      </ul>
+      <header>Products</header>
+      <ul role="menu">
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/">Homepage</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/pricing">Pricing</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/products">Product Overview</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://marketplace.digitalocean.com/">Marketplace</a>
+        </li>
+      </ul>
+      <header>Customers</header>
+      <ul role="menu">
+        <li role="menuitem">
+          <a href="https://cloud.digitalocean.com/login">Control panel</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/docs/">Documentation</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/company/contact/#support">Contact Support</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/company/contact/sales/">Contact Sales</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<header>
+  <div class="legacy-header ">
+    <div class="flash-container">
+      
+    </div>
+
+    <div class="wrapper">
+      
+    </div>
+  </div>
+</header>
+
+
+
+      
+
+      <div class='wrapper layout-wrapper'>
+
+        
+
+
+
+
+
+
+  <div class="TutorialBar" data-js="tutorialBar">
+    <div class="TutorialBar-container">
+      <div class="TutorialBar-series">
+          <a class="TutorialBar-seriesSingle" href="https://www.digitalocean.com/community/tutorial_series/webinar-series-ci-cd-on-kubernetes">Webinar Series: CI/CD on Kubernetes</a>
+        <div class="TutorialBar-separator">
+          <svg class='svg-icon svg-icon-arrow-right'><use xlink:href='https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-arrow-right'></use></svg>
+        </div>
+      </div>
+      <div class="TutorialBar-tutorial">
+        <div class="TutorialBar-dropdown">
+          <button class="Button--reset TutorialBar-dropdownTrigger" type="button" data-js="tutorialDropdown">
+            <span class="TutorialBar-dropdownText">Webinar Series: Building Blocks for Doing CI/CD with Kubernetes</span> <span class="TutorialBar-dropdownArrow"><svg class='svg-icon svg-icon-caret-down'><use xlink:href='https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-caret-down'></use></svg></span>
+          </button>
+          <div class="TutorialBar-dropdownContent TutorialBar-dropdownContent--article">
+            <ul class="TutorialBar-tutorialList" data-js="tutorialList">
+                <li data-completed-tutorial-id="" data-tutorial-id="2820" data-js="tutorial" class="is-current">
+                  <a href="https://www.digitalocean.com/community/tutorials/webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes" class="TutorialBar-tutorialListContainer" data-tutorialInteraction>
+                    <div class="TutorialBar-tutorialListIcon">
+                      <svg class='svg-icon svg-icon-completed'><use xlink:href='https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-completed'></use></svg>
+                    </div>
+                    <div class="TutorialBar-tutorialListContent">
+                      Webinar Series: Building Blocks for Doing CI/CD with Kubernetes
+                    </div>
+                  </a>
+                </li>
+                <li data-completed-tutorial-id="" data-tutorial-id="2909" data-js="tutorial" class="">
+                  <a href="https://www.digitalocean.com/community/tutorials/webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x" class="TutorialBar-tutorialListContainer" data-tutorialInteraction>
+                    <div class="TutorialBar-tutorialListIcon">
+                      <svg class='svg-icon svg-icon-completed'><use xlink:href='https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-completed'></use></svg>
+                    </div>
+                    <div class="TutorialBar-tutorialListContent">
+                      Webinar Series: Kubernetes Package Management with Helm and CI/CD with Jenkins X
+                    </div>
+                  </a>
+                </li>
+                <li data-completed-tutorial-id="" data-tutorial-id="2918" data-js="tutorial" class="">
+                  <a href="https://www.digitalocean.com/community/tutorials/webinar-series-gitops-tool-sets-on-kubernetes-with-circleci-and-argo-cd" class="TutorialBar-tutorialListContainer" data-tutorialInteraction>
+                    <div class="TutorialBar-tutorialListIcon">
+                      <svg class='svg-icon svg-icon-completed'><use xlink:href='https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-completed'></use></svg>
+                    </div>
+                    <div class="TutorialBar-tutorialListContent">
+                      Webinar Series: GitOps Tool Sets on Kubernetes with CircleCI and Argo CD
+                    </div>
+                  </a>
+                </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+<div class="section-content section-content-growable content Tutorial-content content-has-mobile-image">
+  <div class='postable-info-bar-container'>
+  <div class='postable-info-bar'>
+    <div class="author-byline">
+      
+    </div>
+
+    <div class='right-section'>
+      
+
+
+        <div class='section-item table-of-contents-triggers'><div class="toc-trigger-mobile" data-toggle="modal" data-target="#contents-modal">
+  <a href="javascript:void(0);">
+    <span class="icon icon-contents"></span>
+    <span class="title">Contents</span>
+    <span class="icon icon-arrow-down"></span>
+  </a>
+</div>
+
+</div>
+
+    </div>
+  </div>
+</div>
+
+
+    <img alt="Webinar Series: Building Blocks for Doing CI/CD with Kubernetes" title="Webinar Series: Building Blocks for Doing CI/CD with Kubernetes" class="tutorial-image-mobile" src="https://community-cdn-digitalocean-com.global.ssl.fastly.net/assets/tutorials/images/large/Kubernetes_CI-CD_-_Blog_Header.png?1540325447" />
+
+  <div class="container tutorial-header">
+    
+
+      <div class="featured-items-right-bar">
+        <h3>Related</h3>
+          <a href="https://marketplace.digitalocean.com/apps/kubernetes-monitoring-stack-beta?utm_source=community_related">
+            <div class="featured-item-highlight">
+                  <span class="featured-item-highlight-image"><img width="45" height="45" alt="Marketplace" src="https://digitalocean.cdn.prismic.io/digitalocean%2F559b194a-ce06-43e4-9fd2-4c4738909353_monitoring-logo.svg" /></span>
+                Kubernetes Monitoring Stack (BETA)
+                <span class="featured-item-category">
+                  
+                  Marketplace
+                </span>
+              </div>
+</a>          <a href="https://www.digitalocean.com/products/kubernetes/">
+            <div class="featured-item-regular">
+                Now Available: DigitalOcean Kubernetes
+                <span class="featured-item-category">
+                  <img width="14" height="14" src="https://digitalocean.cdn.prismic.io/digitalocean%2Ff7af7f25-db78-40d1-ad9f-7b1c23366b02_kubernetes.svg" alt="Digitalocean%2ff7af7f25 db78 40d1 ad9f 7b1c23366b02 kubernetes" />
+                  Product
+                </span>
+              </div>
+</a>          <a href="/community/tutorials/how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-18-04">
+            <div class="featured-item-regular">
+                  How To Deploy a PHP Application with Kubernetes on Ubuntu 18.04
+                  <span class="featured-item-category">
+                    <img width="14" height="14" alt="Tutorial" src="/assets/community/tutorials/featured-item-tutorial-icon-2150ccbef202144a53cea261312af267.png" />
+                    Tutorial
+                  </span>
+                </div>
+</a>          <a href="/community/tutorials/how-to-set-up-the-code-server-cloud-ide-platform-on-digitalocean-kubernetes">
+            <div class="featured-item-regular">
+                  How To Set Up the code-server Cloud IDE Platform on DigitalOcean Kubernetes
+                  <span class="featured-item-category">
+                    <img width="14" height="14" alt="Tutorial" src="/assets/community/tutorials/featured-item-tutorial-icon-2150ccbef202144a53cea261312af267.png" />
+                    Tutorial
+                  </span>
+                </div>
+</a>      </div>
+
+
+      <img alt="Webinar Series: Building Blocks for Doing CI/CD with Kubernetes" title="Webinar Series: Building Blocks for Doing CI/CD with Kubernetes" class="tutorial-image" src="https://community-cdn-digitalocean-com.global.ssl.fastly.net/assets/tutorials/images/large/Kubernetes_CI-CD_-_Blog_Header.png?1540325447" />
+
+    <h1 class="content-title Tutorial-header">Webinar Series: Building Blocks for Doing CI/CD with Kubernetes</h1>
+
+    <span class="meta-section timestamp"><span class="tutorial-date-text">Posted</span><span class="tutorial-date">September 21, 2018</span></span>
+
+    <span class="meta-section pageviews"><span class="icon icon-eye v-mid"></span><span class="views-count v-mid">13.5k</span><span class="sr-only"> views</span></span>
+
+    <span class="meta-section tags">
+      <a class="tag" href="/community/tags/kubernetes?type=tutorials">Kubernetes</a> <a class="tag" href="/community/tags/terraform?type=tutorials">Terraform</a> <a class="tag" href="/community/tags/ci-cd?type=tutorials">CI/CD</a> <a class="tag" href="/community/tags/docker?type=tutorials">Docker</a> <a class="tag" href="/community/tags/microservices?type=tutorials">Microservices</a>
+      <a class="tag" href="/community/tags/ubuntu?type=tutorials">Ubuntu</a> <a class="tag" href="/community/tags/ubuntu-16-04?type=tutorials">Ubuntu 16.04</a>
+    </span>
+  </div>
+
+  <div class="tutorial-authors">
+    <div class="component-collaborators-container">
+  <ul class="component-collaborators-content">
+        <li class="collaborator-byline-avatar">
+          <a href="/community/users/neependrakhare">
+            <img alt="neependrakhare" class="avatar avatar-large" src="https://secure.gravatar.com/avatar/92bcb0d14ff8fd6afad7409c34fc6197?secure=true&d=identicon" width="80" height="80" />
+</a>        </li>
+
+    <li class="collaborators-byline-data">
+        <p class="names">By <a href="/community/users/neependrakhare">neependrakhare</a></p>
+
+      <p>
+          <a class="advice" href="https://www.digitalocean.com/community/write-for-digitalocean">Become an author</a>
+      </p>
+    </li>
+  </ul>
+</div>
+
+  </div>
+
+
+    <div class="content-body tutorial-content" data-growable-markdown>
+      
+      <span class='note'><p></p>
+
+<h2 id="webinar-series">Webinar Series</h2>
+
+<p>This article supplements a <a href="https://go.digitalocean.com/cicd-on-k8s">webinar series on doing CI/CD with Kubernetes</a>. The series discusses how to take a Cloud Native approach to building, testing, and deploying applications, covering release management, Cloud Native tools, Service Meshes, and CI/CD tools that can be used with Kubernetes. It is designed to help developers and businesses that are interested in integrating CI/CD best practices with Kubernetes into their workflows.</p>
+
+<p>This tutorial includes the concepts and commands from the first session of the series, Building Blocks for Doing CI/CD with Kubernetes.</p></span>
+
+<p><iframe width="854" height="480" src="//www.youtube.com/embed/XxxlmkKdw6M?rel=0" frameborder="0" allowfullscreen></iframe></p>
+
+<h3 id="introduction">Introduction</h3>
+
+<p>If you are getting started with <a href="https://www.digitalocean.com/community/tutorials/webinar-series-getting-started-with-containers">containers</a>, you will likely want to know how to automate building, testing, and deployment. By taking a <a href="https://github.com/cncf/toc/blob/master/DEFINITION.md">Cloud Native</a> approach to these processes, you can leverage the right infrastructure APIs to package and deploy applications in an automated way. </p>
+
+<p>Two building blocks for doing automation include <em>container images</em> and <em>container orchestrators</em>.  Over the last year or so, <a href="https://kubernetes.io/">Kubernetes</a> has become the default choice for container orchestration.  In this first article of the <strong>CI/CD with Kubernetes</strong> series, you will: </p>
+
+<ul>
+<li>Build container images with <a href="https://www.docker.com/">Docker</a>, <a href="https://github.com/projectatomic/buildah">Buildah</a>, and <a href="https://github.com/GoogleContainerTools/kaniko">Kaniko</a>.</li>
+<li>Set up a Kubernetes cluster with <a href="https://www.terraform.io/">Terraform</a>, and create <em>Deployments</em> and <em>Services</em>.</li>
+<li>Extend the functionality of a Kubernetes cluster with <em>Custom Resources</em>. </li>
+</ul>
+
+<p>By the end of this tutorial, you will have container images built with Docker, Buildah, and Kaniko, and a Kubernetes cluster with Deployments, Services, and Custom Resources. </p>
+
+<p>Future articles in the series will cover related topics: package management for Kubernetes, CI/CD tools like <a href="https://jenkins-x.io/">Jenkins X</a> and <a href="https://www.spinnaker.io/">Spinnaker</a>, Services Meshes, and GitOps. </p>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<ul>
+<li>An Ubuntu 16.04 server with a non-root user account. Follow our <a href="https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-16-04">Initial Server Setup with Ubuntu 16.04</a> tutorial for guidance.</li>
+<li><a href="https://www.docker.com/">Docker</a> installed on your server. Please follow Steps 1 and 2 of <a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-16-04">How To Install and Use Docker on Ubuntu 16.04</a> for installation instructions.</li>
+<li>A <a href="https://hub.docker.com">Docker Hub account</a>. For an overview on getting started with Docker Hub, please see <a href="https://docs.docker.com/docker-hub/">these instructions</a>.<br></li>
+<li>A DigitalOcean account and personal access token. Please refer to <a href="https://www.digitalocean.com/docs/api/create-personal-access-token/">these instructions</a> to get your access token. </li>
+<li>Familiarity with containers and Docker. Please refer to the <a href="https://www.digitalocean.com/community/tutorials/webinar-series-getting-started-with-containers">Webinar Series: Getting Started with Containers</a> for more details. </li>
+<li>Familiarity with Kubernetes concepts. Please refer to <a href="https://www.digitalocean.com/community/tutorials/an-introduction-to-kubernetes">An Introduction to Kubernetes</a> for more details. </li>
+</ul>
+
+<h2 id="step-1-—-building-container-images-with-docker-and-buildah">Step 1 — Building Container Images with Docker and Buildah</h2>
+
+<p>A container image is a self-contained entity with its own application code, runtime, and dependencies that you can use to create and run containers. You can use different tools to create container images, and in this step you will build containers with two of them: Docker and Buildah. </p>
+
+<h3 id="building-container-images-with-dockerfiles">Building Container Images with Dockerfiles</h3>
+
+<p>Docker builds your container images automatically by reading instructions from a Dockerfile, a text file that includes the commands required to assemble a container image. Using the <code>docker image build</code> command, you can create an automated build that will execute the command-line instructions provided in the Dockerfile.  When building the image, you will also pass the <em>build context</em> with the Dockerfile, which contains the set of files required to create an environment and run an application in the container image.</p>
+
+<p>Typically, you will create a project folder for your Dockerfile and build context. Create a folder called <code><span class="highlight">demo</span></code> to begin:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">mkdir <span class="highlight">demo</span>
+</li><li class="line" prefix="$">cd <span class="highlight">demo</span>
+</li></ul></code></pre>
+<p>Next, create a Dockerfile inside the <code>demo</code> folder: </p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">nano Dockerfile
+</li></ul></code></pre>
+<p>Add the following content to the file:</p>
+<div class="code-label " title="~/demo/Dockerfile">~/demo/Dockerfile</div><pre class="code-pre "><code langs="">FROM ubuntu:16.04
+
+LABEL MAINTAINER neependra@cloudyuga.guru
+
+RUN apt-get update \
+    &amp;&amp; apt-get install -y nginx \
+    &amp;&amp; apt-get clean \
+    &amp;&amp; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+    &amp;&amp; echo "daemon off;" &gt;&gt; /etc/nginx/nginx.conf
+
+EXPOSE 80
+CMD ["nginx"]
+</code></pre>
+<p>This Dockerfile consists of a set of instructions that will build an image to run Nginx.  During the build process <code>ubuntu:16.04</code> will function as the base image, and the <code>nginx</code> package will be installed. Using the <code>CMD</code> instruction, you&rsquo;ve also configured <code>nginx</code> to be the default command when the container starts. </p>
+
+<p>Next, you&rsquo;ll build the container image with the <code>docker image build</code> command, using the current directory (.) as the build context. Passing the <code>-t</code> option to this command names the image <code><span class="highlight">nkhare/nginx:latest</span></code>: </p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo docker image build -t <span class="highlight">nkhare/nginx:latest</span> .
+</li></ul></code></pre>
+<p>You will see the following output:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>Sending build context to Docker daemon  49.25MB
+Step 1/5 : FROM ubuntu:16.04
+ ---&gt; 7aa3602ab41e
+Step 2/5 : MAINTAINER neependra@cloudyuga.guru
+ ---&gt; Using cache
+ ---&gt; 552b90c2ff8d
+Step 3/5 : RUN apt-get update     &amp;&amp; apt-get install -y nginx     &amp;&amp; apt-get clean     &amp;&amp; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*     &amp;&amp; echo "daemon off;" &gt;&gt; /etc/nginx/nginx.conf
+ ---&gt; Using cache
+ ---&gt; 6bea966278d8
+Step 4/5 : EXPOSE 80
+ ---&gt; Using cache
+ ---&gt; 8f1c4281309e
+Step 5/5 : CMD ["nginx"]
+ ---&gt; Using cache
+ ---&gt; f545da818f47
+Successfully built f545da818f47
+Successfully tagged nginx:latest
+</code></pre>
+<p>Your image is now built. You can list your Docker images using the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">docker image ls
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+nkhare/nginx        latest              4073540cbcec        3 seconds ago       171MB
+ubuntu              16.04               7aa3602ab41e        11 days ago     
+</code></pre>
+<p>You can now use the <code>nkhare/nginx:latest</code> image to create containers. </p>
+
+<h3 id="building-container-images-with-project-atomic-buildah">Building Container Images with Project Atomic-Buildah</h3>
+
+<p>Buildah is a CLI tool, developed by <a href="https://github.com/projectatomic/">Project Atomic</a>, for quickly building <em>Open Container Initiative (<a href="https://www.opencontainers.org">OCI</a>)</em>-compliant images. OCI provides specifications for container runtimes and images in an effort to standardize industry best practices. </p>
+
+<p>Buildah can create an image either from a working container or from a Dockerfile. It can build images completely in user space without the Docker daemon, and can perform image operations like <code>build</code>, <code>list</code>, <code>push</code>, and <code>tag</code>. In this step, you&rsquo;ll compile Buildah from source and then use it to create a container image. </p>
+
+<p>To install Buildah you will need the required dependencies, including tools that will enable you to manage packages and package security, among other things. Run the following commands to install these packages:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$"> cd
+</li><li class="line" prefix="$"> sudo apt-get install software-properties-common
+</li><li class="line" prefix="$"> sudo add-apt-repository ppa:alexlarsson/flatpak
+</li><li class="line" prefix="$"> sudo add-apt-repository ppa:gophers/archive
+</li><li class="line" prefix="$"> sudo apt-add-repository ppa:projectatomic/ppa
+</li><li class="line" prefix="$"> sudo apt-get update
+</li><li class="line" prefix="$"> sudo apt-get install bats btrfs-tools git libapparmor-dev libdevmapper-dev libglib2.0-dev libgpgme11-dev libostree-dev libseccomp-dev libselinux1-dev skopeo-containers go-md2man
+</li></ul></code></pre>
+<p>Because you will compile the <code>buildah</code> source code to create its package, you&rsquo;ll also need to install <a href="https://golang.org/">Go</a>:  </p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo apt-get update
+</li><li class="line" prefix="$">sudo curl -O https://storage.googleapis.com/golang/go1.8.linux-amd64.tar.gz
+</li><li class="line" prefix="$">sudo tar -xvf go1.8.linux-amd64.tar.gz
+</li><li class="line" prefix="$">sudo mv go /usr/local
+</li><li class="line" prefix="$">sudo echo 'export PATH=$PATH:/usr/local/go/bin' &gt;&gt; ~/.profile
+</li><li class="line" prefix="$">source ~/.profile
+</li><li class="line" prefix="$">go version 
+</li></ul></code></pre>
+<p>You will see the following output, indicating a successful installation:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>go version go<span class="highlight">1.8</span> linux/amd64
+</code></pre>
+<p>You can now get the <code>buildah</code> source code to create its package, along with the <code>runc</code> binary. <code>runc</code> is the implementation of the <code>OCI</code> container runtime, which you will use to run your Buildah containers.  </p>
+
+<p>Run the following commands to install <code>runc</code> and <code>buildah</code>:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">mkdir ~/buildah
+</li><li class="line" prefix="$">cd ~/buildah
+</li><li class="line" prefix="$">export GOPATH=`pwd`
+</li><li class="line" prefix="$">git clone https://github.com/containers/buildah ./src/github.com/containers/buildah
+</li><li class="line" prefix="$">cd ./src/github.com/containers/buildah
+</li><li class="line" prefix="$">make runc all TAGS="apparmor seccomp"
+</li><li class="line" prefix="$">sudo cp ~/buildah/src/github.com/opencontainers/runc/runc /usr/bin/.
+</li><li class="line" prefix="$">sudo apt install buildah 
+</li></ul></code></pre>
+<p>Next, create the <code>/etc/containers/registries.conf</code> file to configure your container registries:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo nano /etc/containers/registries.conf
+</li></ul></code></pre>
+<p>Add the following content to the file to specify your registries:</p>
+<div class="code-label " title="/etc/containers/registries.conf">/etc/containers/registries.conf</div><pre class="code-pre "><code langs="">
+# This is a system-wide configuration file used to
+# keep track of registries for various container backends.
+# It adheres to TOML format and does not support recursive
+# lists of registries.
+
+# The default location for this configuration file is /etc/containers/registries.conf.
+
+# The only valid categories are: 'registries.search', 'registries.insecure',
+# and 'registries.block'.
+
+[registries.search]
+registries = ['docker.io', 'registry.fedoraproject.org', 'quay.io', 'registry.access.redhat.com', 'registry.centos.org']
+
+# If you need to access insecure registries, add the registry's fully-qualified name.
+# An insecure registry is one that does not have a valid SSL certificate or only does HTTP.
+[registries.insecure]
+registries = []
+
+# If you need to block pull access from a registry, uncomment the section below
+# and add the registries fully-qualified name.
+#
+# Docker only
+[registries.block]
+registries = []
+</code></pre>
+<p>The <code>registries.conf</code> configuration file specifies which registries should be consulted when completing image names that do not include a registry or domain portion.</p>
+
+<p>Now run the following command to build an image, using the <code>https://github.com/do-community/rsvpapp-webinar1</code> repository as the build context. This repository also contains the relevant Dockerfile:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo buildah build-using-dockerfile -t rsvpapp:buildah github.com/do-community/rsvpapp-webinar1 
+</li></ul></code></pre>
+<p>This command creates an image named <code>rsvpapp:buildah</code> from the Dockerfille available in the <code>https://github.com/do-community/rsvpapp-webinar1</code> repository. </p>
+
+<p>To list the images, use the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo buildah images
+</li></ul></code></pre>
+<p>You will see the following output:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>IMAGE ID             IMAGE NAME                                               CREATED AT             SIZE
+b0c552b8cf64         docker.io/teamcloudyuga/python:alpine                    Sep 30, 2016 04:39     95.3 MB
+<span class="highlight">22121fd251df         localhost/rsvpapp:buildah                                Sep 11, 2018 14:34     114 MB</span>
+</code></pre>
+<p>One of these images is <code>localhost/rsvpapp:buildah</code>, which you just created. The other, <code>docker.io/teamcloudyuga/python:alpine</code>, is the base image from the Dockerfile. </p>
+
+<p>Once you have built the image, you can push it to Docker Hub. This will allow you to store it for future use. You will first need to login to your Docker Hub account from the command line:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">docker login -u <span class="highlight">your-dockerhub-username</span> -p <span class="highlight">your-dockerhub-password</span>
+</li></ul></code></pre>
+<p>Once the login is successful, you will get a file, <code>~/.docker/config.json</code>, that will contain your Docker Hub credentials. You can then use that file with <code>buildah</code> to push images to Docker Hub.</p>
+
+<p>For example, if you wanted to push the image you just created, you could run the following command, citing the <code>authfile</code> and the image to push: </p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo buildah push --authfile ~/.docker/config.json rsvpapp:buildah docker://<span class="highlight">your-dockerhub-username</span>/rsvpapp:buildah
+</li></ul></code></pre>
+<p>You can also push the resulting image to the local Docker daemon using the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo buildah push rsvpapp:buildah docker-daemon:rsvpapp:buildah
+</li></ul></code></pre>
+<p>Finally, take a look at the Docker images you have created: </p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo docker image ls
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+<span class="highlight">rsvpapp             buildah             22121fd251df        4 minutes ago       108MB</span>
+nkhare/nginx        latest              01f0982d91b8        17 minutes ago      172MB
+ubuntu              16.04               b9e15a5d1e1a        5 days ago          115MB
+</code></pre>
+<p>As expected, you should now see a new image, <code>rsvpapp:buildah</code>, that has been exported using <code>buildah</code>. </p>
+
+<p>You now have experience building container images with two different tools, Docker and Buildah. Let&rsquo;s move on to discussing how to set up a cluster of containers with Kubernetes.</p>
+
+<h2 id="step-2-—-setting-up-a-kubernetes-cluster-on-digitalocean-using-kubeadm-and-terraform">Step 2 — Setting Up a Kubernetes Cluster on DigitalOcean using kubeadm and Terraform</h2>
+
+<p>There are different ways to set up Kubernetes on DigitalOcean. To learn more about how to set up Kubernetes with <a href="https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm/">kubeadm</a>, for example, you can look at <a href="https://www.digitalocean.com/community/tutorials/how-to-create-a-kubernetes-1-11-cluster-using-kubeadm-on-ubuntu-18-04">How To Create a Kubernetes Cluster Using Kubeadm on Ubuntu 18.04</a>. </p>
+
+<p>Since this tutorial series discusses taking a Cloud Native approach to application development, we&rsquo;ll apply this methodology when setting up our cluster. Specifically, we will automate our cluster creation using kubeadm and <a href="https://www.terraform.io/">Terraform</a>, a tool that simplifies creating and changing infrastructure. </p>
+
+<p>Using your personal access token, you will connect to DigitalOcean with Terraform to provision 3 servers. You will run the <code>kubeadm</code> commands inside of these VMs to create a 3-node Kubernetes cluster containing one master node and two workers. </p>
+
+<p>On your Ubuntu server, create a pair of <a href="https://www.digitalocean.com/community/tutorials/how-to-configure-ssh-key-based-authentication-on-a-linux-server">SSH keys</a>, which will allow password-less logins to your VMs: </p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">ssh-keygen -t rsa
+</li></ul></code></pre>
+<p>You will see the following output:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>Generating public/private rsa key pair.
+Enter file in which to save the key (~/.ssh/id_rsa): 
+</code></pre>
+<p>Press <code>ENTER</code> to save the key pair in the <code>~/.ssh</code> directory in your home directory, or enter another destination. </p>
+
+<p>Next, you will see the following prompt: </p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>Enter passphrase (empty for no passphrase): 
+</code></pre>
+<p>In this case, press <code>ENTER</code> without a password to enable password-less logins to your nodes.</p>
+
+<p>You will see a confirmation that your key pair has been created:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>Your identification has been saved in ~/.ssh/id_rsa.
+Your public key has been saved in ~/.ssh/id_rsa.pub.
+The key fingerprint is:
+SHA256:lCVaexVBIwHo++NlIxccMW5b6QAJa+ZEr9ogAElUFyY root@3b9a273f18b5
+The key's randomart image is:
++---[RSA 2048]----+
+|++.E ++o=o*o*o   |
+|o   +..=.B = o   |
+|.    .* = * o    |
+| .   =.o + *     |
+|  . . o.S + .    |
+|   . +.    .     |
+|    . &hellip; =      |
+|        o= .     |
+|       &hellip;       |
++----[SHA256]-----+
+</code></pre>
+<p>Get your public key by running the following command, which will display it in your terminal:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">cat ~/.ssh/id_rsa.pub
+</li></ul></code></pre>
+<p>Add this key to your DigitalOcean account by following <a href="https://www.digitalocean.com/docs/droplets/how-to/add-ssh-keys/to-account/">these directions</a>.</p>
+
+<p>Next, install Terraform:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo apt-get update
+</li><li class="line" prefix="$">sudo apt-get install unzip
+</li><li class="line" prefix="$">wget https://releases.hashicorp.com/terraform/0.11.7/terraform_0.11.7_linux_amd64.zip
+</li><li class="line" prefix="$">unzip terraform_0.11.7_linux_amd64.zip
+</li><li class="line" prefix="$">sudo mv terraform /usr/bin/.
+</li><li class="line" prefix="$">terraform version
+</li></ul></code></pre>
+<p>You will see output confirming your Terraform installation:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>Terraform v<span class="highlight">0.11.7</span>
+</code></pre>
+<p>Next, run the following commands to install <code>kubectl</code>, a CLI tool that will communicate with your Kubernetes cluster, and to create a <code>~/.kube</code> directory in your user&rsquo;s home directory:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo apt-get install apt-transport-https
+</li><li class="line" prefix="$">curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+</li><li class="line" prefix="$">sudo touch /etc/apt/sources.list.d/kubernetes.list 
+</li><li class="line" prefix="$">echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
+</li><li class="line" prefix="$">sudo apt-get update
+</li><li class="line" prefix="$">sudo apt-get install kubectl
+</li><li class="line" prefix="$">mkdir -p ~/.kube
+</li></ul></code></pre>
+<p>Creating the <code>~/.kube</code> directory will enable you to copy the configuration file to this location. You’ll do that once you run the Kubernetes setup script later in this section. By default, the <code>kubectl</code> CLI looks for the configuration file in the <code>~/.kube</code> directory to access the cluster. </p>
+
+<p>Next, clone the sample project repository for this tutorial, which contains the Terraform scripts for setting up the infrastructure:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">git clone https://github.com/do-community/k8s-cicd-webinars.git
+</li></ul></code></pre>
+<p>Go to the Terrafrom script directory:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">cd k8s-cicd-webinars/webinar1/2-kubernetes/1-Terraform/
+</li></ul></code></pre>
+<p>Get a fingerprint of your SSH public key:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">ssh-keygen -E md5 -lf ~/.ssh/id_rsa.pub | awk '{print $2}'
+</li></ul></code></pre>
+<p>You will see output like the following, with the highlighted portion representing your key:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>MD5:<span class="highlight">dd:d1:b7:0f:6d:30:c0:be:ed:ae:c7:b9:b8:4a:df:5e</span>
+</code></pre>
+<p>Keep in mind that your key will differ from what&rsquo;s shown here.</p>
+
+<p>Save the fingerprint to an environmental variable so Terraform can use it:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">export FINGERPRINT=<span class="highlight">dd:d1:b7:0f:6d:30:c0:be:ed:ae:c7:b9:b8:4a:df:5e</span>
+</li></ul></code></pre>
+<p>Next, export your DO personal access token:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">export TOKEN=<span class="highlight">your-do-access-token</span>
+</li></ul></code></pre>
+<p>Now take a look at the <code>~/k8s-cicd-webinars/webinar1/2-kubernetes/1-Terraform/</code> project directory: </p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">ls
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>cluster.tf  destroy.sh  files outputs.tf  provider.tf  script.sh
+</code></pre>
+<p>This folder contains the necessary scripts and configuration files for deploying your Kubernetes cluster with Terraform. </p>
+
+<p>Execute the <code>script.sh</code> script to trigger the Kubernetes cluster setup:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">./script.sh
+</li></ul></code></pre>
+<p>When the script execution is complete, <code>kubectl</code> will be configured to use the Kubernetes cluster you&rsquo;ve created.  </p>
+
+<p>List the cluster nodes using <code>kubectl get nodes</code>:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl get nodes
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>NAME                STATUS    ROLES     AGE       VERSION
+k8s-master-node     Ready     master    2m        v1.10.0
+k8s-worker-node-1   Ready     &lt;none&gt;    1m        v1.10.0
+k8s-worker-node-2   Ready     &lt;none&gt;    57s       v1.10.0
+</code></pre>
+<p>You now have one master and two worker nodes in the <code>Ready</code> state.  </p>
+
+<p>With a Kubernetes cluster set up, you can now explore another option for building container images: <a href="https://github.com/GoogleContainerTools/kaniko">Kaniko from Google</a>.</p>
+
+<h2 id="step-3-—-building-container-images-with-kaniko">Step 3 — Building Container Images with Kaniko</h2>
+
+<p>Earlier in this tutorial, you built container images with Dockerfiles and Buildah. But what if you could build container images directly on Kubernetes? There are ways to run the <code>docker image build</code> command inside of Kubernetes, but this isn&rsquo;t native Kubernetes tooling. You would have to depend on the Docker daemon to build images, and it would need to run on one of the <a href="https://kubernetes.io/docs/concepts/workloads/pods/pod/"><em>Pods</em></a> in the cluster. </p>
+
+<p>A tool called Kaniko allows you to build container images with a Dockerfile on an existing Kubernetes cluster. In this step, you will build a container image with a Dockerfile using Kaniko. You will then push this image to Docker Hub. </p>
+
+<p>In order to push your image to Docker Hub, you will need to pass your Docker Hub credentials to Kaniko. In the previous step, you logged into Docker Hub and created a <code>~/.docker/config.json</code> file with your login credentials. Let&rsquo;s use this configuration file to create a Kubernetes <em>ConfigMap</em> object to store the credentials inside the Kubernetes cluster. The ConfigMap object is used to store configuration parameters, decoupling them from your application. </p>
+
+<p>To create a ConfigMap called <code>docker-config</code> using the <code>~/.docker/config.json</code> file, run the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo kubectl create configmap docker-config --from-file=$HOME/.docker/config.json
+</li></ul></code></pre>
+<p>Next, you can create a Pod definition file called <code>pod-kaniko.yml</code> in the <code>~/k8s-cicd-webinars/webinar1/2-kubernetes/1-Terraform/</code>  directory (though it can go anywhere). </p>
+
+<p>First, make sure that you are in the <code>~/k8s-cicd-webinars/webinar1/2-kubernetes/1-Terraform/</code> directory:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">cd ~/k8s-cicd-webinars/webinar1/2-kubernetes/1-Terraform/
+</li></ul></code></pre>
+<p>Create the <code>pod-kaniko.yml</code> file:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">nano pod-kaniko.yml
+</li></ul></code></pre>
+<p>Add the following content to the file to specify what will happen when you deploy your Pod. Be sure to replace <code><span class="highlight">your-dockerhub-username</span></code> in the Pod&rsquo;s <code>args</code> field with your own Docker Hub username:</p>
+<div class="code-label " title="~/k8s-cicd-webinars/webinar1/2-kubernetes/1-Terraform/pod-kaniko.yaml">~/k8s-cicd-webinars/webinar1/2-kubernetes/1-Terraform/pod-kaniko.yaml</div><pre class="code-pre yaml"><code langs="">apiVersion: v1
+kind: Pod
+metadata:
+  name: kaniko
+spec:
+  containers:
+  - name: kaniko
+    image: gcr.io/kaniko-project/executor:latest
+    args: ["--dockerfile=./Dockerfile",
+            "--context=/tmp/rsvpapp/",
+            "--destination=docker.io/<span class="highlight">your-dockerhub-username</span>/rsvpapp:kaniko",
+            "--force" ]
+    volumeMounts:
+      - name: docker-config
+        mountPath: /root/.docker/
+      - name: demo
+        mountPath: /tmp/rsvpapp
+  restartPolicy: Never
+  initContainers:
+    - image: python
+      name: demo
+      command: ["/bin/sh"]
+      args: ["-c", "git clone https://github.com/do-community/rsvpapp-webinar1.git /tmp/rsvpapp"] 
+      volumeMounts:
+      - name: demo
+        mountPath: /tmp/rsvpapp
+  restartPolicy: Never
+  volumes:
+    - name: docker-config
+      configMap:
+        name: docker-config
+    - name: demo
+      emptyDir: {}
+</code></pre>
+<p>This configuration file describes what will happen when your Pod is deployed. First, the <a href="https://kubernetes.io/docs/concepts/workloads/pods/init-containers/">Init container</a> will clone the Git repository with the Dockerfile, <code>https://github.com/do-community/rsvpapp-webinar1.git</code>, into a shared volume called <code>demo</code>. Init containers run before application containers and can be used to run utilties or other tasks that are not desirable to run from your application containers. Your application container, <code>kaniko</code>, will then build the image using the Dockerfile and push the resulting image to Docker Hub, using the credentials you passed to the ConfigMap volume <code>docker-config</code>. </p>
+
+<p>To deploy the <code>kaniko</code> pod, run the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl apply -f pod-kaniko.yml 
+</li></ul></code></pre>
+<p>You will see the following confirmation:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>pod/kaniko created
+</code></pre>
+<p>Get the list of pods:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl get pods
+</li></ul></code></pre>
+<p>You will see the following list:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>NAME      READY     STATUS     RESTARTS   AGE
+kaniko    0/1       Init:0/1   0          47s
+</code></pre>
+<p>Wait a few seconds, and then run <code>kubectl get pods</code> again for a status update: </p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl get pods
+</li></ul></code></pre>
+<p>You will see the following:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>NAME      READY     STATUS    RESTARTS   AGE
+kaniko    1/1       Running   0          1m
+</code></pre>
+<p>Finally, run <code>kubectl get pods</code> once more for a final status update:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl get pods
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>NAME      READY     STATUS      RESTARTS   AGE
+kaniko    0/1       Completed   0          2m
+</code></pre>
+<p>This sequence of output tells you that the Init container ran, cloning the GitHub repository inside of the <code>demo</code> volume. After that, the Kaniko build process ran and eventually finished.</p>
+
+<p>Check the logs of the pod:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl logs kaniko
+</li></ul></code></pre>
+<p>You will see the following output:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>time="2018-08-02T05:01:24Z" level=info msg="appending to multi args docker.io/<span class="highlight">your-dockerhub-username</span>/rsvpapp:kaniko"
+time="2018-08-02T05:01:24Z" level=info msg="Downloading base image nkhare/python:alpine"
+.
+.
+.
+ime="2018-08-02T05:01:46Z" level=info msg="Taking snapshot of full filesystem&hellip;"
+time="2018-08-02T05:01:48Z" level=info msg="cmd: CMD"
+time="2018-08-02T05:01:48Z" level=info msg="Replacing CMD in config with [/bin/sh -c python rsvp.py]"
+time="2018-08-02T05:01:48Z" level=info msg="Taking snapshot of full filesystem&hellip;"
+time="2018-08-02T05:01:49Z" level=info msg="No files were changed, appending empty layer to config."
+2018/08/02 05:01:51 mounted blob: sha256:bc4d09b6c77b25d6d3891095ef3b0f87fbe90621bff2a333f9b7f242299e0cfd
+2018/08/02 05:01:51 mounted blob: sha256:809f49334738c14d17682456fd3629207124c4fad3c28f04618cc154d22e845b
+2018/08/02 05:01:51 mounted blob: sha256:c0cb142e43453ebb1f82b905aa472e6e66017efd43872135bc5372e4fac04031
+2018/08/02 05:01:51 mounted blob: sha256:606abda6711f8f4b91bbb139f8f0da67866c33378a6dcac958b2ddc54f0befd2
+2018/08/02 05:01:52 pushed blob sha256:16d1686835faa5f81d67c0e87eb76eab316e1e9cd85167b292b9fa9434ad56bf
+2018/08/02 05:01:53 pushed blob sha256:358d117a9400cee075514a286575d7d6ed86d118621e8b446cbb39cc5a07303b
+2018/08/02 05:01:55 pushed blob sha256:5d171e492a9b691a49820bebfc25b29e53f5972ff7f14637975de9b385145e04
+2018/08/02 05:01:56 index.docker.io/<span class="highlight">your-dockerhub-username</span>/rsvpapp:kaniko: digest: sha256:831b214cdb7f8231e55afbba40914402b6c915ef4a0a2b6cbfe9efb223522988 size: 1243
+</code></pre>
+<p>From the logs, you can see that the <code>kaniko</code> container built the image from the Dockerfile and pushed it to your Docker Hub account. </p>
+
+<p>You can now pull the Docker image. Be sure again to replace <code><span class="highlight">your-dockerhub-username</span></code> with your Docker Hub username:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">docker pull <span class="highlight">your-dockerhub-username</span>/rsvpapp:kaniko
+</li></ul></code></pre>
+<p>You will see a confirmation of the pull:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>kaniko: Pulling from <span class="highlight">your-dockerhub-username</span>/rsvpapp
+c0cb142e4345: Pull complete 
+bc4d09b6c77b: Pull complete 
+606abda6711f: Pull complete 
+809f49334738: Pull complete 
+358d117a9400: Pull complete 
+5d171e492a9b: Pull complete 
+Digest: sha256:831b214cdb7f8231e55afbba40914402b6c915ef4a0a2b6cbfe9efb223522988
+Status: Downloaded newer image for <span class="highlight">your-dockerhub-username</span>/rsvpapp:kaniko
+</code></pre>
+<p>You have now successfully built a Kubernetes cluster and created new images from within the cluster. Let&rsquo;s move on to discussing <em>Deployments</em> and <em>Services</em>. </p>
+
+<h2 id="step-4-—-create-kubernetes-deployments-and-services">Step 4 — Create Kubernetes Deployments and Services</h2>
+
+<p>Kubernetes <em>Deployments</em> allow you to run your applications. Deployments specify the desired state for your Pods, ensuring consistency across your rollouts. In this step, you will create an <a href="https://www.nginx.com/">Nginx</a> deployment file called <code>deployment.yml</code> in the <code>~/k8s-cicd-webinars/webinar1/2-kubernetes/1-Terraform/</code> directory to create an Nginx Deployment.</p>
+
+<p>First, open the file:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">nano deployment.yml
+</li></ul></code></pre>
+<p>Add the following configuration to the file to define your Nginx Deployment: </p>
+<div class="code-label " title="~/k8s-cicd-webinars/webinar1/2-kubernetes/1-Terraform/deployment.yml">~/k8s-cicd-webinars/webinar1/2-kubernetes/1-Terraform/deployment.yml</div><pre class="code-pre yml"><code langs="">apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.7.9
+        ports:
+        - containerPort: 80
+
+</code></pre>
+<p>This file defines a Deployment named <code>nginx-deployment</code> that creates three pods, each running an <code>nginx</code> container on port <code>80</code>.</p>
+
+<p>To deploy the Deployment, run the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl apply -f deployment.yml
+</li></ul></code></pre>
+<p>You will see a confirmation that the Deployment was created:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>deployment.apps/nginx-deployment created
+</code></pre>
+<p>List your Deployments:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl get deployments
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>NAME               DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+nginx-deployment   3         3         3            3           29s
+</code></pre>
+<p>You can see that the <code>nginx-deployment</code> Deployment has been created and the desired and current count of the Pods are same: <code>3</code>. </p>
+
+<p>To list the Pods that the Deployment created, run the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl get pods
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>NAME                                READY     STATUS      RESTARTS   AGE
+kaniko                              0/1       Completed   0          9m
+nginx-deployment-75675f5897-nhwsp   1/1       Running     0          1m
+nginx-deployment-75675f5897-pxpl9   1/1       Running     0          1m
+nginx-deployment-75675f5897-xvf4f   1/1       Running     0          1m
+</code></pre>
+<p>You can see from this output that the desired number of Pods are running.</p>
+
+<p>To expose an application deployment internally and externally, you will need to create a Kubernetes object called a <em>Service</em>. Each Service specifies a <em>ServiceType</em>, which defines how the service is exposed. In this example, we will use a <em>NodePort</em> ServiceType, which exposes the Service on a static port on each node. </p>
+
+<p>To do this, create a file, <code>service.yml</code>, in the <code>~/k8s-cicd-webinars/webinar1/2-kubernetes/1-Terrafrom/</code> directory:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">nano service.yml
+</li></ul></code></pre>
+<p>Add the following content to define your Service:</p>
+<div class="code-label " title="~/k8s-cicd-webinars/webinar1/2-kubernetes/1-Terrafrom/service.yml">~/k8s-cicd-webinars/webinar1/2-kubernetes/1-Terrafrom/service.yml</div><pre class="code-pre yml"><code langs="">kind: Service
+apiVersion: v1
+metadata:
+  name: nginx-service
+spec:
+  selector:
+    app: nginx
+  type: NodePort
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+    nodePort: 30111
+</code></pre>
+<p>These settings define the Service, <code>nginx-service</code>, and specify that it will target port <code>80</code> on your Pod. <code>nodePort</code> defines the port where the application will accept external traffic. </p>
+
+<p>To deploy the Service run the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl apply -f service.yml
+</li></ul></code></pre>
+<p>You will see a confirmation:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>service/nginx-service created
+</code></pre>
+<p>List the Services:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl get service
+</li></ul></code></pre>
+<p>You will see the following list: </p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>NAME            TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+kubernetes      ClusterIP   10.96.0.1       &lt;none&gt;        443/TCP        5h
+nginx-service   NodePort    10.100.98.213   &lt;none&gt;        80:<span class="highlight">30111</span>/TCP   7s
+</code></pre>
+<p>Your Service, <code>nginx-service</code>, is exposed on port <code>30111</code> and you can now access it on any of the node’s public IPs. For example, navigating to <code>http://<span class="highlight">node_1_ip</span>:30111</code> or <code>http://<span class="highlight">node_2_ip</span>:30111</code> should take you to Nginx&rsquo;s standard welcome page.</p>
+
+<p>Once you have tested the Deployment, you can clean up both the Deployment and Service:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl delete deployment nginx-deployment
+</li><li class="line" prefix="$">kubectl delete service nginx-service
+</li></ul></code></pre>
+<p>These commands will delete the Deployment and Service you have created. </p>
+
+<p>Now that you have worked with Deployments and Services, let&rsquo;s move on to creating Custom Resources.</p>
+
+<h2 id="step-5-—-creating-custom-resources-in-kubernetes">Step 5 — Creating Custom Resources in Kubernetes</h2>
+
+<p>Kubernetes offers limited but production-ready functionalities and features. It is possible to extend Kubernetes&rsquo; offerings, however, using its <a href="https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/">Custom Resources</a> feature. In Kubernetes, a <em>resource</em> is an endpoint in the Kubernetes API that stores a collection of API <em>objects</em>. A Pod resource contains a collection of Pod objects, for instance. With Custom Resources, you can add custom offerings for networking, storage, and more. These additions can be created or removed at any point. </p>
+
+<p>In addition to creating custom objects, you can also employ sub-controllers of the Kubernetes <em>Controller</em> component in the control plane to make sure that the current state of your objects is equal to the desired state. The Kubernetes Controller has sub-controllers for specified objects. For example, <a href="https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/"><em>ReplicaSet</em></a> is a sub-controller that makes sure the desired Pod count remains consistent. When you combine a Custom Resource with a Controller, you get a true <em>declarative API</em> that allows you to specify the desired state of your resources. </p>
+
+<p>In this step, you will create a Custom Resource and related objects.</p>
+
+<p>To create a Custom Resource, first make a file called <code>crd.yml</code> in the <code>~/k8s-cicd-webinars/webinar1/2-kubernetes/1-Terrafrom/</code> directory: </p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">nano crd.yml
+</li></ul></code></pre>
+<p>Add the following Custom Resource Definition (CRD): </p>
+<div class="code-label " title="~/k8s-cicd-webinars/webinar1/2-kubernetes/1-Terrafrom/crd.yml">~/k8s-cicd-webinars/webinar1/2-kubernetes/1-Terrafrom/crd.yml</div><pre class="code-pre yml"><code langs="">apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: webinars.digitalocean.com
+spec:
+  group: digitalocean.com
+  version: v1
+  scope: Namespaced
+  names:
+    plural: webinars
+    singular: webinar
+    kind: Webinar
+    shortNames:
+    - wb
+</code></pre>
+<p>To deploy the CRD defined in <code>crd.yml</code>, run the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl create -f crd.yml 
+</li></ul></code></pre>
+<p>You will see a confirmation that the resource has been created:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>customresourcedefinition.apiextensions.k8s.io/webinars.digitalocean.com created
+</code></pre>
+<p>The <code>crd.yml</code> file has created a new RESTful resource path: <code>/apis/digtialocean.com/v1/namespaces/*/webinars</code>. You can now refer to your objects using <code>webinars</code>, <code>webinar</code>, <code>Webinar</code>, and <code>wb</code>, as you listed them in the <code>names</code> section of the <code>CustomResourceDefinition</code>. You can check the RESTful resource with the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl proxy &amp; curl 127.0.0.1:8001/apis/digitalocean.com
+</li></ul></code></pre>
+<span class='note'><p>
+<strong>Note:</strong> If you followed the initial server setup guide in the prerequisites, then you will need to allow traffic to port <code>8001</code> in order for this test to work. Enable traffic to this port with the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo ufw allow 8001
+</li></ul></code></pre>
+<p></p></span>
+
+<p>You will see the following output: </p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>HTTP/1.1 200 OK
+Content-Length: 238
+Content-Type: application/json
+Date: Fri, 03 Aug 2018 06:10:12 GMT
+
+{
+    "apiVersion": "v1", 
+    "kind": "APIGroup", 
+    "name": "digitalocean.com", 
+    "preferredVersion": {
+        "groupVersion": "digitalocean.com/v1", 
+        "version": "v1"
+    }, 
+    "serverAddressByClientCIDRs": null, 
+    "versions": [
+        {
+            "groupVersion": "digitalocean.com/v1", 
+            "version": "v1"
+        }
+    ]
+}
+</code></pre>
+<p>Next, create the object for using new Custom Resources by opening a file called <code>webinar.yml</code>:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">nano webinar.yml
+</li></ul></code></pre>
+<p>Add the following content to create the object: </p>
+<div class="code-label " title="~/k8s-cicd-webinars/webinar1/2-kubernetes/1-Terrafrom/webinar.yml">~/k8s-cicd-webinars/webinar1/2-kubernetes/1-Terrafrom/webinar.yml</div><pre class="code-pre yml"><code langs="">apiVersion: "digitalocean.com/v1"
+kind: Webinar
+metadata:
+  name: webinar1
+spec:
+  name: webinar
+  image: nginx
+</code></pre>
+<p>Run the following command to push these changes to the cluster:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl apply -f webinar.yml 
+</li></ul></code></pre>
+<p>You will see the following output:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>webinar.digitalocean.com/webinar1 created
+</code></pre>
+<p>You can now manage your <code>webinar</code> objects using <code>kubectl</code>. For example:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl get webinar
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>NAME       CREATED AT
+webinar1   21s
+</code></pre>
+<p>You now have an object called <code>webinar1</code>. If there had been a Controller, it would have intercepted the object creation and performed any defined operations. </p>
+
+<h3 id="deleting-a-custom-resource-definition">Deleting a Custom Resource Definition</h3>
+
+<p>To delete all of the objects for your Custom Resource, use the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl delete webinar --all
+</li></ul></code></pre>
+<p>You will see:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>webinar.digitalocean.com "webinar1" deleted
+</code></pre>
+<p>Remove the Custom Resource itself:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl delete crd webinars.digitalocean.com
+</li></ul></code></pre>
+<p>You will see a confirmation that it has been deleted:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>customresourcedefinition.apiextensions.k8s.io "webinars.digitalocean.com" deleted
+</code></pre>
+<p>After deletion you will not have access to the API endpoint that you tested earlier with the <code>curl</code> command. </p>
+
+<p>This sequence is an introduction to how you can extend Kubernetes functionalities without modifying your Kubernetes code. </p>
+
+<h2 id="step-6-—-deleting-the-kubernetes-cluster">Step 6 — Deleting the Kubernetes Cluster</h2>
+
+<p>To destroy the Kubernetes cluster itself, you can use the <code>destroy.sh</code> script from the <code>~/k8s-cicd-webinars/webinar1/2-kubernetes/1-Terrafrom</code> folder. Make sure that you are in this directory:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">cd ~/k8s-cicd-webinars/webinar1/2-kubernetes/1-Terrafrom
+</li></ul></code></pre>
+<p>Run the script: </p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">./destroy.sh
+</li></ul></code></pre>
+<p>By running this script, you&rsquo;ll allow Terraform to communicate with the DigitalOcean API and delete the servers in your cluster. </p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>In this tutorial, you used different tools to create container images. With these images, you can create containers in any environment. You also set up a Kubernetes cluster using Terraform, and created Deployment and Service objects to deploy and expose your application. Additionally, you extended Kubernetes&rsquo; functionality by defining a Custom Resource. </p>
+
+<p>You now have a solid foundation to build a CI/CD environment on Kubernetes, which we&rsquo;ll explore in future articles.  </p>
+
+    </div>
+</div>
+
+<div class="tutorial-footer">
+  
+<div class='tutorial-footer-details'>
+
+  <div class='postable-info-bar-container'>
+  <div class='postable-info-bar'>
+
+    <div class="author-byline">
+      <div class="component-collaborators-container">
+  <ul class="component-collaborators-content">
+        <li class="collaborator-byline-avatar">
+          <a href="/community/users/neependrakhare">
+            <img alt="neependrakhare" class="avatar avatar-large" src="https://secure.gravatar.com/avatar/92bcb0d14ff8fd6afad7409c34fc6197?secure=true&d=identicon" width="80" height="80" />
+</a>        </li>
+
+    <li class="collaborators-byline-data">
+        <p class="names">By <a href="/community/users/neependrakhare">neependrakhare</a></p>
+
+      <p>
+      </p>
+    </li>
+  </ul>
+</div>
+
+    </div>
+  </div>
+</div>
+
+
+  <div class='section-content tutorial-contributors two'>
+    <div class="component-collaborators-container">
+      <ul class="component-collaborators-content">
+
+          <li class="collaborator-byline-avatar">
+            <a href="/community/users/katjuell">
+                <div class="mod-avatar mod-avatar-large"><img class="avatar avatar-large" src="https://community-cdn-digitalocean-com.global.ssl.fastly.net/assets/users/avatars/large/748ce760fc8ab2840a415f65ee0d674c24845854.jpg?1509387359" alt="748ce760fc8ab2840a415f65ee0d674c24845854" /><span class="mod-star" title="MOD" data-toggle="tooltip" data-container="body"><span class="mod-star-icon" /></span></div>
+</a>          </li>
+
+
+        <li class="collaborators-byline-data">
+            <p class="names">Editor: <a href="/community/users/katjuell">Kathleen Juell</a></p>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+    
+<div class="hsb--content">
+  <div class="hsb--undo hsb--hide">
+    <span class="icon icon-helpfulness-upvoted"></span>
+    <span class="hsb--question">You rated this helpful.</span>
+    <button name="button" type="submit" class="hsb--button-down hsb--vote-down-js" data-upvotable-type="Tutorial">Undo</button>
+  </div>
+
+  <div class="hsb--flagging-undo hsb--hide">
+    <span class="icon icon-helpfulness-flag"></span>
+    <span class="hsb--question">You reported this tutorial.</span>
+    <button name="button" type="submit" class="hsb--button-down hsb--unflagging-js">Undo</button>
+  </div>
+
+  <div class="hsb--do">
+    <span class="hsb--question">Was this helpful?</span>
+    <button name="button" type="submit" class="hsb--button hsb--vote-up-js" data-upvotable-id="2820" data-upvotable-type="Tutorial">Yes</button>
+    <button name="button" type="submit" class="hsb--button hsb--flagging-js" data-url="/community/tutorials/webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes/flag" data-flaggable-id="2820">No</button>
+  </div>
+
+  <div class="hsb--social-and-comments">
+    <div class="hsb--social-sharing">
+      <a target="_blank" class="share-popup" href="http://twitter.com/share?text=Webinar Series: Building Blocks for Doing CI/CD with Kubernetes&amp;url=https://www.digitalocean.com/community/tutorials/webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes?utm_content=webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes&amp;utm_medium=community&amp;utm_source=twshare">
+        <span class="icon icon-helpfulness-twitter"></span>
+</a>
+      <a target="_blank" class="share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes?utm_content=webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes&amp;utm_medium=community&amp;utm_source=fbshare">
+        <span class="icon icon-helpfulness-facebook"></span>
+</a>
+      <a target="_blank" class="share-popup" href="https://news.ycombinator.com/submitlink?t=Webinar Series: Building Blocks for Doing CI/CD with Kubernetes&amp;u=https://www.digitalocean.com/community/tutorials/webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes?utm_content=webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes&amp;utm_medium=community&amp;utm_source=hnshare">
+        <span class="icon icon-helpfulness-hacker-news"></span>
+</a>    </div>
+
+    <div class="hsb--comment">
+      <span class="icon icon-helpfulness-comment"></span>
+      <strong class="amount">1</strong>
+    </div>
+  </div>
+</div>
+
+
+</div>
+
+
+    <div class="tutorial-series-container">
+    <div class='section-content'>
+      <h2 class='tutorial-series-heading'>Tutorial Series</h2>
+          <div id="tutorial_series_80" class="tutorial-series">
+            <h3 class="series-title"><a href="/community/tutorial_series/webinar-series-ci-cd-on-kubernetes">Webinar Series: CI/CD on Kubernetes</a></h2>
+                <div class="description">
+                  The series discusses how to take a Cloud Native approach to building, testing, and deploying applications, covering release management, Cloud Native tools, Service Meshes, and CI/CD tools that can be used with Kubernetes. It is designed to help developers and businesses that are interested in integrating CI/CD best practices with Kubernetes into their worflows.
+                </div>
+              <div data-tutorial-series-list="80">
+  <button
+    type="button" class="button toggle-tutorials-list"
+    data-toggle-visibility-trigger
+    data-toggle-visibility="false"
+    data-toggle-visibility-target="[data-tutorial-series-list='80'] .TutorialSeries-list"
+    data-trigger-label-for-visible-state="Hide Tutorials"
+    data-trigger-label-for-hidden-state="Show Tutorials"
+  >
+  </button>
+  <ul class="TutorialSeries-list">
+      <li data-completed-tutorial-id="" data-tutorial-id="2820" data-js="tutorial">
+        <div class="TutorialSeries-listContainer">
+          <div class="TutorialSeries-listLeft">
+            <button type="button" class="Button--reset TutorialSeries-button " data-toggle="tooltip" title="Mark as Complete" data-js="markAsComplete" data-tutorialInteraction>
+              <svg class='svg-icon svg-icon-completed'><use xlink:href='https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-completed'></use></svg>
+            </button>
+          </div>
+          <div class="TutorialSeries-listRight">
+            <div class="TutorialSeries-headerContainer">
+              <div class="TutorialSeries-headerTitle">
+                <h2><a href="/community/tutorials/webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes">Webinar Series: Building Blocks for Doing CI/CD with Kubernetes</a></h2>
+              </div>
+              <div class="TutorialSeries-headerDate">
+                September 12, 2018
+              </div>
+            </div>
+            <div class="TutorialSeries-description">
+              If you are getting started with containers, you will likely want to know how to automate the processes of building, testing, and deployment. 
+In this first article of the **CI/CD with Kubernetes** series, we will cover key topics for working with Kubernetes. By the end of this tutorial, you will have created container images with Docker, Buildah, and Kaniko. You will also have experience setting up a Kubernetes cluster with Deployments, Services, and Custom Resources. 
+            </div>
+          </div>
+        </div>
+      </li>
+      <li data-completed-tutorial-id="" data-tutorial-id="2909" data-js="tutorial">
+        <div class="TutorialSeries-listContainer">
+          <div class="TutorialSeries-listLeft">
+            <button type="button" class="Button--reset TutorialSeries-button " data-toggle="tooltip" title="Mark as Complete" data-js="markAsComplete" data-tutorialInteraction>
+              <svg class='svg-icon svg-icon-completed'><use xlink:href='https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-completed'></use></svg>
+            </button>
+          </div>
+          <div class="TutorialSeries-listRight">
+            <div class="TutorialSeries-headerContainer">
+              <div class="TutorialSeries-headerTitle">
+                <h2><a href="/community/tutorials/webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x">Webinar Series: Kubernetes Package Management with Helm and CI/CD with Jenkins X</a></h2>
+              </div>
+              <div class="TutorialSeries-headerDate">
+                February 21, 2019
+              </div>
+            </div>
+            <div class="TutorialSeries-description">
+              In this second article of the CI/CD with Kubernetes series, you will preview two Kubernetes-specific tools that have been developed to manage cloud native CI/CD: the Helm package manager and the Jenkins X pipeline automation tool. In order to effectively reduce error and organize complexity in application deployment, CI/CD systems must include robust tooling for package management/deployment and the creation of a development pipeline with automated testing.
+            </div>
+          </div>
+        </div>
+      </li>
+      <li data-completed-tutorial-id="" data-tutorial-id="2918" data-js="tutorial">
+        <div class="TutorialSeries-listContainer">
+          <div class="TutorialSeries-listLeft">
+            <button type="button" class="Button--reset TutorialSeries-button " data-toggle="tooltip" title="Mark as Complete" data-js="markAsComplete" data-tutorialInteraction>
+              <svg class='svg-icon svg-icon-completed'><use xlink:href='https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-completed'></use></svg>
+            </button>
+          </div>
+          <div class="TutorialSeries-listRight">
+            <div class="TutorialSeries-headerContainer">
+              <div class="TutorialSeries-headerTitle">
+                <h2><a href="/community/tutorials/webinar-series-gitops-tool-sets-on-kubernetes-with-circleci-and-argo-cd">Webinar Series: GitOps Tool Sets on Kubernetes with CircleCI and Argo CD</a></h2>
+              </div>
+              <div class="TutorialSeries-headerDate">
+                March  5, 2019
+              </div>
+            </div>
+            <div class="TutorialSeries-description">
+              GitOps, as proposed by Weaverworks in a 2017 blog post, uses Git as a "single source of truth" for CI/CD processes, integrating code changes that happen in your Git repository. In this tutorial, you will run through a demonstration of two tools that you can use to set up your own cloud-based GitOps CI/CD system: The Continuous Integration tool CircleCI and Argo CD, a declarative Continuous Delivery tool.
+            </div>
+          </div>
+        </div>
+      </li>
+  </ul>
+</div>
+
+          </div>
+    </div>
+  </div>
+
+    <div class='related-tutorials'>
+    <div class='section-content'>
+      <h2>Related</h2>
+
+      <ul>
+        <li title="How To Configure a Continuous Integration Testing Environment with Docker and Docker Compose on Ubuntu 14.04">
+  <a class="panel" href="/community/tutorials/how-to-configure-a-continuous-integration-testing-environment-with-docker-and-docker-compose-on-ubuntu-14-04">
+    <h6>Tutorial</h6>
+    <div class="panel-data">
+      <h5>How To Configure a Continuous Integration Testing Environment with Docker and Docker Compose on Ubuntu 14.04</h5>
+      <p>This tutorial uses Docker Compose to demonstrate the automation of continuous integration workflows.
+
+We will create a Dockerized Python application and a Bash test script.
+
+Then, the test script will be Dockerized in its own container and the whole testing environment moved to a docker-compose.test.yml file so we can make sure we are running every test execution on a fresh and uniform application environment.</p>
+    </div>
+  </a>
+</li>
+<li title="How To Dockerise And Deploy Multiple WordPress Applications On Ubuntu">
+  <a class="panel" href="/community/tutorials/how-to-dockerise-and-deploy-multiple-wordpress-applications-on-ubuntu">
+    <h6>Tutorial</h6>
+    <div class="panel-data">
+      <h5>How To Dockerise And Deploy Multiple WordPress Applications On Ubuntu</h5>
+      <p>In this DigitalOcean article, using the Docker Linux Container Engine, we learn how to package and contain WordPress applications on Ubuntu cloud servers and discover the most simple and secure way of deploying multiple WordPress sites on a single host.
+</p>
+    </div>
+  </a>
+</li>
+<li title="Docker Explained: How To Containerize Python Web Applications">
+  <a class="panel" href="/community/tutorials/docker-explained-how-to-containerize-python-web-applications">
+    <h6>Tutorial</h6>
+    <div class="panel-data">
+      <h5>Docker Explained: How To Containerize Python Web Applications</h5>
+      <p>In this DigitalOcean article, we&#39;ll talk about &quot;containerizing&quot; Python web applications in order to have them in very secure sandboxes, absolutely kept within their own environments (unless you explicitly &quot;link&quot; them to another). In order to achieve this, we&#39;ll see about creating a docker container to host a Python web application step-by-step, finally bootstrapping our build processes with a Dockerfile to fully automate it.</p>
+    </div>
+  </a>
+</li>
+<li title="Docker Explained: How To Create Docker Containers Running Memcached">
+  <a class="panel" href="/community/tutorials/docker-explained-how-to-create-docker-containers-running-memcached">
+    <h6>Tutorial</h6>
+    <div class="panel-data">
+      <h5>Docker Explained: How To Create Docker Containers Running Memcached</h5>
+      <p>In this DigitalOcean article, especially keeping in mind those who host multiple web applications (e.g. multiple WordPress instances, Python Applications, etc.), we are going to create docker images to quickly start running (on-demand) Memcached containers which can be operated individually. These containers, kept and secured within their own environments, will work with the application being hosted to help them get better and faster.
+</p>
+    </div>
+  </a>
+</li>
+
+      </ul>
+    </div>
+  </div>
+
+
+  <div class='looking-for-an-answer'>
+  <div class='section-content'>
+    <h4>Still looking for an answer?</h4>
+
+    <div class="lfa--actions">
+      <a href="/community/questions/new?tags=Microservices%2CKubernetes%2CDocker%2CTerraform%2CCI%2FCD" class="lfa--action-box">
+        <span class="icon icon-look-for-answer-question"></span>
+        Ask a question
+      </a>
+      <a href="#q" class="lfa--action-box">
+        <span class="icon icon-look-for-answer-search-thin"></span>
+        Search for more help
+      </a>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="content-comments">
+  <div class="section-content">
+    <div class="tutorial commentable" id="tutorial_2820">
+
+  <div class="comments-header">
+    <h4 class="comments-count">
+        <span>1 Comment</span>
+    </h4>
+  </div>
+
+    <div class="response response-form no-avatar">
+  <div class="js-display-on-error flash error hidden"></div>
+
+
+  <form class="content-form disabled-form" id="new_comment" action="/community/tutorials/webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes/comments" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="&#x2713;" />
+
+    <textarea name="comment[content]" id="comment_content" placeholder="Leave a comment..." class="js-comment-content tutorial-comment-field" data-markdown="true">
+</textarea>
+
+      <div class="log-in-notice "><a href="/community/auth/digitalocean">Log In to Comment</a></div>
+
+    <div class='clearfix'></div>
+</form>
+</div>
+
+
+  <div class="comments">
+    <ul class="response-list">
+          <a class="js-click-on-load hidden" rel="nofollow" data-remote="true" href="/community/tutorials/webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes/comments">Load</a>
+    </ul>
+
+      <div class='comments-spinner'><div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+</div>
+  </div>
+
+  <div class='load-more-container'></div>
+</div>
+
+
+  </div>
+</div>
+
+<div class="creative-commons">
+  <a class="creative-commons-image" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><img rel="license" alt="Creative Commons License" src="/assets/community/creativecommons-08b32a9279fcd47fcd78ac6a26331389.png" /></a>
+    <div class="license-text">This work is licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.</div>
+</div>
+
+
+
+
+
+
+        <div class="clearfix"></div>
+      </div>
+
+            <footer>
+        <section>
+            <a href="https://www.digitalocean.com/write-for-donations/" class="panel">
+            <div class="photo_wrap">
+              <img class="photo" src="https://digitalocean.cdn.prismic.io/digitalocean/70910e9fdeb57be46aaa209ce8d9b4dc8e117fab_w4do2.jpg" alt="">
+            </div>
+            <span class="heading">Become a contributor</span>
+            <p>
+                You get paid; we donate to tech nonprofits.
+            </p>
+          </a>
+            <a href="https://www.meetup.com/pro/digitalocean" class="panel">
+            <div class="photo_wrap">
+              <img class="photo" src="https://digitalocean.cdn.prismic.io/digitalocean/2491485f96735e5982e330914d8a617f85395fab_meetups.jpg" alt="">
+            </div>
+            <span class="heading">Connect with other developers</span>
+            <p>
+                Find a DigitalOcean Meetup near you.
+            </p>
+          </a>
+            <a href="https://www.digitalocean.com/community/newsletter" class="panel">
+            <div class="photo_wrap">
+              <img class="photo" src="https://digitalocean.cdn.prismic.io/digitalocean/ca12c951cc76f33037f3384bba9942545d160d82_iaan_illo.jpg" alt="">
+            </div>
+            <span class="heading">Get our biweekly newsletter</span>
+            <p>
+                Sign up for Infrastructure as a Newsletter.
+            </p>
+          </a>
+      </section>
+      <section class="slim ">
+        <span class="heading">Featured on Community</span>
+            <a href="https://www.digitalocean.com/community/tutorials/an-introduction-to-kubernetes">Intro to Kubernetes</a>
+            <a href="https://www.digitalocean.com/community/tutorial_series/how-to-code-in-python-3">Learn Python 3</a>
+            <a href="https://www.digitalocean.com/community/tutorials/machine-learning-projects-python-a-digitalocean-ebook">Machine Learning in Python</a>
+            <a href="https://www.digitalocean.com/community/tutorials/how-to-write-your-first-program-in-go">Getting started with Go</a>
+            <a href="https://www.digitalocean.com/community/tutorial_series/from-containers-to-kubernetes-with-node-js">Migrate Node.js to Kubernetes</a>
+        <hr>
+        <span class="heading">DigitalOcean Products</span>
+            <a href="https://www.digitalocean.com/products/droplets/">Droplets</a>
+            <a href="https://www.digitalocean.com/products/managed-databases/">Managed Databases</a>
+            <a href="https://www.digitalocean.com/products/kubernetes/">Managed Kubernetes</a>
+            <a href="https://www.digitalocean.com/products/spaces/">Spaces Object Storage</a>
+            <a href="https://marketplace.digitalocean.com/">Marketplace</a>
+      </section>
+        <section class="product">
+          <a class="copy" href="/products">
+            <h3>Welcome to the developer cloud</h3>
+            <p>DigitalOcean makes it simple to launch in the cloud and scale up as you grow – whether you’re running one virtual machine or ten thousand.</p>
+            <span class="link_text">Learn More</a>
+          </div>
+          <div class="feature">
+            <a class="img_wrap" href="/products">
+              <img class="photo" src="https://digitalocean.cdn.prismic.io/digitalocean/95c1215227aa7f39f2bd23076de28feb969741c7_cloud.digitalocean.com_projects_63f9252f-652b-4645-9c0c-bee96f2bc503_resources_ic0ce81-2.png" alt="DigitalOcean Cloud Control Panel">
+            </a>
+          </div>
+        </section>
+        <section class="dark">
+          <div class="vlist grow">
+            <a href="https://www.digitalocean.com">
+              <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+                <title>DigitalOcean Homepage</title>
+                <g fill="#0080FF" fill-rule="evenodd">
+                  <path
+                    d="M24.9153 50v-9.661c10.226 0 18.1638-10.1413 14.2372-20.904-1.4406-3.983-4.6327-7.1751-8.6158-8.6158C19.774 6.921 9.6327 14.8305 9.6327 25.0565H0C0 8.7571 15.7627-3.9548 32.8531 1.3842c7.4576 2.3446 13.418 8.2768 15.7345 15.7344C53.9266 34.2373 41.2429 50 24.9153 50">
+                  </path>
+                  <path
+                    d="M15.339 40.3672h9.6045v-9.6045H15.339zM7.9379 47.7684h7.401v-7.4012H7.938zM1.7514 40.3672H7.938v-6.1864H1.7514z">
+                  </path>
+                </g>
+              </svg>
+            </a>
+            <br><br>
+            © <script type="text/javascript">
+              document.write(new Date().getFullYear());
+
+            </script> DigitalOcean, LLC. All rights reserved.
+          </div>
+
+              <div class="vlist">
+                <span class="heading">Company</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/about/">About</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/about/leadership/">Leadership</a>
+                    </li>
+                    <li>
+                      <a href="https://blog.digitalocean.com/">Blog</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/careers/">Careers</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/partners/">Partners</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/referral-program/">Referral Program</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/press/">Press</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/legal/">Legal &amp; Security</a>
+                    </li>
+                </ul>
+              </div>
+              <div class="vlist">
+                <span class="heading">Products</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/">Products Overview</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/pricing/">Pricing</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/droplets/">Droplets</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/kubernetes/">Kubernetes</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/managed-databases/">Managed Databases</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/spaces/">Spaces</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/marketplace/">Marketplace</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/load-balancer/">Load Balancers</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/block-storage/">Block Storage</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/tools-and-integrations/">Tools &amp; Integrations</a>
+                    </li>
+                    <li>
+                      <a href="https://developers.digitalocean.com/documentation/">API</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/docs">Documentation</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/docs/release-notes/">Release Notes</a>
+                    </li>
+                </ul>
+              </div>
+              <div class="vlist">
+                <span class="heading">Community</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/tutorials">Tutorials</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/questions">Q&amp;A</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/tools">Tools and Integrations</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/tags">Tags</a>
+                    </li>
+                    <li>
+                      <a href="https://ideas.digitalocean.com/">Product Ideas</a>
+                    </li>
+                    <li>
+                      <a href="https://www.meetup.com/pro/digitalocean/?utm_source=do_www">Meetups</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/write-for-donations/">Write for DOnations</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/droplets-for-demos/">Droplets for Demos</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/hatch/">Hatch Startup Program</a>
+                    </li>
+                    <li>
+                      <a href="http://store.digitalocean.com/">Shop Swag</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/research/">Research Program</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/currents/">Currents Research</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/open-source/">Open Source</a>
+                    </li>
+                </ul>
+              </div>
+              <div class="vlist">
+                <span class="heading">Contact</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/support/">Support</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/company/contact/sales/">Sales</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/company/contact/#abuse">Report Abuse</a>
+                    </li>
+                    <li>
+                      <a href="https://status.digitalocean.com/">System Status</a>
+                    </li>
+                </ul>
+              </div>
+        </section>
+      </footer>
+
+
+      <div id='sign-in-modal' class='modal fade mini-modal' style="display: none;">
+  <div class='modal-dialog'>
+    <div class='modal-content'>
+      <div class='modal-header'>
+        <h1>Almost there!</h1>
+        <a class='close-button' data-dismiss='modal' aria-label="close"  href=''><span class='icon icon-close-light'></span></a>
+      </div>
+      <div class='modal-body'>
+        <div class='sign-in-message'>Sign into your account, or create a new one, to start interacting.</div>
+
+        <div class='sign-in-modal-actions'>
+          <a class="sign-in-link button blue-button" data-default-url="/community/auth/digitalocean" href="/community/auth/digitalocean">Log In</a>
+          <a class="sign-up-link button blue-button" data-default-url="/community/auth/digitalocean?display=sessionless+register" href="/community/auth/digitalocean?display=sessionless+register">Sign Up</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+      <script>
+    $(function() {
+      window.initHelpfulnessActions(2820);
+    });
+  </script>
+  <script>
+    $(function() {
+      var p, h5, panel, remainingSpace;
+      var lineHeight = 31, clamp = 1;
+
+      var panels = document.querySelectorAll('li .panel-data');
+
+      for (var i = 0, len = panels.length; i < len; i++) {
+        panel = panels[i];
+
+        p = panel.querySelector('p');
+        h5 = panel.querySelector('h5');
+        remainingSpace = panel.offsetHeight - h5.offsetHeight;
+
+        // Clamp text only when the remaining space isn't enought for p content.
+        if (remainingSpace < p.scrollHeight) {
+          clamp = parseInt(p.offsetHeight / lineHeight);
+
+          p.style.cssText = "-webkit-line-clamp:" + clamp +
+            "; display: -webkit-box; -webkit-box-orient: vertical;";
+        }
+      }
+    });
+  </script>
+
+  <script>
+    $(function() {
+      if (!!window.init_sharing) {
+        window.init_sharing();
+      }
+      new window.NewsletterSignup();
+      new window.GrowableMarkdown({ target: '[data-growable-markdown]' });
+    });
+  </script>
+  <script type="application/ld+json">
+    {"@context":"http://schema.org","@type":"Article","name":"Webinar Series: Building Blocks for Doing CI/CD with Kubernetes","headline":"Webinar Series: Building Blocks for Doing CI/CD with Kubernetes","alternativeHeadline":"Webinar Series: Building Blocks for Doing CI/CD with Kubernetes ","description":"If you are getting started with containers, you will likely want to know how to automate the processes of building, testing, and deployment. \r\nIn this first article of the **CI/CD with Kubernetes** series, we will cover key topics for working with Kubernetes. By the end of this tutorial, you will have created container images with Docker, Buildah, and Kaniko. You will also have experience setting up a Kubernetes cluster with Deployments, Services, and Custom Resources. ","keywords":"Kubernetes,Terraform,CI/CD,Docker,September 2018,Microservices","url":"https://www.digitalocean.com/community/tutorials/webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.digitalocean.com/community/tutorials/webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes"},"dateModified":"2019-02-27T17:10:11Z","inLanguage":"en","accessMode":"textual","accessModeSufficient":"textual","isAccessibleForFree":true,"license":"https://creativecommons.org/licenses/by-nc-sa/4.0/","publishingPrinciples":"https://www.digitalocean.com/community/tutorials/technical-recommendations-and-best-practices-for-digitalocean-s-tutorials","author":[{"@type":"Person","name":"neependrakhare","@id":"https://www.digitalocean.com/community/users/neependrakhare"}],"datePublished":"2018-09-21T17:14:41Z","editor":{"@type":"Person","name":"Kathleen Juell","@id":"katjuell"},"image":{"@type":"ImageObject","url":"https://community-cdn-digitalocean-com.global.ssl.fastly.net/assets/tutorials/images/large/Kubernetes_CI-CD_-_Blog_Header.png?1540325447","height":375,"width":750},"interactionStatistic":[{"@type":"InteractionCounter","interactionType":"http://schema.org/LikeAction","userInteractionCount":"6"},{"@type":"InteractionCounter","interactionType":"http://schema.org/CommentAction","userInteractionCount":"1"}],"sourceOrganization":{"@type":"Organization","name":"DigitalOcean Community","url":"https://www.digitalocean.com/community"},"publisher":{"@type":"Organization","name":"DigitalOcean","url":"https://www.digitalocean.com","logo":{"@type":"ImageObject","url":"https://assets.digitalocean.com/logos/DO_Logo_horizontal_blue.png","width":351,"height":60}}}
+  </script>
+
+
+    
+  </body>
+</html>

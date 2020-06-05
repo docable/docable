@@ -4,7 +4,7 @@ setup:
     host: vagrant@127.0.0.1:2002
     privateKey: id_rsa
 
-../tutorials/256_ubuntu_vultr.html:
+../tutorials/docable/256_ubuntu_vultr.html:
   steps:
     - run: "Update the server to the latest packages/updates."
       user: root

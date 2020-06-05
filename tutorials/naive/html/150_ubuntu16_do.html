@@ -1,0 +1,1965 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>How To Deploy a PHP Application with Kubernetes on Ubuntu 16.04 | DigitalOcean</title>
+
+<meta name="description" content="Kubernetes is an open source container orchestration system. It allows you to create, update, and scale containers without worrying about downtime. In this tutorial, you will deploy a PHP 7 application on a Kubernetes cluster with Nginx and PHP-FPM ru">
+<meta name="keywords" content="Kubernetes PHP Nginx Block Storage">
+
+<meta name="og:title" content="How To Deploy a PHP Application with Kubernetes on Ubuntu 16.04 | DigitalOcean">
+<meta name="og:description" content="Kubernetes is an open source container orchestration system. It allows you to create, update, and scale containers without worrying about downtime. In this tutorial, you will deploy a PHP 7 application on a Kubernetes cluster with Nginx and PHP-FPM ru">
+<meta name="og:site_name" content="DigitalOcean">
+<meta name="og:type" content="article">
+<meta name="og:image" content="https://community-cdn-digitalocean-com.global.ssl.fastly.net/assets/tutorials/images/large/kubernetes_tutorials-big.png?1551468138">
+
+<meta name="twitter:site" content="DigitalOcean">
+<meta name="twitter:title" content="How To Deploy a PHP Application with Kubernetes on Ubuntu 16.04 | DigitalOcean">
+<meta name="twitter:description" content="Kubernetes is an open source container orchestration system. It allows you to create, update, and scale containers without worrying about downtime. In this tutorial, you will deploy a PHP 7 application on a Kubernetes cluster with Nginx and PHP-FPM ru">
+<meta name="twitter:creator" content="DigitalOcean">
+<meta name="twitter:card" content="photo" />
+<meta name="twitter:url" content="https://www.digitalocean.com/community/tutorials/how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-16-04"/>
+<meta name="twitter:image" content="https://community-cdn-digitalocean-com.global.ssl.fastly.net/assets/tutorials/images/large/kubernetes_tutorials-big.png?1551468138">
+
+  <link rel='canonical' href='https://www.digitalocean.com/community/tutorials/how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-16-04'>
+
+<link rel="preconnect" href="https://digitalocean.cdn.prismic.io">
+<link rel="preconnect" href="https://hello.myfonts.net">
+
+
+    <link rel="stylesheet" media="all" href="/assets/community/application-b828e623bec3c41208f9f701850222a0.css" />
+
+    
+    <meta name="csrf-param" content="authenticity_token" />
+<meta name="csrf-token" content="blMwmTQNDm/rH3Kt7+ZwV8y1qklQ6GyZtEi/tCZbpJ15pWxDzZjBNyrHk4t5qCu+EK7P6Towz1UEH9IRU7QGDw==" />
+    <script src="/assets/community/prerequisites-9a51dfaadf0d3629cc636286133a958d.js"></script>
+    <script>
+//<![CDATA[
+
+  window.cookieDomain = '.digitalocean.com';
+
+//]]>
+</script><script src="https://assets.digitalocean.com/cookieConsent/cookieConsent.js"></script>
+<link rel="stylesheet" href="https://assets.digitalocean.com/cookieConsent/cookieConsent.css">
+
+    <script type="text/javascript">
+  if(window.analytics=window.analytics||[],window.analytics.included)window.console&&console.error&&console.error("analytics.js included twice");else{window.analytics.included=!0,window.analytics.methods=["identify","group","track","page","pageview","alias","ready","on","once","off","trackLink","trackForm","trackClick","trackSubmit"],window.analytics.factory=function(a){return function(){var n=Array.prototype.slice.call(arguments);return n.unshift(a),window.analytics.push(n),window.analytics}};for(var i=0;i<window.analytics.methods.length;i++){var key=window.analytics.methods[i];window.analytics[key]=window.analytics.factory(key)}window.analytics.load=function(a){var n=document.createElement("script");n.type="text/javascript",n.async=!0,n.src=("https:"===document.location.protocol?"https://":"http://")+"cdn.segment.com/analytics.js/v1/"+a+"/analytics.min.js";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(n,t)},window.analytics.SNIPPET_VERSION="2.0.9",window.analytics.load("puo3uv968t")}
+  window.analytics.page();
+</script>
+
+<!-- Google Tag Manager -->
+<script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-KHWBBT');
+</script>
+<!-- End Google Tag Manager -->
+
+<script src="/assets/community/internalCookies-d2a3579f6b37d00c8045b16853b90462.js"></script>
+
+      <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="/community/tutorials/feed">
+    <script>
+      window.comApp = {
+        prefix: '/community',
+        svgIconPath: 'https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg',
+        railsEnv: 'production',
+        rootUrl: 'https://www.digitalocean.com/community',
+        algolia_application_id: '6ZHEUVKJ88',
+        algolia_api_key: 'c5470567eae7fa1177d43222e18ba086'
+      };
+    </script>
+      <script src="https://go.digitalocean.com/js/forms2/js/forms2.min.js"></script>
+
+    <script src="/assets/community/application-dd2f12c7d68945c016e67a784d8785fc.js"></script>
+  </head>
+  <body class="feature-filter-bar feature-upvotes tutorials-controller tutorial-single" data-env="production" data-prefix="/community" data-user-id="" data-facebook-app-id="694818843983011"   data-completed-tutorial-id="" data-tutorial-id="2889" data-js="tutorial"
+  data-upvote="null"
+  data-flagged=""
+>
+    
+
+    <div class='outside_viewport'>
+        <div id="contents-modal" class="modal fade mini-modal" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1>Contents</h1>
+          <button class="close-button icon icon-close-light" data-dismiss="modal" aria-label="close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="table-of-contents-modal"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="share-modal" class="modal fade mini-modal" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1>Share</h1>
+        <button type="button" class="close-button icon icon-close-light" aria-label="close" data-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="social-sharing social-sharing-container">
+          <ul class="top ">
+            <li class="shareBtn" id="sbTwitter">
+              <a href="http://twitter.com/share?text=How To Deploy a PHP Application with Kubernetes on Ubuntu 16.04&amp;url=https://www.digitalocean.com/community/tutorials/how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-16-04?utm_content=how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=twshare" class="share-icon share-popup" title="Share on Twitter" target="_blank">
+                <span class="sIcon icon-bird"></span>
+              </a>
+              <a href="http://twitter.com/share?text=How To Deploy a PHP Application with Kubernetes on Ubuntu 16.04&amp;url=https://www.digitalocean.com/community/tutorials/how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-16-04?utm_content=how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=twshare" class="share-link share-popup" title="Share on Twitter" target="_blank">
+                Twitter
+              </a>
+            </li>
+            <li class="shareBtn" id="sbFacebook">
+              <a class="share-icon share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-16-04?utm_content=how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+                <span class="sIcon icon-facebook-B"></span>
+              </a>
+
+              <a class="share-link share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-16-04?utm_content=how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+                Facebook
+              </a>
+            </li>
+            <li class="shareBtn" id="sbYC">
+              <a href="https://news.ycombinator.com/submitlink?t=How To Deploy a PHP Application with Kubernetes on Ubuntu 16.04&amp;u=https://www.digitalocean.com/community/tutorials/how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-16-04?utm_content=how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=hnshare" class="share-icon share-popup" target="_blank" title="Submit to Hacker News">
+                <span class="sIcon icon-hacker-news"></span>
+              </a>
+              <a href="https://news.ycombinator.com/submitlink?t=How To Deploy a PHP Application with Kubernetes on Ubuntu 16.04&amp;u=https://www.digitalocean.com/community/tutorials/how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-16-04?utm_content=how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=hnshare" class="share-link share-popup" target="_blank" title="Submit to Hacker News">
+                Hacker News
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <div class="table-of-contents">
+    <div data-js="tableOfContentsDesktop"></div>
+  </div>
+  
+  
+  
+  <div id="share-modal" class="modal fade mini-modal" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1>Share</h1>
+        <button type="button" class="close-button icon icon-close-light" aria-label="close" data-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="social-sharing social-sharing-container">
+          <ul class="bottom ">
+            <li class="shareBtn" id="sbTwitter">
+              <a href="http://twitter.com/share?text=How To Deploy a PHP Application with Kubernetes on Ubuntu 16.04&amp;url=https://www.digitalocean.com/community/tutorials/how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-16-04?utm_content=how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=twshare" class="share-icon share-popup" title="Share on Twitter" target="_blank">
+                <span class="sIcon icon-bird"></span>
+              </a>
+              <a href="http://twitter.com/share?text=How To Deploy a PHP Application with Kubernetes on Ubuntu 16.04&amp;url=https://www.digitalocean.com/community/tutorials/how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-16-04?utm_content=how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=twshare" class="share-link share-popup" title="Share on Twitter" target="_blank">
+                Twitter
+              </a>
+            </li>
+            <li class="shareBtn" id="sbFacebook">
+              <a class="share-icon share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-16-04?utm_content=how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+                <span class="sIcon icon-facebook-B"></span>
+              </a>
+
+              <a class="share-link share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-16-04?utm_content=how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+                Facebook
+              </a>
+            </li>
+            <li class="shareBtn" id="sbYC">
+              <a href="https://news.ycombinator.com/submitlink?t=How To Deploy a PHP Application with Kubernetes on Ubuntu 16.04&amp;u=https://www.digitalocean.com/community/tutorials/how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-16-04?utm_content=how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=hnshare" class="share-icon share-popup" target="_blank" title="Submit to Hacker News">
+                <span class="sIcon icon-hacker-news"></span>
+              </a>
+              <a href="https://news.ycombinator.com/submitlink?t=How To Deploy a PHP Application with Kubernetes on Ubuntu 16.04&amp;u=https://www.digitalocean.com/community/tutorials/how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-16-04?utm_content=how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=hnshare" class="share-link share-popup" target="_blank" title="Submit to Hacker News">
+                Hacker News
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div id="newsletter-signup-dialog" class="newsletter-signups-dialog" data-newsletter-signup-dialog data-article-target=".content-body">
+  <div class="form-message">
+  <div class="pull-right">
+    <a href="javascript:;" class="newsletter-signups-dialog-dismiss" data-newsletter-signup-dismiss>&times;</a>
+
+  </div>
+  <h4 class="newsletter-signups-dialog-title">
+    Sign up for our newsletter.
+  </h4>
+  <p class="newsletter-signups-dialog-description">
+    Get the latest tutorials on SysAdmin and open source topics.
+  </p>
+  <form class="newsletter-signup" id="new_newsletter_signup" data-newsletter-signup="true" action="/community/newsletter" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="&#x2713;" />
+
+  <input data-newsletter-signup-field="url" type="hidden" name="newsletter_signup[url]" id="newsletter_signup_url" />
+  <input data-newsletter-signup-field="title" type="hidden" name="newsletter_signup[title]" id="newsletter_signup_title" />
+
+  <div class="newsletter-signup-ajax-error" data-newsletter-signup-ajax-error></div>
+
+
+  <div class="form-group">
+    <input placeholder="Enter your email address" required="required" class="field" type="email" name="newsletter_signup[email]" id="newsletter_signup_email" />
+  </div>
+
+  <button data-disable-with="Sign Up" class="button blue-button">
+    Sign Up
+  </button>
+
+</form>
+
+</div>
+
+<div class="thanks-message hidden" data-newsletter-signup-successful> 
+  <div class='pull-right'> 
+    <a href='javascript:;' class='newsletter-signups-dialog-dismiss icon icon-close-light' data-newsletter-signup-dismiss></a> 
+  </div> 
+
+  <span class='newsletter-signups-dialog-success'> 
+    Thanks for signing up! 
+  </span> 
+</div>
+
+</div>
+
+
+      
+    </div>
+
+      
+      
+<div style="display: none;">
+  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <symbol id="do_nav-logo" xmlns="http://www.w3.org/2000/svg"> <title>DigitalOcean home</title> <g fill="currentColor" fill-rule="evenodd"> <path d="M14.4942 29v-5.5674c5.9572 0 10.5633-5.8478 8.2892-12.059-.8425-2.3006-2.693-4.1355-5.0126-4.9706-6.262-2.2534-12.1564 2.3135-12.1573 8.2207 0 0-.0006.0014-.0014.0014H0C0 5.2123 9.1687-2.1167 19.1138.9624c4.3459 1.3457 7.7993 4.7708 9.1561 9.081C31.3742 19.9068 23.985 29 14.4942 29"></path> <path d="M14.507 23.4468H8.9103v-5.549s.0005-.0011.0011-.0011h5.5949c.0006 0 .0009.0006.0009.0006v5.5495M8.9093 27.7118H4.6105l-.0012-.0012v-4.2638h4.3009v4.2638l-.0009.0012M4.6125 23.4468H1.0088c-.0015 0-.0026-.0012-.0026-.0012v-3.5724s.0011-.0025.0026-.0025h3.601c.0015 0 .0027.0011.0027.0011v3.575M43.2806 9.6357h1.649c1.8346 0 3.345.358 4.49 1.0647 1.2714.7603 1.9164 2.2069 1.9164 4.2991 0 2.1554-.6465 3.6671-1.9207 4.4942h-.0008c-1.0971.7196-2.5981 1.0846-4.462 1.0846h-1.6719V9.6357zm8.324-1.0736c-1.6598-1.142-3.7252-1.721-6.1387-1.721h-5.2537V23.373h5.2537c2.4074 0 4.4737-.6113 6.1407-1.8157.907-.6382 1.6197-1.5304 2.1185-2.651.4962-1.1144.7479-2.4288.7479-3.9067 0-1.4605-.2517-2.758-.7482-3.857-.4988-1.104-1.212-1.972-2.1202-2.5804zM58.1303 6.6376c-.5051 0-.9403.1777-1.2906.5254-.3546.335-.5346.7597-.5346 1.2618 0 .501.1791.9322.532 1.2825.3529.35.788.528 1.2932.528.5042 0 .9394-.178 1.2928-.528.3535-.3508.5324-.7821.5324-1.2825 0-.5015-.18-.926-.5324-1.2592-.3534-.3503-.7886-.528-1.2928-.528M56.6247 23.3729h2.9538V11.7294h-2.9538zM69.5321 19.5787c-.5162.5814-1.1793.8635-2.0264.8635-.8471 0-1.5064-.282-2.015-.863-.5065-.5777-.7637-1.3439-.7637-2.2773 0-.9479.2572-1.7238.764-2.3058.502-.576 1.1796-.8683 2.0147-.8683.8465 0 1.5096.284 2.0262.8695.5142.582.7751 1.3573.7751 2.3046 0 .9328-.2609 1.6988-.7749 2.2768zm.775-6.8767c-.8908-.7858-1.8858-1.2444-2.9614-1.2444-1.6305 0-2.9859.5598-4.0276 1.662-1.0555 1.0932-1.5907 2.5006-1.5907 4.1823 0 1.644.5269 3.0464 1.568 4.1709 1.0498 1.088 2.4123 1.6396 4.0503 1.6396 1.139 0 2.1182-.3144 2.9157-.9356v.268c0 .9662-.2608 1.7176-.7751 2.234-.5137.5154-1.226.7764-2.1173.7764-1.3637 0-2.2183-.5314-3.2589-1.9262l-2.0115 1.917.0542.0754c.4346.605 1.1 1.197 1.9785 1.7594.8787.5603 1.9832.8447 3.2832.8447 1.7536 0 3.1726-.5363 4.2172-1.5933 1.0506-1.0628 1.5835-2.486 1.5835-4.2286V11.7294H70.307v.9726zM75.7434 23.3729h2.9541V11.7294h-2.9541zM77.249 6.6376c-.5052 0-.94.1777-1.2906.5254-.3547.335-.5344.7597-.5344 1.2618 0 .501.1789.9322.532 1.2825.353.35.7878.528 1.293.528.5045 0 .9396-.178 1.2928-.528.3535-.3508.5323-.7821.5323-1.2825 0-.5015-.1797-.926-.5323-1.2592-.3532-.3503-.7883-.528-1.2929-.528M85.1724 8.5831h-2.9082v3.1463h-1.6888v2.6702h1.6888v4.8365c0 1.5134.3047 2.5964.9064 3.2181.6031.6247 1.6741.9414 3.1831.9414.48 0 .963-.0156 1.4354-.0463l.133-.0088v-2.6683l-1.013.0526c-.7033 0-1.1728-.1226-1.3961-.3637-.226-.245-.3406-.7636-.3406-1.5404v-4.421h2.7497v-2.6703h-2.7497V8.583M101.7735 23.3729h2.9544V6.8412h-2.9544zM134.5728 19.2094c-.5286.5874-1.0693 1.0966-1.4855 1.3613v.0005c-.4085.2599-.924.3918-1.532.3918-.8703 0-1.5703-.3144-2.1405-.9621-.567-.644-.8545-1.4716-.8545-2.4613s.2838-1.8162.8436-2.4556c.5625-.6434 1.2588-.9562 2.1285-.9562.9515 0 1.9548.5869 2.8145 1.5947l1.9525-1.8568c-1.273-1.6433-2.897-2.4081-4.8352-2.4081-1.622 0-3.028.5862-4.1788 1.7411-1.1446 1.147-1.7251 2.6074-1.7251 4.3409 0 1.7335.58 3.1977 1.7234 4.352 1.1447 1.1557 2.5514 1.7417 4.1805 1.7417 2.139 0 3.8651-.9158 5.029-2.5935l-1.9204-1.8304M140.2405 16.0973c.1422-.5567.401-1.0207.7714-1.381.4005-.3906.9214-.5885 1.5489-.5885.716 0 1.2702.2019 1.6474.6014.3495.3696.5467.8296.588 1.368h-4.5557zm6.4569-2.7414c-.4191-.5788-.9896-1.0448-1.6965-1.3854-.7047-.3404-1.526-.513-2.441-.513-1.6489 0-2.9982.6037-4.0113 1.7946-.9836 1.182-1.4818 2.651-1.4818 4.3665 0 1.7648.547 3.2253 1.6254 4.341 1.0727 1.1105 2.5083 1.6737 4.267 1.6737 1.992 0 3.627-.799 4.8587-2.3752l.0666-.0847-1.9273-1.837c-.1789.2139-.4317.4561-.6628.6722-.2918.273-.5659.4842-.8588.6289-.4415.218-.9369.3255-1.4907.3255-.8187 0-1.4964-.2388-2.0147-.71-.4847-.4403-.768-1.0345-.843-1.7683h7.8265l.0264-1.0693c0-.7569-.1038-1.4862-.3088-2.1677a6.312 6.312 0 0 0-.934-1.8918zM152.797 18.9234c.3352-.2318.8085-.3483 1.4073-.3483.7112 0 1.4654.1413 2.2426.421v1.1421c-.6421.592-1.4996.8922-2.5499.8922-.5114 0-.909-.1126-1.1822-.3355-.2683-.218-.3985-.4955-.3985-.847 0-.3994.1571-.7022.4808-.9245zm5.2452-6.3229h-.0003c-.8952-.758-2.1328-1.143-3.678-1.143-.9829 0-1.902.2144-2.7336.6324-.7691.387-1.5245 1.0275-2.0043 1.8662l.0298.0358 1.8917 1.796c.7791-1.2322 1.6454-1.66 2.7941-1.66.6172 0 1.1298.1643 1.5234.4881.3916.3216.5819.7304.5819 1.249v.5652c-.7324-.221-1.4629-.333-2.1738-.333-1.47 0-2.6663.3432-3.555 1.0193-.9.6852-1.3562 1.665-1.3562 2.9125 0 1.094.3847 1.9829 1.1461 2.6433.7677.6372 1.7275.961 2.8524.961 1.1246 0 2.177-.4495 3.132-1.2191v.9587h2.9089v-7.4852c0-1.4173-.4572-2.523-1.3591-3.2872zM170.7656 12.8285c-.8227-.9092-1.9791-1.371-3.4371-1.371-1.172 0-2.1236.3338-2.8357.9926v-.7207h-2.897v11.6435h2.954v-6.4215c0-.8823.2119-1.5828.6293-2.0826.4162-.4987.989-.741 1.75-.741.6691 0 1.1765.2167 1.5506.662.3759.4474.5662 1.0638.5662 1.8335v6.7496H172v-6.7496c0-1.6127-.415-2.889-1.2344-3.7948M92.8158 18.9234c.3351-.2318.8087-.3483 1.4075-.3483.7112 0 1.4652.1413 2.2426.421v1.1421c-.6421.592-1.4998.8922-2.5502.8922-.5114 0-.9087-.1126-1.1819-.3355-.2683-.218-.3988-.4955-.3988-.847 0-.3994.1574-.7022.4808-.9245zm5.2451-6.3229h-.0003c-.8952-.758-2.1328-1.143-3.6776-1.143-.983 0-1.902.2144-2.7337.6324-.7694.387-1.5247 1.0275-2.0043 1.8662l.0295.0358 1.8917 1.796c.7792-1.2322 1.6458-1.66 2.7941-1.66.6172 0 1.1298.1643 1.5234.4881.3916.3216.5822.7304.5822 1.249v.5652c-.7327-.221-1.4631-.333-2.174-.333-1.47 0-2.6664.3432-3.555 1.0193-.8999.6852-1.3562 1.665-1.3562 2.9125 0 1.094.3847 1.9829 1.1463 2.6433.7677.6372 1.7272.961 2.8524.961 1.1246 0 2.1766-.4495 3.1318-1.2191v.9587H99.42v-7.4852c0-1.4173-.457-2.523-1.359-3.2872zM115.4464 9.5808c-3.0682 0-5.5645 2.4755-5.5645 5.5188s2.4963 5.5188 5.5645 5.5188c3.0682 0 5.5645-2.4755 5.5645-5.5188s-2.4963-5.5188-5.5645-5.5188zm0 14.0408c-4.7383 0-8.5928-3.8228-8.5928-8.522 0-4.6994 3.8545-8.5223 8.5928-8.5223 4.738 0 8.5925 3.8229 8.5925 8.5223 0 4.6992-3.8545 8.522-8.5925 8.522z"></path> </g> </symbol>
+    <symbol id="do_nav-community_logo" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 532.2 99.8" fill="currentColor"> <path class="st0" d="M98.5,23c15.5,0,27.7,12.1,27.7,28.2c0,16.1-12.3,28.1-27.7,28.1c-15.6,0-27.7-11.9-27.7-28.1 C70.8,35.1,82.9,23,98.5,23z M98.5,67.9c8.7,0,14.9-7,14.9-16.8c0-9.8-6.2-16.8-14.9-16.8c-8.8,0-15,7-15,16.8 C83.5,60.9,89.7,67.9,98.5,67.9z"/> <path class="st0" d="M166.8,45.9c0-7-3.5-11.6-9.9-11.6c-7.2,0-11.1,5.3-11.1,13.1V78h-12.5V24.3h12.3V29c2.4-2.8,7-6,13.9-6 c7.3,0,12.2,3.1,15,7c4.4-4.9,10-7,16.8-7c14.4,0,21.4,8.5,21.4,23.8V78h-12.5V45.9c0-7-3.5-11.6-9.9-11.6 c-7.2,0-11.2,5.3-11.2,13.1V78h-12.4V45.9z"/> <path class="st0" d="M255.5,45.9c0-7-3.5-11.6-9.9-11.6c-7.2,0-11.1,5.3-11.1,13.1V78h-12.5V24.3h12.3V29c2.4-2.8,7-6,13.9-6 c7.3,0,12.2,3.1,15,7c4.4-4.9,10-7,16.8-7c14.4,0,21.4,8.5,21.4,23.8V78h-12.5V45.9c0-7-3.5-11.6-9.9-11.6 c-7.2,0-11.2,5.3-11.2,13.1V78h-12.4V45.9z"/> <path class="st0" d="M322.5,56.4c0,7,3.6,11.6,10.1,11.6c7.2,0,11.2-5.6,11.2-13.5V24.3h12.5V78h-12.3v-4.4 c-3.4,3.7-8.1,5.6-13.9,5.6c-11.9,0-20.1-8.4-20.1-23.7V24.3h12.5V56.4z"/> <path class="st0" d="M378.2,78h-12.5V24.3h12.3v4.4c2.7-3.1,7.7-5.7,13.9-5.7c13.1,0,21.3,8.5,21.3,23.8V78h-12.5V46.8 c0-7.5-3.7-12.5-10.6-12.5c-7.8,0-11.8,5.6-11.8,14V78z"/> <path class="st0" d="M427.8,0.2c4.4,0,7.9,3.4,7.9,7.8s-3.5,7.9-7.9,7.9c-4.4,0-7.9-3.5-7.9-7.9S423.4,0.2,427.8,0.2z M421.4,24.3 h12.5V78h-12.5V24.3z"/> <path class="st0" d="M446.7,59.1V35.5h-6.5V24.3h6.5v-15H459v15h12.2v11.2H459v21.7c0,7.8,1.8,9.8,8.8,9.8c1.2,0,4.1-0.2,4.1-0.2 v11.2c0,0-2.4,0.2-6.7,0.2C451.2,78.1,446.7,72.7,446.7,59.1z"/> <path class="st0" d="M497.3,78.7l-21.3-54.4h14.2l14,38.8l14.2-38.8h13.6l-24.1,60.2c-3.7,9.4-7.2,15.3-21.3,15.3 c-2.5,0-4.8-0.1-4.8-0.1V88c0,0,1.5,0.1,2.8,0.1c7.6,0,9.8-2.3,11.8-7.8L497.3,78.7z"/> <path class="st0" d="M62.4,55.9c-5.3,7-12.2,11.4-22.1,11.4c-15.6,0-27-11.7-27-27.5c0-16.1,11.4-27.8,26.5-27.8 c10,0,16.8,4.8,21.3,11.3l8.4-8.8C63.1,5.7,53.3,0,39.7,0C17.1,0,0,15.9,0,39.8c0,23.4,17.1,39.4,40.1,39.4c13.1,0,22-4.9,28.6-12.2 L62.4,55.9z"/> </symbol>
+    <symbol id="do_nav-control_panel_icon" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M19.6875 23.4862C19.6885 23.9722 19.4965 24.4388 19.1537 24.7833C18.8109 25.1279 18.3454 25.3222 17.8594 25.3237H3.23438C2.99366 25.3232 2.75539 25.2753 2.53321 25.1827C2.31102 25.09 2.10927 24.9545 1.93949 24.7839C1.7697 24.6132 1.63522 24.4108 1.54373 24.1881C1.45223 23.9655 1.40552 23.727 1.40626 23.4862V3.25498C1.40577 3.01417 1.45271 2.77562 1.54441 2.55295C1.63611 2.33028 1.77077 2.12785 1.9407 1.95722C2.11063 1.7866 2.31251 1.65111 2.5348 1.5585C2.75709 1.46589 2.99545 1.41797 3.23626 1.41748L17.8613 1.44186C18.347 1.44384 18.812 1.63843 19.1544 1.98292C19.4968 2.32741 19.6885 2.79366 19.6875 3.27936V23.4862Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M43.5863 12.27C43.5828 12.7516 43.3883 13.212 43.0456 13.5503C42.7028 13.8885 42.2397 14.0768 41.7582 14.0738H27.1332C26.8947 14.0755 26.6582 14.0302 26.4372 13.9405C26.2162 13.8507 26.015 13.7183 25.8453 13.5508C25.6755 13.3833 25.5404 13.1839 25.4477 12.9642C25.355 12.7444 25.3065 12.5085 25.3051 12.27V3.24565C25.308 2.76461 25.5019 2.30442 25.8439 1.96621C26.186 1.62799 26.6484 1.43941 27.1294 1.4419L41.7544 1.41753C42.2365 1.41403 42.7002 1.60205 43.0437 1.94027C43.3872 2.27849 43.5823 2.73924 43.5863 3.22128V12.27Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M19.6875 41.7956C19.686 42.0347 19.6375 42.2712 19.5446 42.4915C19.4518 42.7118 19.3164 42.9117 19.1463 43.0797C18.9762 43.2477 18.7747 43.3806 18.5532 43.4707C18.3318 43.5609 18.0947 43.6065 17.8556 43.605L3.23063 43.5806C2.74908 43.5826 2.28644 43.3934 1.94436 43.0545C1.60228 42.7155 1.40873 42.2547 1.40625 41.7731V32.7563C1.40748 32.5175 1.45575 32.2813 1.54831 32.0612C1.64087 31.8412 1.7759 31.6415 1.94569 31.4736C2.11547 31.3057 2.31667 31.173 2.53779 31.0829C2.75892 30.9929 2.99562 30.9473 3.23438 30.9488H17.8594C18.3414 30.9463 18.8047 31.1352 19.1475 31.4742C19.4903 31.8131 19.6845 32.2742 19.6875 32.7563V41.7956Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M27.1349 43.605C26.894 43.6045 26.6555 43.5565 26.433 43.4638C26.2106 43.3711 26.0087 43.2354 25.8387 43.0646C25.6688 42.8937 25.5341 42.6911 25.4426 42.4682C25.351 42.2453 25.3042 42.0066 25.3049 41.7656V21.5381C25.3042 21.2973 25.3509 21.0587 25.4424 20.8359C25.5338 20.6132 25.6683 20.4106 25.8381 20.2398C26.0078 20.069 26.2095 19.9333 26.4317 19.8405C26.6539 19.7476 26.8923 19.6995 27.1331 19.6987H41.7581C41.9989 19.6995 42.2372 19.7476 42.4594 19.8405C42.6816 19.9333 42.8833 20.069 43.0531 20.2398C43.2228 20.4106 43.3573 20.6132 43.4488 20.8359C43.5402 21.0587 43.5869 21.2973 43.5862 21.5381V41.7412C43.5872 42.2271 43.3955 42.6935 43.0532 43.0383C42.7109 43.3831 42.2458 43.5781 41.7599 43.5806L27.1349 43.605Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+    <symbol id="do_nav-community_icon" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#clip0)"> <path d="M12.6562 10.5469C12.6562 9.85155 12.8624 9.17184 13.2487 8.5937C13.635 8.01556 14.1841 7.56495 14.8265 7.29886C15.4689 7.03277 16.1758 6.96315 16.8577 7.0988C17.5397 7.23445 18.1661 7.56929 18.6578 8.06095C19.1495 8.55262 19.4843 9.17905 19.6199 9.86101C19.7556 10.543 19.686 11.2499 19.4199 11.8922C19.1538 12.5346 18.7032 13.0837 18.1251 13.47C17.5469 13.8563 16.8672 14.0625 16.1719 14.0625" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M16.1719 18.2812C16.0328 18.2812 15.8969 18.3225 15.7812 18.3997C15.6656 18.477 15.5755 18.5868 15.5223 18.7153C15.4691 18.8438 15.4551 18.9852 15.4823 19.1215C15.5094 19.2579 15.5764 19.3832 15.6747 19.4816C15.773 19.5799 15.8983 19.6469 16.0347 19.674C16.1711 19.7011 16.3125 19.6872 16.4409 19.634C16.5694 19.5808 16.6792 19.4906 16.7565 19.375C16.8338 19.2594 16.875 19.1234 16.875 18.9844C16.875 18.7979 16.8009 18.6191 16.6691 18.4872C16.5372 18.3553 16.3584 18.2812 16.1719 18.2812Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M32.3438 4.21875V12.6562" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M29.5312 1.40625C30.2772 1.40625 30.9925 1.70257 31.52 2.23001C32.0474 2.75746 32.3438 3.47283 32.3438 4.21875" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M4.21875 1.40625H29.5312" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M1.40625 4.21875C1.40625 3.47283 1.70257 2.75746 2.23001 2.23001C2.75746 1.70257 3.47283 1.40625 4.21875 1.40625" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M1.40625 23.9062V4.21875" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M4.21875 26.7188C3.47283 26.7187 2.75746 26.4224 2.23001 25.895C1.70257 25.3675 1.40625 24.6522 1.40625 23.9062" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M9.84375 26.7188H4.21875" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M9.84375 35.1562V26.7188" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M15.4688 30.9375L9.84375 35.1562" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M43.5938 35.1562H37.9688V43.5938L29.5312 35.1562H21.0938V18.2812H43.5938V35.1562Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M32.3438 23.9062V29.5312" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </g> <defs> <clipPath id="clip0"> <rect width="45" height="45" fill="white"/> </clipPath> </defs> </symbol>
+    <symbol id="do_nav-search" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M15.7 13.3l-3.81-3.83A5.93 5.93 0 0 0 13 6c0-3.31-2.69-6-6-6S1 2.69 1 6s2.69 6 6 6c1.3 0 2.48-.41 3.47-1.11l3.83 3.81c.19.2.45.3.7.3.25 0 .52-.09.7-.3a.996.996 0 0 0 0-1.41v.01zM7 10.7c-2.59 0-4.7-2.11-4.7-4.7 0-2.59 2.11-4.7 4.7-4.7 2.59 0 4.7 2.11 4.7 4.7 0 2.59-2.11 4.7-4.7 4.7z"></path></symbol>
+    <symbol id="do_nav-logomark" x="0px" y="0px" viewBox="65.2 173.5 180 180" fill="currentColor"><path d="M155.2,351.7v-34.2c36.2,0,64.3-35.9,50.4-74c-5.1-14.1-16.4-25.4-30.5-30.5c-38.1-13.8-74,14.2-74,50.4l0,0H67c0-57.7,55.8-102.7,116.3-83.8c26.4,8.3,47.5,29.3,55.7,55.7C257.9,295.9,213,351.7,155.2,351.7z"/> <polygon points="155.3,317.6 121.3,317.6 121.3,283.6 121.3,283.6 155.3,283.6 155.3,283.6"/> <polygon points="121.3,343.8 95.1,343.8 95.1,343.8 95.1,317.6 121.3,317.6"/> <path d="M95.1,317.6H73.2l0,0v-21.9l0,0h21.9l0,0V317.6z"/></symbol>
+    <symbol id="do_nav-write4do" viewBox="0 0 30 30" fill="none" stroke="currentColor"> <path d="M16.3063 17.67L11.6663 18.3338L12.3288 13.6925L24.2613 1.76002C24.7887 1.23257 25.5041 0.936249 26.25 0.936249C26.6194 0.936249 26.9851 1.009 27.3263 1.15034C27.6675 1.29168 27.9776 1.49885 28.2388 1.76002C28.4999 2.02118 28.7071 2.33123 28.8484 2.67246C28.9898 3.01369 29.0625 3.37942 29.0625 3.74877C29.0625 4.11811 28.9898 4.48384 28.8484 4.82507C28.7071 5.1663 28.4999 5.47635 28.2388 5.73752L16.3063 17.67Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M22.935 3.08624L26.9125 7.06374"  stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M23.4375 17.8125V27.1875C23.4375 27.6848 23.24 28.1617 22.8883 28.5133C22.5367 28.865 22.0598 29.0625 21.5625 29.0625H2.8125C2.31522 29.0625 1.83831 28.865 1.48667 28.5133C1.13504 28.1617 0.9375 27.6848 0.9375 27.1875V8.4375C0.9375 7.94022 1.13504 7.46331 1.48667 7.11167C1.83831 6.76004 2.31522 6.5625 2.8125 6.5625H12.1875" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+    <symbol id="do_nav-meetups" viewBox="0 0 30 30" fill="none" stroke="currentColor"> <path d="M27.1901 4.6875H2.81506C1.77953 4.6875 0.940063 5.52697 0.940063 6.5625V27.1875C0.940063 28.223 1.77953 29.0625 2.81506 29.0625H27.1901C28.2256 29.0625 29.0651 28.223 29.0651 27.1875V6.5625C29.0651 5.52697 28.2256 4.6875 27.1901 4.6875Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M0.940063 12.1875H29.0651" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M8.44006 7.5V0.9375" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M21.5651 7.5V0.9375" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+    <symbol id="do_nav-hacktoberfest" viewBox="0 0 30 30" fill="none" stroke="currentColor"> <path d="M19.2063 24.9918L16.5714 22.3569V14.4854L13.986 17.0708V23.5755L12.5615 25L11.1371 23.5591V8.44175L10.7419 8.04652L8.93042 9.8662L8 8.94401L11.9358 5.00823L11.944 5.01647L12.1005 5.16468L13.9778 7.04199V13.8431L16.5632 11.2577V8.42528L15.2705 7.12433L17.3948 5L19.4286 7.03376V20.9572L20.4249 21.9535L21.6352 20.7431L22.5492 21.6571L19.2063 24.9918Z" fill="currentcolor"/> <rect x="0.75" y="0.75" width="28.5" height="28.5" rx="2.25" stroke-width="1.5" stroke="currentColor"/> </symbol>
+    <symbol id="do_nav-build" viewBox="0 0 16 16" fill="none" stroke="currentColor"> <path d="M1.5 14.5C1.23478 14.5 0.98043 14.3946 0.792893 14.2071C0.605357 14.0196 0.5 13.7652 0.5 13.5V2.57667C0.500879 2.29139 0.614596 2.01804 0.81632 1.81632C1.01804 1.6146 1.29139 1.50088 1.57667 1.5H14.4287C14.7125 1.50088 14.9845 1.61403 15.1852 1.81476C15.386 2.01548 15.4991 2.28747 15.5 2.57133V13.4233C15.4991 13.7086 15.3854 13.982 15.1837 14.1837C14.982 14.3854 14.7086 14.4991 14.4233 14.5H1.5Z" stroke-linecap="round" stroke-linejoin="round"/> <path d="M15.5 4.5H0.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M11 7.5L13 9.5L11 11.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M5 7.5L3 9.5L5 11.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M9 7.5L7 11.5" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+  </svg>
+</div>
+
+<nav class="do_nav" role="navigation" aria-label="Navigation">
+  <ul role="menubar" class="utility">
+    <li role="banner" data-flex="grow" data-show="always">
+    </li>
+    <li role="menuitem">
+      <a href="/products/">Products</a>
+    </li>
+    <li role="menuitem">
+      <a href="/pricing/">Pricing</a>
+    </li>
+    <li role="menuitem" aria-haspopup="true" tabindex="0">
+      <span class="expander">Docs</span>
+      <div class="mini" aria-expanded="false">
+        <ul role="menu">
+          <li role="menuitem">
+            <a href="/docs/">Product Docs</a>
+          </li>
+          <li role="menuitem">
+            <a href="https://developers.digitalocean.com/documentation/">API Docs</a>
+          </li>
+        </ul>
+      </div>
+    </li>
+      <li role="menuitem" aria-haspopup="true" tabindex="0">
+      <span class="expander">Log in</span>
+        <div class="mini" aria-expanded="false">
+          <header>Log in to</header>
+          <ul role="menu">
+            <li role="menuitem">
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <use xlink:href="#do_nav-community_icon"></use>
+              </svg>
+              <a id="log-in" href="/community/auth/digitalocean">Community</a>
+            </li>
+            <li role="menuitem">
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <use xlink:href="#do_nav-control_panel_icon"></use>
+              </svg>
+              <a href="https://cloud.digitalocean.com/registrations/new">Control Panel</a>
+            </li>
+          </ul>
+        </div>
+      </li>
+  </ul>
+
+  <ul role="menubar" class="primary">
+    <li role="menuitem" data-show="always">
+      <a href="https://www.digitalocean.com/">
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" shape-rendering="auto">
+          <use xlink:href="#do_nav-logomark"></use>
+        </svg>
+      </a>
+    </li>
+    <li role="menuitem" data-show="always">
+      <a role="home" title="DigitalOcean Community Home" href="/community">
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="120px" height="24px"
+             shape-rendering="auto">
+          <use xlink:href="#do_nav-community_logo"></use>
+        </svg>
+</a>    </li>
+    <li role="menuitem">
+      <a data-activatable="true" href="/community/tutorials">Tutorials</a>
+    </li>
+    <li role="menuitem">
+      <a data-activatable="true" href="/community/questions">Questions</a>
+    </li>
+    <li role="menuitem" aria-haspopup="true" class="mega_parent" tabindex="0">
+      <span class="expander">Get Involved</span>
+      <div class="mega" aria-expanded="false">
+        <div class="section column">
+          <header>Participate</header>
+          <ul role="menu">
+            <li role="menuitem">
+              <a href="https://www.digitalocean.com/write-for-donations/" class="with_image">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <use xlink:href="#do_nav-write4do"></use>
+                </svg>
+                <p>
+                  <strong>Write for DigitalOcean</strong>
+                  You get paid, we donate to tech non-profits.
+                </p>
+              </a>
+            </li>
+            <li role="menuitem">
+              <a href="https://www.meetup.com/pro/digitalocean" class="with_image">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <use xlink:href="#do_nav-meetups"></use>
+                </svg>
+                <p>
+                  <strong>DigitalOcean Meetups</strong>
+                  Find and meet other developers in your city.
+                </p>
+              </a>
+            </li>
+            <li role="menuitem">
+              <a href="https://hacktoberfest.digitalocean.com" class="with_image">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <use xlink:href="#do_nav-hacktoberfest"></use>
+                </svg>
+                <p>
+                  <strong>Hacktoberfest</strong>
+                  Contribute to Open Source
+                </p>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="section column">
+          <header>
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+              <use xlink:href="#do_nav-build"></use>
+            </svg>
+            Build with DigitalOcean
+          </header>
+          <ul role="menu" class="indent">
+            <li role="menuitem">
+              <a title="Community-built tools and integrations that use the DigitalOcean API" href="/community/tools">Community Tools and Integrations</a>
+            </li>
+            <li role="menuitem"><a href="https://www.digitalocean.com/hatch/" title="Build your startup on DigitalOcean.">Hatch Startup Program</a></li>
+            <li role="menuitem"><a href="https://marketplace.digitalocean.com/vendors/" title="List your open source One-Click Application in the DigitalOcean Marketplace">Marketplace Partner Program</a></li>
+            <li role="menuitem"><a href="https://www.digitalocean.com/droplets-for-demos/" title="DigitalOcean credits to fund research for conference and meetup presentations">Presentation Grants</a></li>
+            <li role="menuitem"><a href="https://github.com/digitalocean">DigitalOcean on GitHub</a></li>
+          </ul>
+        </div>
+      </div>
+    </li>
+    <li role="menuitem" data-show="mobile" data-flex="grow" class="right">
+      <a href="javascript:void(0);" data-js="modal_toggle">
+        <span class="icon-menu-thin"></span>
+      </a>
+    </li>
+    <li role="menuitem" aria-haspopup="true" data-flex="grow">
+      <form name="do_nav-search" method="GET" action="https://www.digitalocean.com/community/search">
+        <label for="q">
+          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" shape-rendering="auto"
+               width="14px" height="14px">
+            <use xlink:href="#do_nav-search"></use>
+          </svg>
+        </label>
+        <input type="text" name="q" id="q" title="Search" placeholder="Search DigitalOcean" autocomplete="off" spellcheck="false" class="search" />
+        </form>
+        <div class="mini search-results-dropdown" aria-expanded="false">
+            <div class="header-search-results-list"></div>
+            <div id="btn-wrap">
+              <a class="more-search-results" data-search-path="/community/search" href="/community/search">
+                View All Results
+              </a>
+            </div>
+        </div>
+        <script type='text/template' id='autocomplete-hits-template'>
+          <div class="inner-search">
+            <ul>
+              <li class="section">
+                <p>{{section}}</p>
+              </li>
+
+              {{#hits}}
+                <li>
+                  <span class='icon icon-{{css_name}}'></span>
+                  <a href='{{url}}'>{{title}}</a>
+                </li>
+              {{/hits}}
+            </ul>
+
+            {{#hasMoreResults}}
+              <a href="/community/search?q={{query}}">View All Results</a>
+            {{/hasMoreResults}}
+          </div>
+        </script>
+    </li>
+    <li role="menuitem">
+      <a class="button primary" href="/community/auth/digitalocean?display=sessionless+register">Sign Up</a>
+    </li>
+  </ul>
+
+  <div class="mobile_nav_bg" data-js="modal_toggle"></div>
+  <div class="mobile_nav">
+    <a data-dismiss='modal' aria-label="close" href="javascript:void(0);" data-js="modal_toggle"><span class="icon-close"></span></a>
+    <div class="mobile_nav_content">
+      <header>Community</header>
+      <ul role="menu">
+        <li role="menuitem">
+          <a data-activatable="true" href="/community/tutorials">Tutorials</a>
+        </li>
+        <li role="menuitem">
+          <a data-activatable="true" href="/community/questions">Questions</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.meetup.com/pro/digitalocean">Meetups</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/write-for-donations/">Write for us</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://hacktoberfest.digitalocean.com">Hacktoberfest</a>
+        </li>
+        <li role="menuitem">
+          <a href="/community/tools">Community Projects</a>
+        </li>
+      </ul>
+      <header>Products</header>
+      <ul role="menu">
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/">Homepage</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/pricing">Pricing</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/products">Product Overview</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://marketplace.digitalocean.com/">Marketplace</a>
+        </li>
+      </ul>
+      <header>Customers</header>
+      <ul role="menu">
+        <li role="menuitem">
+          <a href="https://cloud.digitalocean.com/login">Control panel</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/docs/">Documentation</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/company/contact/#support">Contact Support</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/company/contact/sales/">Contact Sales</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<header>
+  <div class="legacy-header ">
+    <div class="flash-container">
+      
+    </div>
+
+    <div class="wrapper">
+      
+    </div>
+  </div>
+</header>
+
+
+
+      
+
+      <div class='wrapper layout-wrapper'>
+
+        
+
+
+
+
+
+
+
+
+
+
+<div class="section-content section-content-growable content Tutorial-content content-has-mobile-image">
+  <div class='postable-info-bar-container'>
+  <div class='postable-info-bar'>
+    <div class="author-byline">
+      
+    </div>
+
+    <div class='right-section'>
+      
+
+
+        <div class='section-item table-of-contents-triggers'><div class="toc-trigger-mobile" data-toggle="modal" data-target="#contents-modal">
+  <a href="javascript:void(0);">
+    <span class="icon icon-contents"></span>
+    <span class="title">Contents</span>
+    <span class="icon icon-arrow-down"></span>
+  </a>
+</div>
+
+</div>
+
+    </div>
+  </div>
+</div>
+
+
+    <img alt="How To Deploy a PHP Application with Kubernetes on Ubuntu 16.04" title="How To Deploy a PHP Application with Kubernetes on Ubuntu 16.04" class="tutorial-image-mobile" src="https://community-cdn-digitalocean-com.global.ssl.fastly.net/assets/tutorials/images/large/kubernetes_tutorials-big.png?1551468138" />
+
+  <div class="container tutorial-header">
+    
+
+      <div class="featured-items-right-bar">
+        <h3>Related</h3>
+          <a href="https://marketplace.digitalocean.com/apps/kubernetes-monitoring-stack-beta?utm_source=community_related">
+            <div class="featured-item-highlight">
+                  <span class="featured-item-highlight-image"><img width="45" height="45" alt="Marketplace" src="https://digitalocean.cdn.prismic.io/digitalocean%2F559b194a-ce06-43e4-9fd2-4c4738909353_monitoring-logo.svg" /></span>
+                Kubernetes Monitoring Stack (BETA)
+                <span class="featured-item-category">
+                  
+                  Marketplace
+                </span>
+              </div>
+</a>          <a href="https://www.digitalocean.com/products/kubernetes/">
+            <div class="featured-item-regular">
+                Now Available: DigitalOcean Kubernetes
+                <span class="featured-item-category">
+                  <img width="14" height="14" src="https://digitalocean.cdn.prismic.io/digitalocean%2Ff7af7f25-db78-40d1-ad9f-7b1c23366b02_kubernetes.svg" alt="Digitalocean%2ff7af7f25 db78 40d1 ad9f 7b1c23366b02 kubernetes" />
+                  Product
+                </span>
+              </div>
+</a>          <a href="/community/tutorials/how-to-install-wordpress-managed-database-ubuntu-18-04">
+            <div class="featured-item-regular">
+                  How To Install WordPress with a Managed Database on Ubuntu 18.04
+                  <span class="featured-item-category">
+                    <img width="14" height="14" alt="Tutorial" src="/assets/community/tutorials/featured-item-tutorial-icon-2150ccbef202144a53cea261312af267.png" />
+                    Tutorial
+                  </span>
+                </div>
+</a>          <a href="/community/tutorials/how-to-install-nagios-4-and-monitor-your-servers-on-ubuntu-18-04">
+            <div class="featured-item-regular">
+                  How To Install Nagios 4 and Monitor Your Servers on Ubuntu 18.04
+                  <span class="featured-item-category">
+                    <img width="14" height="14" alt="Tutorial" src="/assets/community/tutorials/featured-item-tutorial-icon-2150ccbef202144a53cea261312af267.png" />
+                    Tutorial
+                  </span>
+                </div>
+</a>      </div>
+
+
+      <img alt="How To Deploy a PHP Application with Kubernetes on Ubuntu 16.04" title="How To Deploy a PHP Application with Kubernetes on Ubuntu 16.04" class="tutorial-image" src="https://community-cdn-digitalocean-com.global.ssl.fastly.net/assets/tutorials/images/large/kubernetes_tutorials-big.png?1551468138" />
+
+    <h1 class="content-title Tutorial-header">How To Deploy a PHP Application with Kubernetes on Ubuntu 16.04</h1>
+
+    <span class="meta-section timestamp"><span class="tutorial-date-text">Posted</span><span class="tutorial-date">January 18, 2019</span></span>
+
+    <span class="meta-section pageviews"><span class="icon icon-eye v-mid"></span><span class="views-count v-mid">81.7k</span><span class="sr-only"> views</span></span>
+
+    <span class="meta-section tags">
+      <a class="tag" href="/community/tags/kubernetes?type=tutorials">Kubernetes</a> <a class="tag" href="/community/tags/php?type=tutorials">PHP</a> <a class="tag" href="/community/tags/nginx?type=tutorials">Nginx</a> <a class="tag" href="/community/tags/block-storage?type=tutorials">Block Storage</a>
+      <a class="tag" href="/community/tags/ubuntu-16-04?type=tutorials">Ubuntu 16.04</a>
+    </span>
+  </div>
+
+  <div class="tutorial-authors">
+    <div class="component-collaborators-container">
+  <ul class="component-collaborators-content">
+        <li class="collaborator-byline-avatar">
+          <a href="/community/users/amitabhdhiwal">
+            <img alt="amitabhdhiwal" class="avatar avatar-large" src="https://secure.gravatar.com/avatar/9bb72cc2d7acccbdc530b526eec29c49?secure=true&d=identicon" width="80" height="80" />
+</a>        </li>
+
+    <li class="collaborators-byline-data">
+        <p class="names">By <a href="/community/users/amitabhdhiwal">Amitabh Dhiwal</a></p>
+
+      <p>
+          <a class="advice" href="https://www.digitalocean.com/community/write-for-digitalocean">Become an author</a>
+      </p>
+    </li>
+  </ul>
+</div>
+
+  </div>
+
+    <div class="container versioned-tutorial-group-navigation" data-versioned-tutorial-group-navigation>
+
+  <div class="versioned-tutorial-group-navigation__header" data-versioned-tutorial-group-navigation-header>
+    <h5 class="versioned-tutorial-group-navigation__heading">
+        Not using <strong>Ubuntu 16.04</strong>? Choose a different version:
+    </h5>
+    <span class="versioned-tutorial-group-navigation__arrow">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 105.565 60.872"><path d="M2.526 46.087c-3.37 3.382-3.37 8.868 0 12.246 3.37 3.386 8.832 3.386 12.202 0l43.384-43.547c3.37-3.382 3.37-8.87 0-12.246-3.37-3.386-8.833-3.386-12.202 0L2.526 46.087z" fill="#fff"></path><path d="M90.835 58.333c3.37 3.386 8.833 3.386 12.202 0 3.37-3.378 3.37-8.864 0-12.246L59.654 2.54c-3.37-3.386-8.832-3.386-12.202 0-3.37 3.377-3.37 8.864 0 12.246l43.383 43.547z" fill="#fff"></path></svg>
+
+    </span>
+  </div>
+  
+  <div class="versioned-tutorial-group-navigation__body" data-versioned-tutorial-group-navigation-body>
+    <ul class="versioned-tutorial-group-navigation__list">
+      <li class="versioned-tutorial-group-navigation__list-item">
+  <a class="versioned-tutorial-group-navigation__link" title="Ubuntu 18.04" href="/community/tutorials/how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-18-04">
+    <span class="text">Ubuntu 18.04</span>
+    <span class="icon-arrow-down versioned-tutorial-group-navigation__link-arrow"></span>
+</a></li>
+
+      <li class="versioned-tutorial-group-navigation__list-item">
+  <a data-tutorial-request data-distribution-version-id="12" data-versioned-tutorial-group-id="105" href="javascript:;" class="versioned-tutorial-group-navigation__link versioned-tutorial-group-navigation__link--unavailable" title="Automated: Docker">
+    <span class="text">Automated: Docker</span>
+    <small class="versioned-tutorial-group-navigation__request" data-tutorial-request-status-indicator>request</small>
+  </a>
+</li>
+<li class="versioned-tutorial-group-navigation__list-item">
+  <a data-tutorial-request data-distribution-version-id="14" data-versioned-tutorial-group-id="105" href="javascript:;" class="versioned-tutorial-group-navigation__link versioned-tutorial-group-navigation__link--unavailable" title="Automated: Bash">
+    <span class="text">Automated: Bash</span>
+    <small class="versioned-tutorial-group-navigation__request" data-tutorial-request-status-indicator>request</small>
+  </a>
+</li>
+<li class="versioned-tutorial-group-navigation__list-item">
+  <a data-tutorial-request data-distribution-version-id="13" data-versioned-tutorial-group-id="105" href="javascript:;" class="versioned-tutorial-group-navigation__link versioned-tutorial-group-navigation__link--unavailable" title="Automated: Ansible">
+    <span class="text">Automated: Ansible</span>
+    <small class="versioned-tutorial-group-navigation__request" data-tutorial-request-status-indicator>request</small>
+  </a>
+</li>
+<li class="versioned-tutorial-group-navigation__list-item">
+  <a data-tutorial-request data-distribution-version-id="5" data-versioned-tutorial-group-id="105" href="javascript:;" class="versioned-tutorial-group-navigation__link versioned-tutorial-group-navigation__link--unavailable" title="CentOS 7">
+    <span class="text">CentOS 7</span>
+    <small class="versioned-tutorial-group-navigation__request" data-tutorial-request-status-indicator>request</small>
+  </a>
+</li>
+<li class="versioned-tutorial-group-navigation__list-item">
+  <a data-tutorial-request data-distribution-version-id="6" data-versioned-tutorial-group-id="105" href="javascript:;" class="versioned-tutorial-group-navigation__link versioned-tutorial-group-navigation__link--unavailable" title="Debian 9">
+    <span class="text">Debian 9</span>
+    <small class="versioned-tutorial-group-navigation__request" data-tutorial-request-status-indicator>request</small>
+  </a>
+</li>
+<li class="versioned-tutorial-group-navigation__list-item">
+  <a data-tutorial-request data-distribution-version-id="7" data-versioned-tutorial-group-id="105" href="javascript:;" class="versioned-tutorial-group-navigation__link versioned-tutorial-group-navigation__link--unavailable" title="Debian 8">
+    <span class="text">Debian 8</span>
+    <small class="versioned-tutorial-group-navigation__request" data-tutorial-request-status-indicator>request</small>
+  </a>
+</li>
+<li class="versioned-tutorial-group-navigation__list-item">
+  <a data-tutorial-request data-distribution-version-id="18" data-versioned-tutorial-group-id="105" href="javascript:;" class="versioned-tutorial-group-navigation__link versioned-tutorial-group-navigation__link--unavailable" title="Debian 10">
+    <span class="text">Debian 10</span>
+    <small class="versioned-tutorial-group-navigation__request" data-tutorial-request-status-indicator>request</small>
+  </a>
+</li>
+<li class="versioned-tutorial-group-navigation__list-item">
+  <a data-tutorial-request data-distribution-version-id="2" data-versioned-tutorial-group-id="105" href="javascript:;" class="versioned-tutorial-group-navigation__link versioned-tutorial-group-navigation__link--unavailable" title="Ubuntu 14.04">
+    <span class="text">Ubuntu 14.04</span>
+    <small class="versioned-tutorial-group-navigation__request" data-tutorial-request-status-indicator>request</small>
+  </a>
+</li>
+
+
+      <li class="versioned-tutorial-group-navigation__list-item">
+        <a class="versioned-tutorial-group-navigation__link" title="How To Deploy a PHP Application with Kubernetes " href="/community/tutorial_collections/105">
+          <span class="text">View All</span>
+          <span class="icon-arrow-down versioned-tutorial-group-navigation__link-arrow"></span>
+</a>      </li>
+
+    </ul>
+  </div>
+</div>
+
+
+
+    <div class="content-body tutorial-content" data-growable-markdown>
+      
+      <p><em>The author selected the <a href="https://www.brightfunds.org/funds/open-internet-free-speech">Open Internet/Free Speech</a> to receive a donation as part of the <a href="https://do.co/w4do-cta">Write for DOnations</a> program.</em></p>
+
+<h3 id="introduction">Introduction</h3>
+
+<p>Kubernetes is an open source container orchestration system. It allows you to create, update, and scale containers without worrying about downtime. </p>
+
+<p>To run a PHP application, Nginx acts as a proxy to <a href="http://php.net/manual/en/install.fpm.php">PHP-FPM</a>. Containerizing this setup in a single container can be a cumbersome process, but Kubernetes will help manage both services in separate containers. Using Kubernetes will allow you to keep your containers reusable and swappable, and you will not have to rebuild your container image every time there&rsquo;s a new version of Nginx or PHP.</p>
+
+<p>In this tutorial, you will deploy a PHP 7 application on a Kubernetes cluster with Nginx and PHP-FPM running in separate containers. You will also learn how to keep your configuration files and application code outside the container image using <a href="https://www.digitalocean.com/products/block-storage/">DigitalOcean&rsquo;s Block Storage</a> system. This approach will allow you to reuse the Nginx image for any application that needs a web/proxy server by passing a configuration volume, rather than rebuilding the image. </p>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<ul>
+<li>A basic understanding of Kubernetes objects. Check out our <a href="https://www.digitalocean.com/community/tutorials/an-introduction-to-kubernetes#kubernetes-objects-and-workloads">Introduction to Kubernetes</a> article for more information.</li>
+<li>A Kubernetes cluster running on Ubuntu 16.04. You can set this up by following the <a href="https://www.digitalocean.com/community/tutorials/how-to-create-a-kubernetes-1-10-cluster-using-kubeadm-on-ubuntu-16-04">How To Create a Kubernetes 1.10 Cluster Using Kubeadm on Ubuntu 16.04</a> tutorial.</li>
+<li>A DigitalOcean account and an API access token with read and write permissions to create our storage volume. If you don’t have your API access token, you can <a href="https://www.digitalocean.com/docs/api/create-personal-access-token/">create it from here</a>.</li>
+<li>Your application code hosted on a publicly accessible URL, such as <a href="https://github.com">Github</a>.</li>
+</ul>
+
+<h2 id="step-1-—-creating-the-php-fpm-and-nginx-services">Step 1 — Creating the PHP-FPM and Nginx Services</h2>
+
+<p>In this step, you will create the PHP-FPM and Nginx services. A service allows access to a set of pods from within the cluster. Services within a cluster can communicate directly through their names, without the need for IP addresses. The PHP-FPM service will allow access to the PHP-FPM pods, while the Nginx service will allow access to the Nginx pods. </p>
+
+<p>Since Nginx pods will proxy the PHP-FPM pods, you will need to tell the service how to find them. Instead of using IP addresses, you will take advantage of Kubernetes&rsquo; automatic service discovery to use human-readable names to route requests to the appropriate service.</p>
+
+<p>To create the service, you will create an object definition file. Every Kubernetes object definition is a YAML file that contains at least the following items:</p>
+
+<ul>
+<li><code>apiVersion</code>: The version of the Kubernetes API that the definition belongs to.</li>
+<li><code>kind</code>: The Kubernetes object this file represents. For example, a <code>pod</code> or <code>service</code>.</li>
+<li><code>metadata</code>: This contains the <code>name</code> of the object along with any <code>labels</code> that you may wish to apply to it.</li>
+<li><code>spec</code>: This contains a specific configuration depending on the kind of object you are creating, such as the container image or the ports on which the container will be accessible from.</li>
+</ul>
+
+<p>First you will create a directory to hold your Kubernetes object definitions. </p>
+
+<p>SSH to your <strong>master node</strong> and create the <code>definitions</code> directory that will hold your Kubernetes object definitions.</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">mkdir definitions
+</li></ul></code></pre>
+<p>Navigate to the newly created <code>definitions</code> directory:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">cd definitions
+</li></ul></code></pre>
+<p>Make your PHP-FPM service by creating a <code>php_service.yaml</code> file:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">nano php_service.yaml
+</li></ul></code></pre>
+<p>Set <code>kind</code> as <code>Service</code> to specify that this object is a service:</p>
+<div class="code-label " title="php_service.yaml">php_service.yaml</div><pre class="code-pre "><code langs="">&hellip;
+apiVersion: v1
+kind: Service
+</code></pre>
+<p>Name the service <code>php</code> since it will provide access to PHP-FPM:</p>
+<div class="code-label " title="php_service.yaml">php_service.yaml</div><pre class="code-pre "><code langs="">&hellip;
+metadata:
+  name: php
+</code></pre>
+<p>You will logically group different objects with labels. In this tutorial, you will use labels to group the objects into &ldquo;tiers&rdquo;, such as frontend or backend. The PHP pods will run behind this service, so you will label it as <code>tier: backend</code>. </p>
+<div class="code-label " title="php_service.yaml">php_service.yaml</div><pre class="code-pre "><code langs="">&hellip;
+  labels:
+    tier: backend
+</code></pre>
+<p>A service determines which pods to access by using <code>selector</code> labels. A pod that matches these labels will be serviced, independent of whether the pod was created before or after the service. You will add labels for your pods later in the tutorial. </p>
+
+<p>Use the <code>tier: backend</code> label to assign the pod into the backend tier. You will also add the <code>app: php</code> label to specify that this pod runs PHP. Add these two labels after the <code>metadata</code> section. </p>
+<div class="code-label " title="php_service.yaml">php_service.yaml</div><pre class="code-pre "><code langs="">&hellip;
+spec:
+  selector:
+    app: php
+    tier: backend
+</code></pre>
+<p>Next, specify the port used to access this service. You will use port <code>9000</code> in this tutorial. Add it to the <code>php_service.yaml</code> file under <code>spec</code>: </p>
+<div class="code-label " title="php_service.yaml">php_service.yaml</div><pre class="code-pre "><code langs="">&hellip;
+  ports:
+    - protocol: TCP
+      port: 9000
+</code></pre>
+<p>Your completed <code>php_service.yaml</code> file will look like this:</p>
+<div class="code-label " title="php_service.yaml">php_service.yaml</div><pre class="code-pre "><code langs="">apiVersion: v1
+kind: Service
+metadata:
+  name: php
+  labels:
+    tier: backend
+spec:
+  selector:
+    app: php
+    tier: backend
+  ports:
+  - protocol: TCP
+    port: 9000
+</code></pre>
+<p>Hit <code>CTRL + o</code> to save the file, and then <code>CTRL + x</code> to exit <code>nano</code>.</p>
+
+<p>Now that you&rsquo;ve created the object definition for your service, to run the service you will use the <code>kubectl apply</code> command along with the <code>-f</code> argument and specify your <code>php_service.yaml</code> file. </p>
+
+<p>Create your service:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl apply -f php_service.yaml
+</li></ul></code></pre>
+<p>This output confirms the service creation:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>service/php created
+</code></pre>
+<p>Verify that your service is running:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl get svc
+</li></ul></code></pre>
+<p>You will see your PHP-FPM service running:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+kubernetes   ClusterIP   10.96.0.1       &lt;none&gt;        443/TCP    10m
+php          ClusterIP   10.100.59.238   &lt;none&gt;        9000/TCP   5m
+</code></pre>
+<p>There are various <a href="https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types">service types</a> that Kubernetes supports. Your <code>php</code> service uses the default service type, <code>ClusterIP</code>. This service type assigns an internal IP and makes the service reachable only from within the cluster.</p>
+
+<p>Now that the PHP-FPM service is ready, you will create the Nginx service. Create and open a new file called <code>nginx_service.yaml</code> with the editor:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">nano nginx_service.yaml
+</li></ul></code></pre>
+<p>This service will target Nginx pods, so you will name it <code>nginx</code>. You will also add a <code>tier: backend</code> label as it belongs in the backend tier:</p>
+<div class="code-label " title="nginx_service.yaml">nginx_service.yaml</div><pre class="code-pre "><code langs="">apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  labels:
+    tier: backend
+</code></pre>
+<p>Similar to the <code>php</code> service, target the pods with the selector labels <code>app: nginx</code> and <code>tier: backend</code>. Make this service accessible on port 80, the default HTTP port.</p>
+<div class="code-label " title="nginx_service.yaml">nginx_service.yaml</div><pre class="code-pre "><code langs="">&hellip;
+spec:
+  selector:
+    app: nginx
+    tier: backend
+  ports:
+  - protocol: TCP
+    port: 80
+</code></pre>
+<p>The Nginx service will be publicly accessible to the internet from your Droplet&rsquo;s public IP address. <code><span class="highlight">your_public_ip</span></code> can be found from your <a href="https://cloud.digitalocean.com">DigitalOcean Cloud Panel</a>. Under <code>spec.externalIPs</code>, add:</p>
+<div class="code-label " title="nginx_service.yaml">nginx_service.yaml</div><pre class="code-pre "><code langs="">&hellip;
+spec:
+  externalIPs:
+  - <span class="highlight">your_public_ip</span>
+</code></pre>
+<p>Your <code>nginx_service.yaml</code> file will look like this:</p>
+<div class="code-label " title="nginx_service.yaml">nginx_service.yaml</div><pre class="code-pre "><code langs="">apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  labels:
+    tier: backend
+spec:
+  selector:
+    app: nginx
+    tier: backend
+  ports:
+  - protocol: TCP
+    port: 80
+  externalIPs:
+  - <span class="highlight">your_public_ip</span>    
+</code></pre>
+<p>Save and close the file. Create the Nginx service:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl apply -f nginx_service.yaml
+</li></ul></code></pre>
+<p>You will see the following output when the service is running:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>service/nginx created
+</code></pre>
+<p>You can view all running services by executing:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl get svc
+</li></ul></code></pre>
+<p>You will see both the PHP-FPM and Nginx services listed in the output:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+kubernetes   ClusterIP   10.96.0.1       &lt;none&gt;        443/TCP    13m
+nginx        ClusterIP   10.102.160.47   <span class="highlight">your_public_ip</span> 80/TCP     50s
+php          ClusterIP   10.100.59.238   &lt;none&gt;        9000/TCP   8m
+</code></pre>
+<p>Please note, if you want to delete a service you can run:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl delete svc/<span class="highlight">service_name</span>
+</li></ul></code></pre>
+<p>Now that you&rsquo;ve created your PHP-FPM and Nginx services, you will need to specify where to store your application code and configuration files.</p>
+
+<h2 id="step-2-—-installing-the-digitalocean-storage-plug-in">Step 2 — Installing the DigitalOcean Storage Plug-In</h2>
+
+<p>Kubernetes provides different storage plug-ins that can create the storage space for your environment. In this step, you will install the <a href="https://github.com/digitalocean/csi-digitalocean">DigitalOcean storage plug-in</a> to create <a href="https://www.digitalocean.com/products/storage/">block storage</a> on DigitalOcean. Once the installation is complete, it will add a storage class named <code>do-block-storage</code> that you will use to create your block storage.</p>
+
+<p>You will first configure a Kubernetes Secret object to store your DigitalOcean API token. Secret objects are used to share sensitive information, like SSH keys and passwords, with other Kubernetes objects within the same namespace. Namespaces provide a way to logically separate your Kubernetes objects. </p>
+
+<p>Open a file named <code>secret.yaml</code> with the editor:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">nano secret.yaml
+</li></ul></code></pre>
+<p>You will name your Secret object <code>digitalocean</code> and add it to the <code>kube-system</code> <code>namespace</code>. The <code>kube-system</code> namespace is the default namespace for Kubernetes’ internal services and is also used by the DigitalOcean storage plug-in to launch various components.</p>
+<div class="code-label " title="secret.yaml">secret.yaml</div><pre class="code-pre "><code langs="">apiVersion: v1
+kind: Secret
+metadata:
+  name: digitalocean
+  namespace: kube-system
+</code></pre>
+<p>Instead of a <code>spec</code> key, a Secret uses a <code>data</code> or <code>stringData</code> key to hold the required information. The <code>data</code> parameter holds base64 encoded data that is automatically decoded when retrieved. The <code>stringData</code> parameter holds non-encoded data that is automatically encoded during creation or updates, and does not output the data when retrieving Secrets. You will use <code>stringData</code> in this tutorial for convenience.</p>
+
+<p>Add the <code>access-token</code> as <code>stringData</code>:</p>
+<div class="code-label " title="secret.yaml">secret.yaml</div><pre class="code-pre "><code langs="">&hellip;
+stringData:
+  access-token: <span class="highlight">your-api-token</span>
+</code></pre>
+<p>Save and exit the file. </p>
+
+<p>Your <code>secret.yaml</code> file will look like this:</p>
+<div class="code-label " title="secret.yaml">secret.yaml</div><pre class="code-pre "><code langs="">apiVersion: v1
+kind: Secret
+metadata:
+  name: digitalocean
+  namespace: kube-system
+stringData:
+  access-token: <span class="highlight">your-api-token</span>
+</code></pre>
+<p>Create the secret:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl apply -f secret.yaml
+</li></ul></code></pre>
+<p>You will see this output upon Secret creation:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>secret/digitalocean created
+</code></pre>
+<p>You can view the secret with the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl -n kube-system get secret digitalocean
+</li></ul></code></pre>
+<p>The output will look similar to this:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>NAME           TYPE      DATA      AGE
+digitalocean   Opaque    1         41s
+</code></pre>
+<p>The <code>Opaque</code> type means that this Secret is read-only, which is standard for <code>stringData</code> Secrets. You can read more about it on the <a href="https://github.com/kubernetes/community/blob/master/contributors/design-proposals/auth/secrets.md">Secret design spec</a>. The <code>DATA</code> field shows the number of items stored in this Secret. In this case, it shows <code>1</code> because you have a single key stored.</p>
+
+<p>Now that your Secret is in place, install the <a href="https://github.com/digitalocean/csi-digitalocean">DigitalOcean block storage plug-in</a>:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl apply -f https://raw.githubusercontent.com/digitalocean/csi-digitalocean/master/deploy/kubernetes/releases/csi-digitalocean-v0.3.0.yaml
+</li></ul></code></pre>
+<p>You will see output similar to the following:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>storageclass.storage.k8s.io/do-block-storage created
+serviceaccount/csi-attacher created
+clusterrole.rbac.authorization.k8s.io/external-attacher-runner created
+clusterrolebinding.rbac.authorization.k8s.io/csi-attacher-role created
+service/csi-attacher-doplug-in created
+statefulset.apps/csi-attacher-doplug-in created
+serviceaccount/csi-provisioner created
+clusterrole.rbac.authorization.k8s.io/external-provisioner-runner created
+clusterrolebinding.rbac.authorization.k8s.io/csi-provisioner-role created
+service/csi-provisioner-doplug-in created
+statefulset.apps/csi-provisioner-doplug-in created
+serviceaccount/csi-doplug-in created
+clusterrole.rbac.authorization.k8s.io/csi-doplug-in created
+clusterrolebinding.rbac.authorization.k8s.io/csi-doplug-in created
+daemonset.apps/csi-doplug-in created
+</code></pre>
+<p>Now that you have installed the DigitalOcean storage plug-in, you can create block storage to hold your application code and configuration files. </p>
+
+<h2 id="step-3-—-creating-the-persistent-volume">Step 3 — Creating the Persistent Volume</h2>
+
+<p>With your Secret in place and the block storage plug-in installed, you are now ready to create your <em>Persistent Volume</em>. A Persistent Volume, or PV, is block storage of a specified size that lives independently of a pod’s life cycle. Using a Persistent Volume will allow you to manage or update your pods without worrying about losing your application code. A Persistent Volume is accessed by using a <code>PersistentVolumeClaim</code>, or PVC, which mounts the PV at the required path.  </p>
+
+<p>Open a file named <code>code_volume.yaml</code> with your editor:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">nano code_volume.yaml
+</li></ul></code></pre>
+<p>Name the PVC <code>code</code> by adding the following parameters and values to your file:</p>
+<div class="code-label " title="code_volume.yaml">code_volume.yaml</div><pre class="code-pre "><code langs="">apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: code
+</code></pre>
+<p>The <code>spec</code> for a PVC contains the following items:</p>
+
+<ul>
+<li><code>accessModes</code> which vary by the use case. These are:
+
+<ul>
+<li><code>ReadWriteOnce</code> – mounts the volume as read-write by a single node</li>
+<li><code>ReadOnlyMany</code> – mounts the volume as read-only by many nodes</li>
+<li><code>ReadWriteMany</code> – mounts the volume as read-write by many nodes</li>
+</ul></li>
+<li><code>resources</code>  – the storage space that you require</li>
+</ul>
+
+<p>DigitalOcean block storage is only mounted to a single node, so you will set the <code>accessModes</code> to <code>ReadWriteOnce</code>. This tutorial will guide you through adding a small amount of application code, so 1GB will be plenty in this use case. If you plan on storing a larger amount of code or data on the volume, you can modify the <code>storage</code> parameter to fit your requirements. You can increase the amount of storage after volume creation, but shrinking the disk is not supported.</p>
+<div class="code-label " title="code_volume.yaml">code_volume.yaml</div><pre class="code-pre "><code langs="">&hellip;
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: <span class="highlight">1Gi</span>
+</code></pre>
+<p>Next, specify the storage class that Kubernetes will use to provision the volumes. You will use the <code>do-block-storage</code> class created by the DigitalOcean block storage plug-in.</p>
+<div class="code-label " title="code_volume.yaml">code_volume.yaml</div><pre class="code-pre "><code langs="">&hellip;
+  storageClassName: do-block-storage
+</code></pre>
+<p>Your <code>code_volume.yaml</code> file will look like this:</p>
+<div class="code-label " title="code_volume.yaml">code_volume.yaml</div><pre class="code-pre "><code langs="">apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: code
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: <span class="highlight">1Gi</span>
+  storageClassName: do-block-storage
+</code></pre>
+<p>Save and exit the file.</p>
+
+<p>Create the <code>code</code> PersistentVolumeClaim using <code>kubectl</code>:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl apply -f code_volume.yaml
+</li></ul></code></pre>
+<p>The following output tells you that the object was successfully created, and you are ready to mount your 1GB PVC as a volume.</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>persistentvolumeclaim/code created
+</code></pre>
+<p>To view available Persistent Volumes (PV):</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl get pv
+</li></ul></code></pre>
+<p>You will see your PV listed:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS    CLAIM          STORAGECLASS       REASON    AGE
+pvc-ca4df10f-ab8c-11e8-b89d-12331aa95b13   1Gi        RWO            Delete           Bound     default/code   do-block-storage             2m
+</code></pre>
+<p>The fields above are an overview of your configuration file, except for <code>Reclaim Policy</code> and <code>Status</code>. The <code>Reclaim Policy</code> defines what is done with the PV after the PVC accessing it is deleted. <code>Delete</code> removes the PV from Kubernetes as well as the DigitalOcean infrastructure. You can learn more about the <code>Reclaim Policy</code> and <code>Status</code> from the <a href="https://kubernetes.io/docs/concepts/storage/persistent-volumes/">Kubernetes PV documentation</a>.</p>
+
+<p>You&rsquo;ve successfully created a Persistent Volume using the DigitalOcean block storage plug-in. Now that your Persistent Volume is ready, you will create your pods using a Deployment. </p>
+
+<h2 id="step-4-—-creating-a-php-fpm-deployment">Step 4 — Creating a PHP-FPM Deployment</h2>
+
+<p>In this step, you will learn how to use a Deployment to create your PHP-FPM pod. Deployments provide a uniform way to create, update, and manage pods by using <a href="https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/">ReplicaSets</a>. If an update does not work as expected, a Deployment will automatically rollback its pods to a previous image. </p>
+
+<p>The Deployment <code>spec.selector</code> key will list the labels of the pods it will manage. It will also use the <code>template</code> key to create the required pods.</p>
+
+<p>This step will also introduce the use of Init Containers. <em>Init Containers</em> run one or more commands before the regular containers specified under the pod&rsquo;s <code>template</code> key. In this tutorial, your Init Container will fetch a sample <code>index.php</code> file from <a href="https://gist.github.com">GitHub Gist</a> using <code>wget</code>. These are the contents of the sample file:</p>
+<div class="code-label " title="index.php">index.php</div><pre class="code-pre "><code langs="">&lt;?php
+echo phpinfo(); 
+</code></pre>
+<p>To create your Deployment, open a new file called <code>php_deployment.yaml</code> with your editor:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">nano php_deployment.yaml
+</li></ul></code></pre>
+<p>This Deployment will manage your PHP-FPM pods, so you will name the Deployment object <code>php</code>. The pods belong to the backend tier, so you will group the Deployment into this group by using the <code>tier: backend</code> label: </p>
+<div class="code-label " title="php_deployment.yaml">php_deployment.yaml</div><pre class="code-pre "><code langs="">apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php
+  labels:
+    tier: backend
+</code></pre>
+<p>For the Deployment <code>spec</code>, you will specify how many copies of this pod to create by using the <code>replicas</code> parameter. The number of <code>replicas</code> will vary depending on your needs and available resources. You will create one replica in this tutorial:</p>
+<div class="code-label " title="php_deployment.yaml">php_deployment.yaml</div><pre class="code-pre "><code langs="">&hellip;
+spec:
+  replicas: 1
+</code></pre>
+<p>This Deployment will manage pods that match the <code>app: php</code> and <code>tier: backend</code> labels. Under <code>selector</code> key add:</p>
+<div class="code-label " title="php_deployment.yaml">php_deployment.yaml</div><pre class="code-pre "><code langs="">&hellip;
+  selector:
+    matchLabels:
+      app: php
+      tier: backend
+</code></pre>
+<p>Next, the Deployment <code>spec</code> requires the <code>template</code> for your pod&rsquo;s object definition. This template will define specifications to create the pod from. First, you will add the labels that were specified for the <code>php</code> service <code>selectors</code> and the Deployment’s <code>matchLabels</code>. Add <code>app: php</code> and <code>tier: backend</code> under <code>template.metadata.labels</code>:</p>
+<div class="code-label " title="php_deployment.yaml">php_deployment.yaml</div><pre class="code-pre "><code langs="">&hellip;
+  template:
+    metadata:
+      labels:
+        app: php
+        tier: backend
+</code></pre>
+<p>A pod can have multiple containers and volumes, but each will need a name. You can selectively mount volumes to a container by specifying a mount path for each volume.</p>
+
+<p>First, specify the volumes that your containers will access. You created a PVC named <code>code</code> to hold your application code, so name this volume <code>code</code> as well. Under <code>spec.template.spec.volumes</code>, add the following:</p>
+<div class="code-label " title="php_deployment.yaml">php_deployment.yaml</div><pre class="code-pre "><code langs="">&hellip;
+    spec:
+      volumes:
+      - name: code
+        persistentVolumeClaim:
+          claimName: code
+</code></pre>
+<p>Next, specify the container you want to run in this pod. You can find various images on <a href="https://hub.docker.com/explore/">the Docker store</a>, but in this tutorial you will use the <code>php:7-fpm</code> image. </p>
+
+<p>Under <code>spec.template.spec.containers</code>, add the following: </p>
+<div class="code-label " title="php_deployment.yaml">php_deployment.yaml</div><pre class="code-pre "><code langs="">&hellip;
+      containers:
+      - name: php
+        image: php:7-fpm
+</code></pre>
+<p>Next, you will mount the volumes that the container requires access to. This container will run your PHP code, so it will need access to the <code>code</code> volume. You will also use <code>mountPath</code> to specify <code>/code</code> as the mount point.</p>
+
+<p>Under <code>spec.template.spec.containers.volumeMounts</code>, add:</p>
+<div class="code-label " title="php_deployment.yaml">php_deployment.yaml</div><pre class="code-pre "><code langs="">&hellip;
+        volumeMounts:
+        - name: code
+          mountPath: /code
+</code></pre>
+<p>Now that you have mounted your volume, you need to get your application code on the volume. You may have previously used FTP/SFTP or cloned the code over an SSH connection to accomplish this, but this step will show you how to copy the code using an Init Container. </p>
+
+<p>Depending on the complexity of your setup process, you can either use a single <code>initContainer</code> to run a script that builds your application, or you can use one <code>initContainer</code> per command. Make sure that the volumes are mounted to the <code>initContainer</code>.</p>
+
+<p>In this tutorial, you will use a single Init Container with <code>busybox</code> to download the code. <code>busybox</code> is a small image that contains the <code>wget</code> utility that you will use to accomplish this.</p>
+
+<p>Under <code>spec.template.spec</code>, add your <code>initContainer</code> and specify the <code>busybox</code> image:</p>
+<div class="code-label " title="php_deployment.yaml">php_deployment.yaml</div><pre class="code-pre "><code langs="">&hellip;
+      initContainers:
+      - name: install
+        image: busybox
+</code></pre>
+<p>Your Init Container will need access to the <code>code</code> volume so that it can download the code in that location. Under <code>spec.template.spec.initContainers</code>, mount the volume <code>code</code> at the <code>/code</code> path:</p>
+<div class="code-label " title="php_deployment.yaml">php_deployment.yaml</div><pre class="code-pre "><code langs="">&hellip;
+        volumeMounts:
+        - name: code
+          mountPath: /code
+</code></pre>
+<p>Each Init Container needs to run a <code>command</code>. Your Init Container will use <code>wget</code> to download <a href="https://raw.githubusercontent.com/do-community/php-kubernetes/master/index.php">the code</a> from <a href="https://github.com/do-community/php-kubernetes">Github</a> into the <code>/code</code> working directory. The <code>-O</code> option gives the downloaded file a name, and you will name this file <code>index.php</code>.</p>
+
+<p><span class='note'><strong>Note:</strong> Be sure to trust the code you’re pulling. Before pulling it to your server, inspect the source code to ensure you are comfortable with what the code does.<br></span></p>
+
+<p>Under the <code>install</code> container in <code>spec.template.spec.initContainers</code>, add these lines: </p>
+<div class="code-label " title="php_deployment.yaml">php_deployment.yaml</div><pre class="code-pre "><code langs="">&hellip;
+        command:
+        - wget
+        - "-O"
+        - "/code/index.php"
+        - <span class="highlight">https://raw.githubusercontent.com/do-community/php-kubernetes/master/index.php</span>
+</code></pre>
+<p>Your completed <code>php_deployment.yaml</code> file will look like this:</p>
+<div class="code-label " title="php_deployment.yaml">php_deployment.yaml</div><pre class="code-pre "><code langs="">apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php
+  labels:
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: php
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: php
+        tier: backend
+    spec:
+      volumes:
+      - name: code
+        persistentVolumeClaim:
+          claimName: code
+      containers:
+      - name: php
+        image: php:7-fpm
+        volumeMounts:
+        - name: code
+          mountPath: /code
+      initContainers:
+      - name: install
+        image: busybox
+        volumeMounts:
+        - name: code
+          mountPath: /code
+        command:
+        - wget
+        - "-O"
+        - "/code/index.php"
+        - <span class="highlight">https://raw.githubusercontent.com/do-community/php-kubernetes/master/index.php</span>
+</code></pre>
+<p>Save the file and exit the editor.</p>
+
+<p>Create the PHP-FPM Deployment with <code>kubectl</code>:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl apply -f php_deployment.yaml
+</li></ul></code></pre>
+<p>You will see the following output upon Deployment creation:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>deployment.apps/php created
+</code></pre>
+<p>To summarize, this Deployment will start by downloading the specified images. It will then request the <code>PersistentVolume</code> from your <code>PersistentVolumeClaim</code> and serially run your <code>initContainers</code>. Once complete, the containers will run and mount the <code>volumes</code> to the specified mount point. Once all of these steps are complete, your pod will be up and running.</p>
+
+<p>You can view your Deployment by running:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl get deployments
+</li></ul></code></pre>
+<p>You will see the output: </p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>NAME      DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+php       1         1         1            0           19s
+</code></pre>
+<p>This output can help you understand the current state of the Deployment. A <code>Deployment</code> is <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/">one of the controllers</a> that maintains a desired state. The <code>template</code> you created specifies that the <code>DESIRED</code> state will have 1 <code>replicas</code> of the pod named <code>php</code>. The <code>CURRENT</code> field indicates how many replicas are running, so this should match the <code>DESIRED</code> state. You can read about the remaining fields in the <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/">Kubernetes Deployments documentation</a>.</p>
+
+<p>You can view the pods that this Deployment started with the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl get pods
+</li></ul></code></pre>
+<p>The output of this command varies depending on how much time has passed since creating the Deployment. If you run it shortly after creation, the output will likely look like this: </p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>NAME                   READY     STATUS     RESTARTS   AGE
+php-86d59fd666-bf8zd   0/1       Init:0/1   0          9s
+</code></pre>
+<p>The columns represent the following information:</p>
+
+<ul>
+<li><code>Ready</code>: The number of <code>replicas</code> running this pod.</li>
+<li><code>Status</code>: The status of the pod. <code>Init</code> indicates that the Init Containers are running. In this output, 0 out of 1 Init Containers have finished running.</li>
+<li><code>Restarts</code>: How many times this process has restarted to start the pod. This number will increase if any of your Init Containers fail. The Deployment will restart it until it reaches a desired state.</li>
+</ul>
+
+<p>Depending on the complexity of your startup scripts, it can take a couple of minutes for the status to change to <code>podInitializing</code>:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>NAME                   READY     STATUS            RESTARTS   AGE
+php-86d59fd666-lkwgn   0/1       podInitializing   0          39s
+</code></pre>
+<p>This means the Init Containers have finished and the containers are initializing. If you run the command when all of the containers are running, you will see the pod status change to <code>Running</code>.</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>NAME                   READY     STATUS            RESTARTS   AGE
+php-86d59fd666-lkwgn   1/1       Running   0          1m
+</code></pre>
+<p>You now see that your pod is running successfully. If your pod doesn&rsquo;t start, you can debug with the following commands:</p>
+
+<ul>
+<li>View detailed information of a pod: </li>
+</ul>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl describe pods <span class="highlight">pod-name</span>
+</li></ul></code></pre>
+<ul>
+<li>View logs generated by a pod:</li>
+</ul>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl logs <span class="highlight">pod-name</span>
+</li></ul></code></pre>
+<ul>
+<li>View logs for a specific container in a pod:</li>
+</ul>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl logs <span class="highlight">pod-name</span> <span class="highlight">container-name</span>
+</li></ul></code></pre>
+<p>Your application code is mounted and the PHP-FPM service is now ready to handle connections. You can now create your Nginx Deployment.</p>
+
+<h2 id="step-5-—-creating-the-nginx-deployment">Step 5 — Creating the Nginx Deployment</h2>
+
+<p>In this step, you will use a <em>ConfigMap</em> to configure Nginx. A ConfigMap holds your configuration in a key-value format that you can reference in other Kubernetes object definitions. This approach will grant you the flexibility to reuse or swap the image with a different Nginx version if needed. Updating the ConfigMap will automatically replicate the changes to any pod mounting it.</p>
+
+<p>Create a <code>nginx_configMap.yaml</code> file for your ConfigMap with your editor:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">nano nginx_configMap.yaml
+</li></ul></code></pre>
+<p>Name the ConfigMap <code>nginx-config</code> and group it into the <code>tier: backend</code> micro-service:</p>
+<div class="code-label " title="nginx_configMap.yaml">nginx_configMap.yaml</div><pre class="code-pre "><code langs="">apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  labels:
+    tier: backend
+</code></pre>
+<p>Next, you will add the <code>data</code> for the ConfigMap. Name the key <code>config</code> and add the contents of your Nginx configuration file as the value. You can use the example Nginx configuration from <a href="https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-server-blocks-virtual-hosts-on-ubuntu-16-04#step-three-create-server-block-files-for-each-domain">this tutorial</a>.</p>
+
+<p>Because Kubernetes can route requests to the appropriate host for a service, you can enter the name of your PHP-FPM service in the <code>fastcgi_pass</code> parameter instead of its IP address. Add the following to your <code>nginx_configMap.yaml</code> file:</p>
+<div class="code-label " title="nginx_configMap.yaml">nginx_configMap.yaml</div><pre class="code-pre "><code langs="">&hellip;
+data:
+  config : |
+    server {
+      index index.php index.html;
+      error_log  /var/log/nginx/error.log;
+      access_log /var/log/nginx/access.log;
+      root ^/code^;
+
+      location / {
+          try_files $uri $uri/ /index.php?$query_string;
+      }
+
+      location ~ \.php$ {
+          try_files $uri =404;
+          fastcgi_split_path_info ^(.+\.php)(/.+)$;
+          fastcgi_pass <span class="highlight">php:9000</span>;
+          fastcgi_index index.php;
+          include fastcgi_params;
+          fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+          fastcgi_param PATH_INFO $fastcgi_path_info;
+        }
+    }
+</code></pre>
+<p>Your <code>nginx_configMap.yaml</code> file will look like this:</p>
+<div class="code-label " title="nginx_configMap.yaml">nginx_configMap.yaml</div><pre class="code-pre "><code langs="">apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  labels:
+    tier: backend
+data:
+  config : |
+    server {
+      index index.php index.html;
+      error_log  /var/log/nginx/error.log;
+      access_log /var/log/nginx/access.log;
+      root <span class="highlight">/code</span>;
+
+      location / {
+          try_files $uri $uri/ /index.php?$query_string;
+      }
+
+      location ~ \.php$ {
+          try_files $uri =404;
+          fastcgi_split_path_info ^(.+\.php)(/.+)$;
+          fastcgi_pass <span class="highlight">php:9000</span>;
+          fastcgi_index index.php;
+          include fastcgi_params;
+          fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+          fastcgi_param PATH_INFO $fastcgi_path_info;
+        }
+    }
+</code></pre>
+<p>Save the file and exit the editor.</p>
+
+<p>Create the ConfigMap:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl apply -f nginx_configMap.yaml
+</li></ul></code></pre>
+<p>You will see the following output:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>configmap/nginx-config created
+</code></pre>
+<p>You&rsquo;ve finished creating your ConfigMap and can now build your Nginx Deployment. </p>
+
+<p>Start by opening a new <code>nginx_deployment.yaml</code> file in the editor:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">nano nginx_deployment.yaml
+</li></ul></code></pre>
+<p>Name the Deployment <code>nginx</code> and add the label <code>tier: backend</code>: </p>
+<div class="code-label " title="nginx_deployment.yaml">nginx_deployment.yaml</div><pre class="code-pre "><code langs="">apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  labels:
+    tier: backend
+</code></pre>
+<p>Specify that you want one <code>replicas</code> in the Deployment <code>spec</code>. This Deployment will manage pods with labels <code>app: nginx</code> and <code>tier: backend</code>. Add the following parameters and values:</p>
+<div class="code-label " title="nginx_deployment.yaml">nginx_deployment.yaml</div><pre class="code-pre "><code langs="">&hellip;
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+      tier: backend
+</code></pre>
+<p>Next, add the pod <code>template</code>. You need to use the same labels that you added for the Deployment <code>selector.matchLabels</code>. Add the following:</p>
+<div class="code-label " title="nginx_deployment.yaml">nginx_deployment.yaml</div><pre class="code-pre "><code langs="">&hellip;
+  template:
+    metadata:
+      labels:
+        app: nginx
+        tier: backend
+</code></pre>
+<p>Give Nginx access to the <code>code</code> PVC that you created earlier. Under <code>spec.template.spec.volumes</code>, add:</p>
+<div class="code-label " title="nginx_deployment.yaml">nginx_deployment.yaml</div><pre class="code-pre "><code langs="">&hellip;
+    spec:
+      volumes:
+      - name: code
+        persistentVolumeClaim:
+          claimName: code
+</code></pre>
+<p>Pods can mount a ConfigMap as a volume. Specifying a file name and key will create a file with its value as the content. To use the ConfigMap, set <code>path</code> to name of the file that will hold the contents of the <code>key</code>. You want to create a file <code>site.conf</code> from the key <code>config</code>. Under <code>spec.template.spec.volumes</code>, add the following: </p>
+<div class="code-label " title="nginx_deployment.yaml">nginx_deployment.yaml</div><pre class="code-pre "><code langs="">&hellip;
+      - name: config
+        configMap:
+          name: nginx-config
+          items:
+          - key: config
+            path: site.conf
+</code></pre>
+<p><span class='warning'><strong>Warning</strong>: If a file is not specified, the contents of the <code>key</code> will replace the <code>mountPath</code> of the volume. This means that if a path is not explicitly specified, you will lose all content in the destination folder.<br></span></p>
+
+<p>Next, you will specify the image to create your pod from. This tutorial will use the <code>nginx:1.7.9</code> image for stability, but you can find other Nginx images on <a href="https://hub.docker.com/explore/">the Docker store</a>. Also, make Nginx available on the port 80. Under <code>spec.template.spec</code> add: </p>
+<div class="code-label " title="nginx_deployment.yaml">nginx_deployment.yaml</div><pre class="code-pre "><code langs="">&hellip;
+      containers:
+      - name: nginx
+        image: <span class="highlight">nginx:1.7.9</span>
+        ports:
+        - containerPort: 80
+</code></pre>
+<p>Nginx and PHP-FPM need to access the file at the same path, so mount the <code>code</code> volume at <code>/code</code>:</p>
+<div class="code-label " title="nginx_deployment.yaml">nginx_deployment.yaml</div><pre class="code-pre "><code langs="">&hellip;
+        volumeMounts:
+        - name: code
+          mountPath: /code
+</code></pre>
+<p>The <code>nginx:1.7.9</code> image will automatically load any configuration files under the <code>/etc/nginx/conf.d</code> directory. Mounting the <code>config</code> volume in this directory will create the file <code>/etc/nginx/conf.d/site.conf</code>. Under <code>volumeMounts</code> add the following:</p>
+<div class="code-label " title="nginx_deployment.yaml">nginx_deployment.yaml</div><pre class="code-pre "><code langs="">&hellip;
+        - name: config
+          mountPath: /etc/nginx/conf.d
+</code></pre>
+<p>Your <code>nginx_deployment.yaml</code> file will look like this:</p>
+<div class="code-label " title="nginx_deployment.yaml">nginx_deployment.yaml</div><pre class="code-pre "><code langs="">apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  labels:
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: nginx
+        tier: backend
+    spec:
+      volumes:
+      - name: code
+        persistentVolumeClaim:
+          claimName: code
+      - name: config
+        configMap:
+          name: nginx-config
+          items:
+          - key: config
+            path: site.conf
+      containers:
+      - name: nginx
+        image: <span class="highlight">nginx:1.7.9</span>
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: code
+          mountPath: /code
+        - name: config
+          mountPath: /etc/nginx/conf.d
+</code></pre>
+<p>Save the file and exit the editor.</p>
+
+<p>Create the Nginx Deployment:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl apply -f nginx_deployment.yaml
+</li></ul></code></pre>
+<p>The following output indicates that your Deployment is now created:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>deployment.apps/nginx created
+</code></pre>
+<p>List your Deployments with this command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl get deployments
+</li></ul></code></pre>
+<p>You will see the Nginx and PHP-FPM Deployments: </p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>NAME      DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+nginx     1         1         1            0           16s
+php       1         1         1            1           7m
+</code></pre>
+<p>List the pods managed by both of the Deployments:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl get pods
+</li></ul></code></pre>
+<p>You will see the pods that are running:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>NAME                     READY     STATUS    RESTARTS   AGE
+nginx-7bf5476b6f-zppml   1/1       Running   0          32s
+php-86d59fd666-lkwgn     1/1       Running   0          7m
+</code></pre>
+<p>Now that all of the Kubernetes objects are active, you can visit the Nginx service on your browser.</p>
+
+<p>List the running services:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl get services -o wide
+</li></ul></code></pre>
+<p>Get the External IP for your Nginx service:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE       SELECTOR
+kubernetes   ClusterIP   10.96.0.1       &lt;none&gt;        443/TCP    39m       &lt;none&gt;
+nginx        ClusterIP   10.102.160.47   <span class="highlight">your_public_ip</span> 80/TCP     27m       app=nginx,tier=backend
+php          ClusterIP   10.100.59.238   &lt;none&gt;        9000/TCP   34m       app=php,tier=backend
+</code></pre>
+<p>On your browser, visit your server by typing in <code>http://<span class="highlight">your_public_ip</span></code>. You will see the output of <code>php_info()</code> and have confirmed that your Kubernetes services are up and running.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>In this guide, you containerized the PHP-FPM and Nginx services so that you can manage them independently. This approach will not only improve the scalability of your project as you grow, but will also allow you to efficiently use resources as well. You also stored your application code on a volume so that you can easily update your services in the future.</p>
+
+    </div>
+</div>
+
+<div class="tutorial-footer">
+  
+<div class='tutorial-footer-details'>
+
+  <div class='postable-info-bar-container'>
+  <div class='postable-info-bar'>
+
+    <div class="author-byline">
+      <div class="component-collaborators-container">
+  <ul class="component-collaborators-content">
+        <li class="collaborator-byline-avatar">
+          <a href="/community/users/amitabhdhiwal">
+            <img alt="amitabhdhiwal" class="avatar avatar-large" src="https://secure.gravatar.com/avatar/9bb72cc2d7acccbdc530b526eec29c49?secure=true&d=identicon" width="80" height="80" />
+</a>        </li>
+
+    <li class="collaborators-byline-data">
+        <p class="names">By <a href="/community/users/amitabhdhiwal">Amitabh Dhiwal</a></p>
+
+      <p>
+      </p>
+    </li>
+  </ul>
+</div>
+
+    </div>
+  </div>
+</div>
+
+
+  <div class='section-content tutorial-contributors two'>
+    <div class="component-collaborators-container">
+      <ul class="component-collaborators-content">
+
+          <li class="collaborator-byline-avatar">
+            <a href="/community/users/hmills">
+                <div class="mod-avatar mod-avatar-large"><img class="avatar avatar-large" src="https://community-cdn-digitalocean-com.global.ssl.fastly.net/assets/users/avatars/large/5cb219d7bc74267dd64010dc59b9437c415ab253.png?1553614226" alt="5cb219d7bc74267dd64010dc59b9437c415ab253" /><span class="mod-star" title="MOD" data-toggle="tooltip" data-container="body"><span class="mod-star-icon" /></span></div>
+</a>          </li>
+
+
+        <li class="collaborators-byline-data">
+            <p class="names">Editor: <a href="/community/users/hmills">Haley Mills</a></p>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+    
+<div class="hsb--content">
+  <div class="hsb--undo hsb--hide">
+    <span class="icon icon-helpfulness-upvoted"></span>
+    <span class="hsb--question">You rated this helpful.</span>
+    <button name="button" type="submit" class="hsb--button-down hsb--vote-down-js" data-upvotable-type="Tutorial">Undo</button>
+  </div>
+
+  <div class="hsb--flagging-undo hsb--hide">
+    <span class="icon icon-helpfulness-flag"></span>
+    <span class="hsb--question">You reported this tutorial.</span>
+    <button name="button" type="submit" class="hsb--button-down hsb--unflagging-js">Undo</button>
+  </div>
+
+  <div class="hsb--do">
+    <span class="hsb--question">Was this helpful?</span>
+    <button name="button" type="submit" class="hsb--button hsb--vote-up-js" data-upvotable-id="2889" data-upvotable-type="Tutorial">Yes</button>
+    <button name="button" type="submit" class="hsb--button hsb--flagging-js" data-url="/community/tutorials/how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-16-04/flag" data-flaggable-id="2889">No</button>
+  </div>
+
+  <div class="hsb--social-and-comments">
+    <div class="hsb--social-sharing">
+      <a target="_blank" class="share-popup" href="http://twitter.com/share?text=How To Deploy a PHP Application with Kubernetes on Ubuntu 16.04&amp;url=https://www.digitalocean.com/community/tutorials/how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-16-04?utm_content=how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=twshare">
+        <span class="icon icon-helpfulness-twitter"></span>
+</a>
+      <a target="_blank" class="share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-16-04?utm_content=how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=fbshare">
+        <span class="icon icon-helpfulness-facebook"></span>
+</a>
+      <a target="_blank" class="share-popup" href="https://news.ycombinator.com/submitlink?t=How To Deploy a PHP Application with Kubernetes on Ubuntu 16.04&amp;u=https://www.digitalocean.com/community/tutorials/how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-16-04?utm_content=how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=hnshare">
+        <span class="icon icon-helpfulness-hacker-news"></span>
+</a>    </div>
+
+    <div class="hsb--comment">
+      <span class="icon icon-helpfulness-comment"></span>
+      <strong class="amount">11</strong>
+    </div>
+  </div>
+</div>
+
+
+</div>
+
+
+  
+    <div class='related-tutorials'>
+    <div class='section-content'>
+      <h2>Related</h2>
+
+      <ul>
+        <li title="How To Add the gzip Module to Nginx on CentOS 7">
+  <a class="panel" href="/community/tutorials/how-to-add-the-gzip-module-to-nginx-on-centos-7">
+    <h6>Tutorial</h6>
+    <div class="panel-data">
+      <h5>How To Add the gzip Module to Nginx on CentOS 7</h5>
+      <p>How fast a website will load depends on the size of all of the files that have to be downloaded by the browser. Reducing the size of files to be transmitted can make the website not only load faster, but also cheaper to those who have to pay for their bandwidth usage. In this guide, we&#39;ll discuss how to configure Nginx installed on your CentOS 7 server to utilize `gzip` compression to reduce the size of content sent to website visitors.</p>
+    </div>
+  </a>
+</li>
+<li title="How To Add the gzip Module to Nginx on Ubuntu 14.04">
+  <a class="panel" href="/community/tutorials/how-to-add-the-gzip-module-to-nginx-on-ubuntu-14-04">
+    <h6>Tutorial</h6>
+    <div class="panel-data">
+      <h5>How To Add the gzip Module to Nginx on Ubuntu 14.04</h5>
+      <p>How fast a website will load depends on the size of all of the files that have to be downloaded by the browser. Reducing the size of files to be transmitted can make the website not only load faster, but also cheaper to those who have to pay for their bandwidth usage. In this guide, we&#39;ll discuss how to configure Nginx installed on your Ubuntu 14.04 server to utilize `gzip` compression to reduce the size of content sent to website visitors.</p>
+    </div>
+  </a>
+</li>
+<li title="How To Install and Configure OpenLDAP and phpLDAPadmin on an Ubuntu 14.04 Server">
+  <a class="panel" href="/community/tutorials/how-to-install-and-configure-openldap-and-phpldapadmin-on-an-ubuntu-14-04-server">
+    <h6>Tutorial</h6>
+    <div class="panel-data">
+      <h5>How To Install and Configure OpenLDAP and phpLDAPadmin on an Ubuntu 14.04 Server</h5>
+      <p>In this guide, we&#39;ll focus on how to install and configure OpenLDAP on an Ubuntu 14.04 server.  We will then install and configure phpLDAPadmin on the server, allowing us to manage our units and groups through an easy to use web interface.</p>
+    </div>
+  </a>
+</li>
+<li title="How To Use the DigitalOcean One-Click to Install Redmine on Ubuntu 14.04 Image">
+  <a class="panel" href="/community/tutorials/how-to-use-the-digitalocean-one-click-to-install-redmine-on-ubuntu-14-04-image">
+    <h6>Tutorial</h6>
+    <div class="panel-data">
+      <h5>How To Use the DigitalOcean One-Click to Install Redmine on Ubuntu 14.04 Image</h5>
+      <p>ARCHIVED: We have created a one-click Redmine 2.5 installation that uses Nginx/MySQL/Ruby on Rails on Ubuntu 14.04 x64. Redmine is a free and open source project management software to assist with projects, bug-tracking. It supports a variety of version control system. Using the one click image, you will be able to get redmine up and running quickly and painlessly.</p>
+    </div>
+  </a>
+</li>
+
+      </ul>
+    </div>
+  </div>
+
+
+  <div class='looking-for-an-answer'>
+  <div class='section-content'>
+    <h4>Still looking for an answer?</h4>
+
+    <div class="lfa--actions">
+      <a href="/community/questions/new?tags=Kubernetes%2CPHP%2CNginx%2CBlock+Storage" class="lfa--action-box">
+        <span class="icon icon-look-for-answer-question"></span>
+        Ask a question
+      </a>
+      <a href="#q" class="lfa--action-box">
+        <span class="icon icon-look-for-answer-search-thin"></span>
+        Search for more help
+      </a>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="content-comments">
+  <div class="section-content">
+    <div class="tutorial commentable" id="tutorial_2889">
+
+  <div class="comments-header">
+    <h4 class="comments-count">
+        <span>11 Comments</span>
+    </h4>
+  </div>
+
+    <div class="response response-form no-avatar">
+  <div class="js-display-on-error flash error hidden"></div>
+
+
+  <form class="content-form disabled-form" id="new_comment" action="/community/tutorials/how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-16-04/comments" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="&#x2713;" />
+
+    <textarea name="comment[content]" id="comment_content" placeholder="Leave a comment..." class="js-comment-content tutorial-comment-field" data-markdown="true">
+</textarea>
+
+      <div class="log-in-notice "><a href="/community/auth/digitalocean">Log In to Comment</a></div>
+
+    <div class='clearfix'></div>
+</form>
+</div>
+
+
+  <div class="comments">
+    <ul class="response-list">
+          <a class="js-click-on-load hidden" rel="nofollow" data-remote="true" href="/community/tutorials/how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-16-04/comments">Load</a>
+    </ul>
+
+      <div class='comments-spinner'><div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+</div>
+  </div>
+
+  <div class='load-more-container'></div>
+</div>
+
+
+  </div>
+</div>
+
+<div class="creative-commons">
+  <a class="creative-commons-image" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><img rel="license" alt="Creative Commons License" src="/assets/community/creativecommons-08b32a9279fcd47fcd78ac6a26331389.png" /></a>
+    <div class="license-text">This work is licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.</div>
+</div>
+
+
+
+
+
+
+        <div class="clearfix"></div>
+      </div>
+
+            <footer>
+        <section>
+            <a href="https://www.digitalocean.com/write-for-donations/" class="panel">
+            <div class="photo_wrap">
+              <img class="photo" src="https://digitalocean.cdn.prismic.io/digitalocean/70910e9fdeb57be46aaa209ce8d9b4dc8e117fab_w4do2.jpg" alt="">
+            </div>
+            <span class="heading">Become a contributor</span>
+            <p>
+                You get paid; we donate to tech nonprofits.
+            </p>
+          </a>
+            <a href="https://www.meetup.com/pro/digitalocean" class="panel">
+            <div class="photo_wrap">
+              <img class="photo" src="https://digitalocean.cdn.prismic.io/digitalocean/2491485f96735e5982e330914d8a617f85395fab_meetups.jpg" alt="">
+            </div>
+            <span class="heading">Connect with other developers</span>
+            <p>
+                Find a DigitalOcean Meetup near you.
+            </p>
+          </a>
+            <a href="https://www.digitalocean.com/community/newsletter" class="panel">
+            <div class="photo_wrap">
+              <img class="photo" src="https://digitalocean.cdn.prismic.io/digitalocean/ca12c951cc76f33037f3384bba9942545d160d82_iaan_illo.jpg" alt="">
+            </div>
+            <span class="heading">Get our biweekly newsletter</span>
+            <p>
+                Sign up for Infrastructure as a Newsletter.
+            </p>
+          </a>
+      </section>
+      <section class="slim ">
+        <span class="heading">Featured on Community</span>
+            <a href="https://www.digitalocean.com/community/tutorials/an-introduction-to-kubernetes">Intro to Kubernetes</a>
+            <a href="https://www.digitalocean.com/community/tutorial_series/how-to-code-in-python-3">Learn Python 3</a>
+            <a href="https://www.digitalocean.com/community/tutorials/machine-learning-projects-python-a-digitalocean-ebook">Machine Learning in Python</a>
+            <a href="https://www.digitalocean.com/community/tutorials/how-to-write-your-first-program-in-go">Getting started with Go</a>
+            <a href="https://www.digitalocean.com/community/tutorial_series/from-containers-to-kubernetes-with-node-js">Migrate Node.js to Kubernetes</a>
+        <hr>
+        <span class="heading">DigitalOcean Products</span>
+            <a href="https://www.digitalocean.com/products/droplets/">Droplets</a>
+            <a href="https://www.digitalocean.com/products/managed-databases/">Managed Databases</a>
+            <a href="https://www.digitalocean.com/products/kubernetes/">Managed Kubernetes</a>
+            <a href="https://www.digitalocean.com/products/spaces/">Spaces Object Storage</a>
+            <a href="https://marketplace.digitalocean.com/">Marketplace</a>
+      </section>
+        <section class="product">
+          <a class="copy" href="/products">
+            <h3>Welcome to the developer cloud</h3>
+            <p>DigitalOcean makes it simple to launch in the cloud and scale up as you grow – whether you’re running one virtual machine or ten thousand.</p>
+            <span class="link_text">Learn More</a>
+          </div>
+          <div class="feature">
+            <a class="img_wrap" href="/products">
+              <img class="photo" src="https://digitalocean.cdn.prismic.io/digitalocean/95c1215227aa7f39f2bd23076de28feb969741c7_cloud.digitalocean.com_projects_63f9252f-652b-4645-9c0c-bee96f2bc503_resources_ic0ce81-2.png" alt="DigitalOcean Cloud Control Panel">
+            </a>
+          </div>
+        </section>
+        <section class="dark">
+          <div class="vlist grow">
+            <a href="https://www.digitalocean.com">
+              <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+                <title>DigitalOcean Homepage</title>
+                <g fill="#0080FF" fill-rule="evenodd">
+                  <path
+                    d="M24.9153 50v-9.661c10.226 0 18.1638-10.1413 14.2372-20.904-1.4406-3.983-4.6327-7.1751-8.6158-8.6158C19.774 6.921 9.6327 14.8305 9.6327 25.0565H0C0 8.7571 15.7627-3.9548 32.8531 1.3842c7.4576 2.3446 13.418 8.2768 15.7345 15.7344C53.9266 34.2373 41.2429 50 24.9153 50">
+                  </path>
+                  <path
+                    d="M15.339 40.3672h9.6045v-9.6045H15.339zM7.9379 47.7684h7.401v-7.4012H7.938zM1.7514 40.3672H7.938v-6.1864H1.7514z">
+                  </path>
+                </g>
+              </svg>
+            </a>
+            <br><br>
+            © <script type="text/javascript">
+              document.write(new Date().getFullYear());
+
+            </script> DigitalOcean, LLC. All rights reserved.
+          </div>
+
+              <div class="vlist">
+                <span class="heading">Company</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/about/">About</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/about/leadership/">Leadership</a>
+                    </li>
+                    <li>
+                      <a href="https://blog.digitalocean.com/">Blog</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/careers/">Careers</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/partners/">Partners</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/referral-program/">Referral Program</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/press/">Press</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/legal/">Legal &amp; Security</a>
+                    </li>
+                </ul>
+              </div>
+              <div class="vlist">
+                <span class="heading">Products</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/">Products Overview</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/pricing/">Pricing</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/droplets/">Droplets</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/kubernetes/">Kubernetes</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/managed-databases/">Managed Databases</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/spaces/">Spaces</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/marketplace/">Marketplace</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/load-balancer/">Load Balancers</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/block-storage/">Block Storage</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/tools-and-integrations/">Tools &amp; Integrations</a>
+                    </li>
+                    <li>
+                      <a href="https://developers.digitalocean.com/documentation/">API</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/docs">Documentation</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/docs/release-notes/">Release Notes</a>
+                    </li>
+                </ul>
+              </div>
+              <div class="vlist">
+                <span class="heading">Community</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/tutorials">Tutorials</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/questions">Q&amp;A</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/tools">Tools and Integrations</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/tags">Tags</a>
+                    </li>
+                    <li>
+                      <a href="https://ideas.digitalocean.com/">Product Ideas</a>
+                    </li>
+                    <li>
+                      <a href="https://www.meetup.com/pro/digitalocean/?utm_source=do_www">Meetups</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/write-for-donations/">Write for DOnations</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/droplets-for-demos/">Droplets for Demos</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/hatch/">Hatch Startup Program</a>
+                    </li>
+                    <li>
+                      <a href="http://store.digitalocean.com/">Shop Swag</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/research/">Research Program</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/currents/">Currents Research</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/open-source/">Open Source</a>
+                    </li>
+                </ul>
+              </div>
+              <div class="vlist">
+                <span class="heading">Contact</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/support/">Support</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/company/contact/sales/">Sales</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/company/contact/#abuse">Report Abuse</a>
+                    </li>
+                    <li>
+                      <a href="https://status.digitalocean.com/">System Status</a>
+                    </li>
+                </ul>
+              </div>
+        </section>
+      </footer>
+
+
+      <div id='sign-in-modal' class='modal fade mini-modal' style="display: none;">
+  <div class='modal-dialog'>
+    <div class='modal-content'>
+      <div class='modal-header'>
+        <h1>Almost there!</h1>
+        <a class='close-button' data-dismiss='modal' aria-label="close"  href=''><span class='icon icon-close-light'></span></a>
+      </div>
+      <div class='modal-body'>
+        <div class='sign-in-message'>Sign into your account, or create a new one, to start interacting.</div>
+
+        <div class='sign-in-modal-actions'>
+          <a class="sign-in-link button blue-button" data-default-url="/community/auth/digitalocean" href="/community/auth/digitalocean">Log In</a>
+          <a class="sign-up-link button blue-button" data-default-url="/community/auth/digitalocean?display=sessionless+register" href="/community/auth/digitalocean?display=sessionless+register">Sign Up</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+      <script>
+    $(function() {
+      var dropDownOptions = {};
+      
+
+      VTGNavigationDropdown($('[data-versioned-tutorial-group-navigation]'), dropDownOptions);
+      createTutorialRequest({
+        $tutorialRequestLinks: $("[data-tutorial-request]"),
+        tutorialRequestStatusSelector: "[data-tutorial-request-status-indicator]",
+        tutorialRequestUrl: "/community/api/tutorial_requests",
+      });
+    });
+  </script>
+  <script>
+    $(function() {
+      window.initHelpfulnessActions(2889);
+    });
+  </script>
+  <script>
+    $(function() {
+      var p, h5, panel, remainingSpace;
+      var lineHeight = 31, clamp = 1;
+
+      var panels = document.querySelectorAll('li .panel-data');
+
+      for (var i = 0, len = panels.length; i < len; i++) {
+        panel = panels[i];
+
+        p = panel.querySelector('p');
+        h5 = panel.querySelector('h5');
+        remainingSpace = panel.offsetHeight - h5.offsetHeight;
+
+        // Clamp text only when the remaining space isn't enought for p content.
+        if (remainingSpace < p.scrollHeight) {
+          clamp = parseInt(p.offsetHeight / lineHeight);
+
+          p.style.cssText = "-webkit-line-clamp:" + clamp +
+            "; display: -webkit-box; -webkit-box-orient: vertical;";
+        }
+      }
+    });
+  </script>
+
+  <script>
+    $(function() {
+      if (!!window.init_sharing) {
+        window.init_sharing();
+      }
+      new window.NewsletterSignup();
+      new window.GrowableMarkdown({ target: '[data-growable-markdown]' });
+    });
+  </script>
+  <script type="application/ld+json">
+    {"@context":"http://schema.org","@type":"Article","name":"How To Deploy a PHP Application with Kubernetes on Ubuntu 16.04","headline":"How To Deploy a PHP Application with Kubernetes on Ubuntu 16.04","alternativeHeadline":"How To Deploy a PHP Application with Kubernetes on Ubuntu 16.04","description":"Kubernetes is an open source container orchestration system. It allows you to create, update, and scale containers without worrying about downtime. In this tutorial, you will deploy a PHP 7 application on a Kubernetes cluster with Nginx and PHP-FPM running in separate containers.","keywords":"Kubernetes,PHP,Nginx,Block Storage","url":"https://www.digitalocean.com/community/tutorials/how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-16-04","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.digitalocean.com/community/tutorials/how-to-deploy-a-php-application-with-kubernetes-on-ubuntu-16-04"},"dateModified":"2019-03-01T19:22:19Z","inLanguage":"en","accessMode":"textual","accessModeSufficient":"textual","isAccessibleForFree":true,"license":"https://creativecommons.org/licenses/by-nc-sa/4.0/","publishingPrinciples":"https://www.digitalocean.com/community/tutorials/technical-recommendations-and-best-practices-for-digitalocean-s-tutorials","author":[{"@type":"Person","name":"Amitabh Dhiwal","@id":"https://www.digitalocean.com/community/users/amitabhdhiwal"}],"datePublished":"2019-01-18T17:35:37Z","editor":{"@type":"Person","name":"Haley Mills","@id":"hmills"},"image":{"@type":"ImageObject","url":"https://community-cdn-digitalocean-com.global.ssl.fastly.net/assets/tutorials/images/large/kubernetes_tutorials-big.png?1551468138","height":375,"width":750},"interactionStatistic":[{"@type":"InteractionCounter","interactionType":"http://schema.org/LikeAction","userInteractionCount":"13"},{"@type":"InteractionCounter","interactionType":"http://schema.org/CommentAction","userInteractionCount":"7"}],"sourceOrganization":{"@type":"Organization","name":"DigitalOcean Community","url":"https://www.digitalocean.com/community"},"publisher":{"@type":"Organization","name":"DigitalOcean","url":"https://www.digitalocean.com","logo":{"@type":"ImageObject","url":"https://assets.digitalocean.com/logos/DO_Logo_horizontal_blue.png","width":351,"height":60}}}
+  </script>
+
+
+    
+  </body>
+</html>

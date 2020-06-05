@@ -4,7 +4,7 @@ setup:
     host: vagrant@127.0.0.1:2003
     privateKey: id_rsa
 
-../tutorials/98_ubuntu16_vultr.html:
+../tutorials/docable/98_ubuntu16_vultr.html:
   steps:
     - run: "Check the Ubuntu version."
 

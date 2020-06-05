@@ -1,0 +1,2400 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Bias-Variance for Deep Reinforcement Learning: How To Build a Bot for Atari with OpenAI Gym | DigitalOcean</title>
+
+<meta name="description" content="Reinforcement learning is a subfield within control theory, which concerns controlling systems that change over time and broadly includes applications such as self-driving cars, robotics, and bots for games. Throughout this guide, you will use reinfor">
+<meta name="keywords" content="Programming Project Machine Learning Development Python">
+
+<meta name="og:title" content="Bias-Variance for Deep Reinforcement Learning: How To Build a Bot for Atari with OpenAI Gym | DigitalOcean">
+<meta name="og:description" content="Reinforcement learning is a subfield within control theory, which concerns controlling systems that change over time and broadly includes applications such as self-driving cars, robotics, and bots for games. Throughout this guide, you will use reinfor">
+<meta name="og:site_name" content="DigitalOcean">
+<meta name="og:type" content="article">
+<meta name="og:image" content="https://www.digitalocean.com/assets/community/default_dev_sharing-f6ea33ffca80bed0b35ad3c0fdd772a6.png">
+
+<meta name="twitter:site" content="DigitalOcean">
+<meta name="twitter:title" content="Bias-Variance for Deep Reinforcement Learning: How To Build a Bot for Atari with OpenAI Gym | DigitalOcean">
+<meta name="twitter:description" content="Reinforcement learning is a subfield within control theory, which concerns controlling systems that change over time and broadly includes applications such as self-driving cars, robotics, and bots for games. Throughout this guide, you will use reinfor">
+<meta name="twitter:creator" content="DigitalOcean">
+<meta name="twitter:card" content="photo" />
+<meta name="twitter:url" content="https://www.digitalocean.com/community/tutorials/how-to-build-atari-bot-with-openai-gym"/>
+<meta name="twitter:image" content="https://www.digitalocean.com/assets/community/default_dev_sharing-f6ea33ffca80bed0b35ad3c0fdd772a6.png">
+
+  <link rel='canonical' href='https://www.digitalocean.com/community/tutorials/how-to-build-atari-bot-with-openai-gym'>
+
+<link rel="preconnect" href="https://digitalocean.cdn.prismic.io">
+<link rel="preconnect" href="https://hello.myfonts.net">
+
+
+    <link rel="stylesheet" media="all" href="/assets/community/application-b828e623bec3c41208f9f701850222a0.css" />
+
+    
+    <meta name="csrf-param" content="authenticity_token" />
+<meta name="csrf-token" content="CsuiPCTe+WcBQfMIP0E/TTAdtd6fHCPrBZii7Kxy4Q3wbVFT1HKTwlHsGevUlQSE90U++lsPvgva7ZD66qpdMw==" />
+    <script src="/assets/community/prerequisites-9a51dfaadf0d3629cc636286133a958d.js"></script>
+    <script>
+//<![CDATA[
+
+  window.cookieDomain = '.digitalocean.com';
+
+//]]>
+</script><script src="https://assets.digitalocean.com/cookieConsent/cookieConsent.js"></script>
+<link rel="stylesheet" href="https://assets.digitalocean.com/cookieConsent/cookieConsent.css">
+
+    <script type="text/javascript">
+  if(window.analytics=window.analytics||[],window.analytics.included)window.console&&console.error&&console.error("analytics.js included twice");else{window.analytics.included=!0,window.analytics.methods=["identify","group","track","page","pageview","alias","ready","on","once","off","trackLink","trackForm","trackClick","trackSubmit"],window.analytics.factory=function(a){return function(){var n=Array.prototype.slice.call(arguments);return n.unshift(a),window.analytics.push(n),window.analytics}};for(var i=0;i<window.analytics.methods.length;i++){var key=window.analytics.methods[i];window.analytics[key]=window.analytics.factory(key)}window.analytics.load=function(a){var n=document.createElement("script");n.type="text/javascript",n.async=!0,n.src=("https:"===document.location.protocol?"https://":"http://")+"cdn.segment.com/analytics.js/v1/"+a+"/analytics.min.js";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(n,t)},window.analytics.SNIPPET_VERSION="2.0.9",window.analytics.load("puo3uv968t")}
+  window.analytics.page();
+</script>
+
+<!-- Google Tag Manager -->
+<script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-KHWBBT');
+</script>
+<!-- End Google Tag Manager -->
+
+<script src="/assets/community/internalCookies-d2a3579f6b37d00c8045b16853b90462.js"></script>
+
+      <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="/community/tutorials/feed">
+    <script>
+      window.comApp = {
+        prefix: '/community',
+        svgIconPath: 'https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg',
+        railsEnv: 'production',
+        rootUrl: 'https://www.digitalocean.com/community',
+        algolia_application_id: '6ZHEUVKJ88',
+        algolia_api_key: 'c5470567eae7fa1177d43222e18ba086'
+      };
+    </script>
+      <script src="https://go.digitalocean.com/js/forms2/js/forms2.min.js"></script>
+
+    <script src="/assets/community/application-dd2f12c7d68945c016e67a784d8785fc.js"></script>
+  </head>
+  <body class="feature-filter-bar feature-upvotes tutorials-controller tutorial-single" data-env="production" data-prefix="/community" data-user-id="" data-facebook-app-id="694818843983011"   data-completed-tutorial-id="" data-tutorial-id="2892" data-js="tutorial"
+  data-upvote="null"
+  data-flagged=""
+>
+    
+
+    <div class='outside_viewport'>
+        <div id="contents-modal" class="modal fade mini-modal" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1>Contents</h1>
+          <button class="close-button icon icon-close-light" data-dismiss="modal" aria-label="close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="table-of-contents-modal"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="share-modal" class="modal fade mini-modal" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1>Share</h1>
+        <button type="button" class="close-button icon icon-close-light" aria-label="close" data-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="social-sharing social-sharing-container">
+          <ul class="top ">
+            <li class="shareBtn" id="sbTwitter">
+              <a href="http://twitter.com/share?text=Bias-Variance for Deep Reinforcement Learning: How To Build a Bot for Atari with OpenAI Gym&amp;url=https://www.digitalocean.com/community/tutorials/how-to-build-atari-bot-with-openai-gym?utm_content=how-to-build-atari-bot-with-openai-gym&amp;utm_medium=community&amp;utm_source=twshare" class="share-icon share-popup" title="Share on Twitter" target="_blank">
+                <span class="sIcon icon-bird"></span>
+              </a>
+              <a href="http://twitter.com/share?text=Bias-Variance for Deep Reinforcement Learning: How To Build a Bot for Atari with OpenAI Gym&amp;url=https://www.digitalocean.com/community/tutorials/how-to-build-atari-bot-with-openai-gym?utm_content=how-to-build-atari-bot-with-openai-gym&amp;utm_medium=community&amp;utm_source=twshare" class="share-link share-popup" title="Share on Twitter" target="_blank">
+                Twitter
+              </a>
+            </li>
+            <li class="shareBtn" id="sbFacebook">
+              <a class="share-icon share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/how-to-build-atari-bot-with-openai-gym?utm_content=how-to-build-atari-bot-with-openai-gym&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+                <span class="sIcon icon-facebook-B"></span>
+              </a>
+
+              <a class="share-link share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/how-to-build-atari-bot-with-openai-gym?utm_content=how-to-build-atari-bot-with-openai-gym&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+                Facebook
+              </a>
+            </li>
+            <li class="shareBtn" id="sbYC">
+              <a href="https://news.ycombinator.com/submitlink?t=Bias-Variance for Deep Reinforcement Learning: How To Build a Bot for Atari with OpenAI Gym&amp;u=https://www.digitalocean.com/community/tutorials/how-to-build-atari-bot-with-openai-gym?utm_content=how-to-build-atari-bot-with-openai-gym&amp;utm_medium=community&amp;utm_source=hnshare" class="share-icon share-popup" target="_blank" title="Submit to Hacker News">
+                <span class="sIcon icon-hacker-news"></span>
+              </a>
+              <a href="https://news.ycombinator.com/submitlink?t=Bias-Variance for Deep Reinforcement Learning: How To Build a Bot for Atari with OpenAI Gym&amp;u=https://www.digitalocean.com/community/tutorials/how-to-build-atari-bot-with-openai-gym?utm_content=how-to-build-atari-bot-with-openai-gym&amp;utm_medium=community&amp;utm_source=hnshare" class="share-link share-popup" target="_blank" title="Submit to Hacker News">
+                Hacker News
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <div class="table-of-contents">
+    <div data-js="tableOfContentsDesktop"></div>
+  </div>
+  
+  
+  
+  <div id="share-modal" class="modal fade mini-modal" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1>Share</h1>
+        <button type="button" class="close-button icon icon-close-light" aria-label="close" data-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="social-sharing social-sharing-container">
+          <ul class="bottom ">
+            <li class="shareBtn" id="sbTwitter">
+              <a href="http://twitter.com/share?text=Bias-Variance for Deep Reinforcement Learning: How To Build a Bot for Atari with OpenAI Gym&amp;url=https://www.digitalocean.com/community/tutorials/how-to-build-atari-bot-with-openai-gym?utm_content=how-to-build-atari-bot-with-openai-gym&amp;utm_medium=community&amp;utm_source=twshare" class="share-icon share-popup" title="Share on Twitter" target="_blank">
+                <span class="sIcon icon-bird"></span>
+              </a>
+              <a href="http://twitter.com/share?text=Bias-Variance for Deep Reinforcement Learning: How To Build a Bot for Atari with OpenAI Gym&amp;url=https://www.digitalocean.com/community/tutorials/how-to-build-atari-bot-with-openai-gym?utm_content=how-to-build-atari-bot-with-openai-gym&amp;utm_medium=community&amp;utm_source=twshare" class="share-link share-popup" title="Share on Twitter" target="_blank">
+                Twitter
+              </a>
+            </li>
+            <li class="shareBtn" id="sbFacebook">
+              <a class="share-icon share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/how-to-build-atari-bot-with-openai-gym?utm_content=how-to-build-atari-bot-with-openai-gym&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+                <span class="sIcon icon-facebook-B"></span>
+              </a>
+
+              <a class="share-link share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/how-to-build-atari-bot-with-openai-gym?utm_content=how-to-build-atari-bot-with-openai-gym&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+                Facebook
+              </a>
+            </li>
+            <li class="shareBtn" id="sbYC">
+              <a href="https://news.ycombinator.com/submitlink?t=Bias-Variance for Deep Reinforcement Learning: How To Build a Bot for Atari with OpenAI Gym&amp;u=https://www.digitalocean.com/community/tutorials/how-to-build-atari-bot-with-openai-gym?utm_content=how-to-build-atari-bot-with-openai-gym&amp;utm_medium=community&amp;utm_source=hnshare" class="share-icon share-popup" target="_blank" title="Submit to Hacker News">
+                <span class="sIcon icon-hacker-news"></span>
+              </a>
+              <a href="https://news.ycombinator.com/submitlink?t=Bias-Variance for Deep Reinforcement Learning: How To Build a Bot for Atari with OpenAI Gym&amp;u=https://www.digitalocean.com/community/tutorials/how-to-build-atari-bot-with-openai-gym?utm_content=how-to-build-atari-bot-with-openai-gym&amp;utm_medium=community&amp;utm_source=hnshare" class="share-link share-popup" target="_blank" title="Submit to Hacker News">
+                Hacker News
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div id="newsletter-signup-dialog" class="newsletter-signups-dialog" data-newsletter-signup-dialog data-article-target=".content-body">
+  <div class="form-message">
+  <div class="pull-right">
+    <a href="javascript:;" class="newsletter-signups-dialog-dismiss" data-newsletter-signup-dismiss>&times;</a>
+
+  </div>
+  <h4 class="newsletter-signups-dialog-title">
+    Sign up for our newsletter.
+  </h4>
+  <p class="newsletter-signups-dialog-description">
+    Get the latest tutorials on SysAdmin and open source topics.
+  </p>
+  <form class="newsletter-signup" id="new_newsletter_signup" data-newsletter-signup="true" action="/community/newsletter" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="&#x2713;" />
+
+  <input data-newsletter-signup-field="url" type="hidden" name="newsletter_signup[url]" id="newsletter_signup_url" />
+  <input data-newsletter-signup-field="title" type="hidden" name="newsletter_signup[title]" id="newsletter_signup_title" />
+
+  <div class="newsletter-signup-ajax-error" data-newsletter-signup-ajax-error></div>
+
+
+  <div class="form-group">
+    <input placeholder="Enter your email address" required="required" class="field" type="email" name="newsletter_signup[email]" id="newsletter_signup_email" />
+  </div>
+
+  <button data-disable-with="Sign Up" class="button blue-button">
+    Sign Up
+  </button>
+
+</form>
+
+</div>
+
+<div class="thanks-message hidden" data-newsletter-signup-successful> 
+  <div class='pull-right'> 
+    <a href='javascript:;' class='newsletter-signups-dialog-dismiss icon icon-close-light' data-newsletter-signup-dismiss></a> 
+  </div> 
+
+  <span class='newsletter-signups-dialog-success'> 
+    Thanks for signing up! 
+  </span> 
+</div>
+
+</div>
+
+
+      
+    </div>
+
+      
+      
+<div style="display: none;">
+  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <symbol id="do_nav-logo" xmlns="http://www.w3.org/2000/svg"> <title>DigitalOcean home</title> <g fill="currentColor" fill-rule="evenodd"> <path d="M14.4942 29v-5.5674c5.9572 0 10.5633-5.8478 8.2892-12.059-.8425-2.3006-2.693-4.1355-5.0126-4.9706-6.262-2.2534-12.1564 2.3135-12.1573 8.2207 0 0-.0006.0014-.0014.0014H0C0 5.2123 9.1687-2.1167 19.1138.9624c4.3459 1.3457 7.7993 4.7708 9.1561 9.081C31.3742 19.9068 23.985 29 14.4942 29"></path> <path d="M14.507 23.4468H8.9103v-5.549s.0005-.0011.0011-.0011h5.5949c.0006 0 .0009.0006.0009.0006v5.5495M8.9093 27.7118H4.6105l-.0012-.0012v-4.2638h4.3009v4.2638l-.0009.0012M4.6125 23.4468H1.0088c-.0015 0-.0026-.0012-.0026-.0012v-3.5724s.0011-.0025.0026-.0025h3.601c.0015 0 .0027.0011.0027.0011v3.575M43.2806 9.6357h1.649c1.8346 0 3.345.358 4.49 1.0647 1.2714.7603 1.9164 2.2069 1.9164 4.2991 0 2.1554-.6465 3.6671-1.9207 4.4942h-.0008c-1.0971.7196-2.5981 1.0846-4.462 1.0846h-1.6719V9.6357zm8.324-1.0736c-1.6598-1.142-3.7252-1.721-6.1387-1.721h-5.2537V23.373h5.2537c2.4074 0 4.4737-.6113 6.1407-1.8157.907-.6382 1.6197-1.5304 2.1185-2.651.4962-1.1144.7479-2.4288.7479-3.9067 0-1.4605-.2517-2.758-.7482-3.857-.4988-1.104-1.212-1.972-2.1202-2.5804zM58.1303 6.6376c-.5051 0-.9403.1777-1.2906.5254-.3546.335-.5346.7597-.5346 1.2618 0 .501.1791.9322.532 1.2825.3529.35.788.528 1.2932.528.5042 0 .9394-.178 1.2928-.528.3535-.3508.5324-.7821.5324-1.2825 0-.5015-.18-.926-.5324-1.2592-.3534-.3503-.7886-.528-1.2928-.528M56.6247 23.3729h2.9538V11.7294h-2.9538zM69.5321 19.5787c-.5162.5814-1.1793.8635-2.0264.8635-.8471 0-1.5064-.282-2.015-.863-.5065-.5777-.7637-1.3439-.7637-2.2773 0-.9479.2572-1.7238.764-2.3058.502-.576 1.1796-.8683 2.0147-.8683.8465 0 1.5096.284 2.0262.8695.5142.582.7751 1.3573.7751 2.3046 0 .9328-.2609 1.6988-.7749 2.2768zm.775-6.8767c-.8908-.7858-1.8858-1.2444-2.9614-1.2444-1.6305 0-2.9859.5598-4.0276 1.662-1.0555 1.0932-1.5907 2.5006-1.5907 4.1823 0 1.644.5269 3.0464 1.568 4.1709 1.0498 1.088 2.4123 1.6396 4.0503 1.6396 1.139 0 2.1182-.3144 2.9157-.9356v.268c0 .9662-.2608 1.7176-.7751 2.234-.5137.5154-1.226.7764-2.1173.7764-1.3637 0-2.2183-.5314-3.2589-1.9262l-2.0115 1.917.0542.0754c.4346.605 1.1 1.197 1.9785 1.7594.8787.5603 1.9832.8447 3.2832.8447 1.7536 0 3.1726-.5363 4.2172-1.5933 1.0506-1.0628 1.5835-2.486 1.5835-4.2286V11.7294H70.307v.9726zM75.7434 23.3729h2.9541V11.7294h-2.9541zM77.249 6.6376c-.5052 0-.94.1777-1.2906.5254-.3547.335-.5344.7597-.5344 1.2618 0 .501.1789.9322.532 1.2825.353.35.7878.528 1.293.528.5045 0 .9396-.178 1.2928-.528.3535-.3508.5323-.7821.5323-1.2825 0-.5015-.1797-.926-.5323-1.2592-.3532-.3503-.7883-.528-1.2929-.528M85.1724 8.5831h-2.9082v3.1463h-1.6888v2.6702h1.6888v4.8365c0 1.5134.3047 2.5964.9064 3.2181.6031.6247 1.6741.9414 3.1831.9414.48 0 .963-.0156 1.4354-.0463l.133-.0088v-2.6683l-1.013.0526c-.7033 0-1.1728-.1226-1.3961-.3637-.226-.245-.3406-.7636-.3406-1.5404v-4.421h2.7497v-2.6703h-2.7497V8.583M101.7735 23.3729h2.9544V6.8412h-2.9544zM134.5728 19.2094c-.5286.5874-1.0693 1.0966-1.4855 1.3613v.0005c-.4085.2599-.924.3918-1.532.3918-.8703 0-1.5703-.3144-2.1405-.9621-.567-.644-.8545-1.4716-.8545-2.4613s.2838-1.8162.8436-2.4556c.5625-.6434 1.2588-.9562 2.1285-.9562.9515 0 1.9548.5869 2.8145 1.5947l1.9525-1.8568c-1.273-1.6433-2.897-2.4081-4.8352-2.4081-1.622 0-3.028.5862-4.1788 1.7411-1.1446 1.147-1.7251 2.6074-1.7251 4.3409 0 1.7335.58 3.1977 1.7234 4.352 1.1447 1.1557 2.5514 1.7417 4.1805 1.7417 2.139 0 3.8651-.9158 5.029-2.5935l-1.9204-1.8304M140.2405 16.0973c.1422-.5567.401-1.0207.7714-1.381.4005-.3906.9214-.5885 1.5489-.5885.716 0 1.2702.2019 1.6474.6014.3495.3696.5467.8296.588 1.368h-4.5557zm6.4569-2.7414c-.4191-.5788-.9896-1.0448-1.6965-1.3854-.7047-.3404-1.526-.513-2.441-.513-1.6489 0-2.9982.6037-4.0113 1.7946-.9836 1.182-1.4818 2.651-1.4818 4.3665 0 1.7648.547 3.2253 1.6254 4.341 1.0727 1.1105 2.5083 1.6737 4.267 1.6737 1.992 0 3.627-.799 4.8587-2.3752l.0666-.0847-1.9273-1.837c-.1789.2139-.4317.4561-.6628.6722-.2918.273-.5659.4842-.8588.6289-.4415.218-.9369.3255-1.4907.3255-.8187 0-1.4964-.2388-2.0147-.71-.4847-.4403-.768-1.0345-.843-1.7683h7.8265l.0264-1.0693c0-.7569-.1038-1.4862-.3088-2.1677a6.312 6.312 0 0 0-.934-1.8918zM152.797 18.9234c.3352-.2318.8085-.3483 1.4073-.3483.7112 0 1.4654.1413 2.2426.421v1.1421c-.6421.592-1.4996.8922-2.5499.8922-.5114 0-.909-.1126-1.1822-.3355-.2683-.218-.3985-.4955-.3985-.847 0-.3994.1571-.7022.4808-.9245zm5.2452-6.3229h-.0003c-.8952-.758-2.1328-1.143-3.678-1.143-.9829 0-1.902.2144-2.7336.6324-.7691.387-1.5245 1.0275-2.0043 1.8662l.0298.0358 1.8917 1.796c.7791-1.2322 1.6454-1.66 2.7941-1.66.6172 0 1.1298.1643 1.5234.4881.3916.3216.5819.7304.5819 1.249v.5652c-.7324-.221-1.4629-.333-2.1738-.333-1.47 0-2.6663.3432-3.555 1.0193-.9.6852-1.3562 1.665-1.3562 2.9125 0 1.094.3847 1.9829 1.1461 2.6433.7677.6372 1.7275.961 2.8524.961 1.1246 0 2.177-.4495 3.132-1.2191v.9587h2.9089v-7.4852c0-1.4173-.4572-2.523-1.3591-3.2872zM170.7656 12.8285c-.8227-.9092-1.9791-1.371-3.4371-1.371-1.172 0-2.1236.3338-2.8357.9926v-.7207h-2.897v11.6435h2.954v-6.4215c0-.8823.2119-1.5828.6293-2.0826.4162-.4987.989-.741 1.75-.741.6691 0 1.1765.2167 1.5506.662.3759.4474.5662 1.0638.5662 1.8335v6.7496H172v-6.7496c0-1.6127-.415-2.889-1.2344-3.7948M92.8158 18.9234c.3351-.2318.8087-.3483 1.4075-.3483.7112 0 1.4652.1413 2.2426.421v1.1421c-.6421.592-1.4998.8922-2.5502.8922-.5114 0-.9087-.1126-1.1819-.3355-.2683-.218-.3988-.4955-.3988-.847 0-.3994.1574-.7022.4808-.9245zm5.2451-6.3229h-.0003c-.8952-.758-2.1328-1.143-3.6776-1.143-.983 0-1.902.2144-2.7337.6324-.7694.387-1.5247 1.0275-2.0043 1.8662l.0295.0358 1.8917 1.796c.7792-1.2322 1.6458-1.66 2.7941-1.66.6172 0 1.1298.1643 1.5234.4881.3916.3216.5822.7304.5822 1.249v.5652c-.7327-.221-1.4631-.333-2.174-.333-1.47 0-2.6664.3432-3.555 1.0193-.8999.6852-1.3562 1.665-1.3562 2.9125 0 1.094.3847 1.9829 1.1463 2.6433.7677.6372 1.7272.961 2.8524.961 1.1246 0 2.1766-.4495 3.1318-1.2191v.9587H99.42v-7.4852c0-1.4173-.457-2.523-1.359-3.2872zM115.4464 9.5808c-3.0682 0-5.5645 2.4755-5.5645 5.5188s2.4963 5.5188 5.5645 5.5188c3.0682 0 5.5645-2.4755 5.5645-5.5188s-2.4963-5.5188-5.5645-5.5188zm0 14.0408c-4.7383 0-8.5928-3.8228-8.5928-8.522 0-4.6994 3.8545-8.5223 8.5928-8.5223 4.738 0 8.5925 3.8229 8.5925 8.5223 0 4.6992-3.8545 8.522-8.5925 8.522z"></path> </g> </symbol>
+    <symbol id="do_nav-community_logo" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 532.2 99.8" fill="currentColor"> <path class="st0" d="M98.5,23c15.5,0,27.7,12.1,27.7,28.2c0,16.1-12.3,28.1-27.7,28.1c-15.6,0-27.7-11.9-27.7-28.1 C70.8,35.1,82.9,23,98.5,23z M98.5,67.9c8.7,0,14.9-7,14.9-16.8c0-9.8-6.2-16.8-14.9-16.8c-8.8,0-15,7-15,16.8 C83.5,60.9,89.7,67.9,98.5,67.9z"/> <path class="st0" d="M166.8,45.9c0-7-3.5-11.6-9.9-11.6c-7.2,0-11.1,5.3-11.1,13.1V78h-12.5V24.3h12.3V29c2.4-2.8,7-6,13.9-6 c7.3,0,12.2,3.1,15,7c4.4-4.9,10-7,16.8-7c14.4,0,21.4,8.5,21.4,23.8V78h-12.5V45.9c0-7-3.5-11.6-9.9-11.6 c-7.2,0-11.2,5.3-11.2,13.1V78h-12.4V45.9z"/> <path class="st0" d="M255.5,45.9c0-7-3.5-11.6-9.9-11.6c-7.2,0-11.1,5.3-11.1,13.1V78h-12.5V24.3h12.3V29c2.4-2.8,7-6,13.9-6 c7.3,0,12.2,3.1,15,7c4.4-4.9,10-7,16.8-7c14.4,0,21.4,8.5,21.4,23.8V78h-12.5V45.9c0-7-3.5-11.6-9.9-11.6 c-7.2,0-11.2,5.3-11.2,13.1V78h-12.4V45.9z"/> <path class="st0" d="M322.5,56.4c0,7,3.6,11.6,10.1,11.6c7.2,0,11.2-5.6,11.2-13.5V24.3h12.5V78h-12.3v-4.4 c-3.4,3.7-8.1,5.6-13.9,5.6c-11.9,0-20.1-8.4-20.1-23.7V24.3h12.5V56.4z"/> <path class="st0" d="M378.2,78h-12.5V24.3h12.3v4.4c2.7-3.1,7.7-5.7,13.9-5.7c13.1,0,21.3,8.5,21.3,23.8V78h-12.5V46.8 c0-7.5-3.7-12.5-10.6-12.5c-7.8,0-11.8,5.6-11.8,14V78z"/> <path class="st0" d="M427.8,0.2c4.4,0,7.9,3.4,7.9,7.8s-3.5,7.9-7.9,7.9c-4.4,0-7.9-3.5-7.9-7.9S423.4,0.2,427.8,0.2z M421.4,24.3 h12.5V78h-12.5V24.3z"/> <path class="st0" d="M446.7,59.1V35.5h-6.5V24.3h6.5v-15H459v15h12.2v11.2H459v21.7c0,7.8,1.8,9.8,8.8,9.8c1.2,0,4.1-0.2,4.1-0.2 v11.2c0,0-2.4,0.2-6.7,0.2C451.2,78.1,446.7,72.7,446.7,59.1z"/> <path class="st0" d="M497.3,78.7l-21.3-54.4h14.2l14,38.8l14.2-38.8h13.6l-24.1,60.2c-3.7,9.4-7.2,15.3-21.3,15.3 c-2.5,0-4.8-0.1-4.8-0.1V88c0,0,1.5,0.1,2.8,0.1c7.6,0,9.8-2.3,11.8-7.8L497.3,78.7z"/> <path class="st0" d="M62.4,55.9c-5.3,7-12.2,11.4-22.1,11.4c-15.6,0-27-11.7-27-27.5c0-16.1,11.4-27.8,26.5-27.8 c10,0,16.8,4.8,21.3,11.3l8.4-8.8C63.1,5.7,53.3,0,39.7,0C17.1,0,0,15.9,0,39.8c0,23.4,17.1,39.4,40.1,39.4c13.1,0,22-4.9,28.6-12.2 L62.4,55.9z"/> </symbol>
+    <symbol id="do_nav-control_panel_icon" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M19.6875 23.4862C19.6885 23.9722 19.4965 24.4388 19.1537 24.7833C18.8109 25.1279 18.3454 25.3222 17.8594 25.3237H3.23438C2.99366 25.3232 2.75539 25.2753 2.53321 25.1827C2.31102 25.09 2.10927 24.9545 1.93949 24.7839C1.7697 24.6132 1.63522 24.4108 1.54373 24.1881C1.45223 23.9655 1.40552 23.727 1.40626 23.4862V3.25498C1.40577 3.01417 1.45271 2.77562 1.54441 2.55295C1.63611 2.33028 1.77077 2.12785 1.9407 1.95722C2.11063 1.7866 2.31251 1.65111 2.5348 1.5585C2.75709 1.46589 2.99545 1.41797 3.23626 1.41748L17.8613 1.44186C18.347 1.44384 18.812 1.63843 19.1544 1.98292C19.4968 2.32741 19.6885 2.79366 19.6875 3.27936V23.4862Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M43.5863 12.27C43.5828 12.7516 43.3883 13.212 43.0456 13.5503C42.7028 13.8885 42.2397 14.0768 41.7582 14.0738H27.1332C26.8947 14.0755 26.6582 14.0302 26.4372 13.9405C26.2162 13.8507 26.015 13.7183 25.8453 13.5508C25.6755 13.3833 25.5404 13.1839 25.4477 12.9642C25.355 12.7444 25.3065 12.5085 25.3051 12.27V3.24565C25.308 2.76461 25.5019 2.30442 25.8439 1.96621C26.186 1.62799 26.6484 1.43941 27.1294 1.4419L41.7544 1.41753C42.2365 1.41403 42.7002 1.60205 43.0437 1.94027C43.3872 2.27849 43.5823 2.73924 43.5863 3.22128V12.27Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M19.6875 41.7956C19.686 42.0347 19.6375 42.2712 19.5446 42.4915C19.4518 42.7118 19.3164 42.9117 19.1463 43.0797C18.9762 43.2477 18.7747 43.3806 18.5532 43.4707C18.3318 43.5609 18.0947 43.6065 17.8556 43.605L3.23063 43.5806C2.74908 43.5826 2.28644 43.3934 1.94436 43.0545C1.60228 42.7155 1.40873 42.2547 1.40625 41.7731V32.7563C1.40748 32.5175 1.45575 32.2813 1.54831 32.0612C1.64087 31.8412 1.7759 31.6415 1.94569 31.4736C2.11547 31.3057 2.31667 31.173 2.53779 31.0829C2.75892 30.9929 2.99562 30.9473 3.23438 30.9488H17.8594C18.3414 30.9463 18.8047 31.1352 19.1475 31.4742C19.4903 31.8131 19.6845 32.2742 19.6875 32.7563V41.7956Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M27.1349 43.605C26.894 43.6045 26.6555 43.5565 26.433 43.4638C26.2106 43.3711 26.0087 43.2354 25.8387 43.0646C25.6688 42.8937 25.5341 42.6911 25.4426 42.4682C25.351 42.2453 25.3042 42.0066 25.3049 41.7656V21.5381C25.3042 21.2973 25.3509 21.0587 25.4424 20.8359C25.5338 20.6132 25.6683 20.4106 25.8381 20.2398C26.0078 20.069 26.2095 19.9333 26.4317 19.8405C26.6539 19.7476 26.8923 19.6995 27.1331 19.6987H41.7581C41.9989 19.6995 42.2372 19.7476 42.4594 19.8405C42.6816 19.9333 42.8833 20.069 43.0531 20.2398C43.2228 20.4106 43.3573 20.6132 43.4488 20.8359C43.5402 21.0587 43.5869 21.2973 43.5862 21.5381V41.7412C43.5872 42.2271 43.3955 42.6935 43.0532 43.0383C42.7109 43.3831 42.2458 43.5781 41.7599 43.5806L27.1349 43.605Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+    <symbol id="do_nav-community_icon" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#clip0)"> <path d="M12.6562 10.5469C12.6562 9.85155 12.8624 9.17184 13.2487 8.5937C13.635 8.01556 14.1841 7.56495 14.8265 7.29886C15.4689 7.03277 16.1758 6.96315 16.8577 7.0988C17.5397 7.23445 18.1661 7.56929 18.6578 8.06095C19.1495 8.55262 19.4843 9.17905 19.6199 9.86101C19.7556 10.543 19.686 11.2499 19.4199 11.8922C19.1538 12.5346 18.7032 13.0837 18.1251 13.47C17.5469 13.8563 16.8672 14.0625 16.1719 14.0625" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M16.1719 18.2812C16.0328 18.2812 15.8969 18.3225 15.7812 18.3997C15.6656 18.477 15.5755 18.5868 15.5223 18.7153C15.4691 18.8438 15.4551 18.9852 15.4823 19.1215C15.5094 19.2579 15.5764 19.3832 15.6747 19.4816C15.773 19.5799 15.8983 19.6469 16.0347 19.674C16.1711 19.7011 16.3125 19.6872 16.4409 19.634C16.5694 19.5808 16.6792 19.4906 16.7565 19.375C16.8338 19.2594 16.875 19.1234 16.875 18.9844C16.875 18.7979 16.8009 18.6191 16.6691 18.4872C16.5372 18.3553 16.3584 18.2812 16.1719 18.2812Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M32.3438 4.21875V12.6562" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M29.5312 1.40625C30.2772 1.40625 30.9925 1.70257 31.52 2.23001C32.0474 2.75746 32.3438 3.47283 32.3438 4.21875" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M4.21875 1.40625H29.5312" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M1.40625 4.21875C1.40625 3.47283 1.70257 2.75746 2.23001 2.23001C2.75746 1.70257 3.47283 1.40625 4.21875 1.40625" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M1.40625 23.9062V4.21875" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M4.21875 26.7188C3.47283 26.7187 2.75746 26.4224 2.23001 25.895C1.70257 25.3675 1.40625 24.6522 1.40625 23.9062" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M9.84375 26.7188H4.21875" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M9.84375 35.1562V26.7188" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M15.4688 30.9375L9.84375 35.1562" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M43.5938 35.1562H37.9688V43.5938L29.5312 35.1562H21.0938V18.2812H43.5938V35.1562Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M32.3438 23.9062V29.5312" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </g> <defs> <clipPath id="clip0"> <rect width="45" height="45" fill="white"/> </clipPath> </defs> </symbol>
+    <symbol id="do_nav-search" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M15.7 13.3l-3.81-3.83A5.93 5.93 0 0 0 13 6c0-3.31-2.69-6-6-6S1 2.69 1 6s2.69 6 6 6c1.3 0 2.48-.41 3.47-1.11l3.83 3.81c.19.2.45.3.7.3.25 0 .52-.09.7-.3a.996.996 0 0 0 0-1.41v.01zM7 10.7c-2.59 0-4.7-2.11-4.7-4.7 0-2.59 2.11-4.7 4.7-4.7 2.59 0 4.7 2.11 4.7 4.7 0 2.59-2.11 4.7-4.7 4.7z"></path></symbol>
+    <symbol id="do_nav-logomark" x="0px" y="0px" viewBox="65.2 173.5 180 180" fill="currentColor"><path d="M155.2,351.7v-34.2c36.2,0,64.3-35.9,50.4-74c-5.1-14.1-16.4-25.4-30.5-30.5c-38.1-13.8-74,14.2-74,50.4l0,0H67c0-57.7,55.8-102.7,116.3-83.8c26.4,8.3,47.5,29.3,55.7,55.7C257.9,295.9,213,351.7,155.2,351.7z"/> <polygon points="155.3,317.6 121.3,317.6 121.3,283.6 121.3,283.6 155.3,283.6 155.3,283.6"/> <polygon points="121.3,343.8 95.1,343.8 95.1,343.8 95.1,317.6 121.3,317.6"/> <path d="M95.1,317.6H73.2l0,0v-21.9l0,0h21.9l0,0V317.6z"/></symbol>
+    <symbol id="do_nav-write4do" viewBox="0 0 30 30" fill="none" stroke="currentColor"> <path d="M16.3063 17.67L11.6663 18.3338L12.3288 13.6925L24.2613 1.76002C24.7887 1.23257 25.5041 0.936249 26.25 0.936249C26.6194 0.936249 26.9851 1.009 27.3263 1.15034C27.6675 1.29168 27.9776 1.49885 28.2388 1.76002C28.4999 2.02118 28.7071 2.33123 28.8484 2.67246C28.9898 3.01369 29.0625 3.37942 29.0625 3.74877C29.0625 4.11811 28.9898 4.48384 28.8484 4.82507C28.7071 5.1663 28.4999 5.47635 28.2388 5.73752L16.3063 17.67Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M22.935 3.08624L26.9125 7.06374"  stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M23.4375 17.8125V27.1875C23.4375 27.6848 23.24 28.1617 22.8883 28.5133C22.5367 28.865 22.0598 29.0625 21.5625 29.0625H2.8125C2.31522 29.0625 1.83831 28.865 1.48667 28.5133C1.13504 28.1617 0.9375 27.6848 0.9375 27.1875V8.4375C0.9375 7.94022 1.13504 7.46331 1.48667 7.11167C1.83831 6.76004 2.31522 6.5625 2.8125 6.5625H12.1875" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+    <symbol id="do_nav-meetups" viewBox="0 0 30 30" fill="none" stroke="currentColor"> <path d="M27.1901 4.6875H2.81506C1.77953 4.6875 0.940063 5.52697 0.940063 6.5625V27.1875C0.940063 28.223 1.77953 29.0625 2.81506 29.0625H27.1901C28.2256 29.0625 29.0651 28.223 29.0651 27.1875V6.5625C29.0651 5.52697 28.2256 4.6875 27.1901 4.6875Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M0.940063 12.1875H29.0651" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M8.44006 7.5V0.9375" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M21.5651 7.5V0.9375" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+    <symbol id="do_nav-hacktoberfest" viewBox="0 0 30 30" fill="none" stroke="currentColor"> <path d="M19.2063 24.9918L16.5714 22.3569V14.4854L13.986 17.0708V23.5755L12.5615 25L11.1371 23.5591V8.44175L10.7419 8.04652L8.93042 9.8662L8 8.94401L11.9358 5.00823L11.944 5.01647L12.1005 5.16468L13.9778 7.04199V13.8431L16.5632 11.2577V8.42528L15.2705 7.12433L17.3948 5L19.4286 7.03376V20.9572L20.4249 21.9535L21.6352 20.7431L22.5492 21.6571L19.2063 24.9918Z" fill="currentcolor"/> <rect x="0.75" y="0.75" width="28.5" height="28.5" rx="2.25" stroke-width="1.5" stroke="currentColor"/> </symbol>
+    <symbol id="do_nav-build" viewBox="0 0 16 16" fill="none" stroke="currentColor"> <path d="M1.5 14.5C1.23478 14.5 0.98043 14.3946 0.792893 14.2071C0.605357 14.0196 0.5 13.7652 0.5 13.5V2.57667C0.500879 2.29139 0.614596 2.01804 0.81632 1.81632C1.01804 1.6146 1.29139 1.50088 1.57667 1.5H14.4287C14.7125 1.50088 14.9845 1.61403 15.1852 1.81476C15.386 2.01548 15.4991 2.28747 15.5 2.57133V13.4233C15.4991 13.7086 15.3854 13.982 15.1837 14.1837C14.982 14.3854 14.7086 14.4991 14.4233 14.5H1.5Z" stroke-linecap="round" stroke-linejoin="round"/> <path d="M15.5 4.5H0.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M11 7.5L13 9.5L11 11.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M5 7.5L3 9.5L5 11.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M9 7.5L7 11.5" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+  </svg>
+</div>
+
+<nav class="do_nav" role="navigation" aria-label="Navigation">
+  <ul role="menubar" class="utility">
+    <li role="banner" data-flex="grow" data-show="always">
+    </li>
+    <li role="menuitem">
+      <a href="/products/">Products</a>
+    </li>
+    <li role="menuitem">
+      <a href="/pricing/">Pricing</a>
+    </li>
+    <li role="menuitem" aria-haspopup="true" tabindex="0">
+      <span class="expander">Docs</span>
+      <div class="mini" aria-expanded="false">
+        <ul role="menu">
+          <li role="menuitem">
+            <a href="/docs/">Product Docs</a>
+          </li>
+          <li role="menuitem">
+            <a href="https://developers.digitalocean.com/documentation/">API Docs</a>
+          </li>
+        </ul>
+      </div>
+    </li>
+      <li role="menuitem" aria-haspopup="true" tabindex="0">
+      <span class="expander">Log in</span>
+        <div class="mini" aria-expanded="false">
+          <header>Log in to</header>
+          <ul role="menu">
+            <li role="menuitem">
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <use xlink:href="#do_nav-community_icon"></use>
+              </svg>
+              <a id="log-in" href="/community/auth/digitalocean">Community</a>
+            </li>
+            <li role="menuitem">
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <use xlink:href="#do_nav-control_panel_icon"></use>
+              </svg>
+              <a href="https://cloud.digitalocean.com/registrations/new">Control Panel</a>
+            </li>
+          </ul>
+        </div>
+      </li>
+  </ul>
+
+  <ul role="menubar" class="primary">
+    <li role="menuitem" data-show="always">
+      <a href="https://www.digitalocean.com/">
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" shape-rendering="auto">
+          <use xlink:href="#do_nav-logomark"></use>
+        </svg>
+      </a>
+    </li>
+    <li role="menuitem" data-show="always">
+      <a role="home" title="DigitalOcean Community Home" href="/community">
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="120px" height="24px"
+             shape-rendering="auto">
+          <use xlink:href="#do_nav-community_logo"></use>
+        </svg>
+</a>    </li>
+    <li role="menuitem">
+      <a data-activatable="true" href="/community/tutorials">Tutorials</a>
+    </li>
+    <li role="menuitem">
+      <a data-activatable="true" href="/community/questions">Questions</a>
+    </li>
+    <li role="menuitem" aria-haspopup="true" class="mega_parent" tabindex="0">
+      <span class="expander">Get Involved</span>
+      <div class="mega" aria-expanded="false">
+        <div class="section column">
+          <header>Participate</header>
+          <ul role="menu">
+            <li role="menuitem">
+              <a href="https://www.digitalocean.com/write-for-donations/" class="with_image">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <use xlink:href="#do_nav-write4do"></use>
+                </svg>
+                <p>
+                  <strong>Write for DigitalOcean</strong>
+                  You get paid, we donate to tech non-profits.
+                </p>
+              </a>
+            </li>
+            <li role="menuitem">
+              <a href="https://www.meetup.com/pro/digitalocean" class="with_image">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <use xlink:href="#do_nav-meetups"></use>
+                </svg>
+                <p>
+                  <strong>DigitalOcean Meetups</strong>
+                  Find and meet other developers in your city.
+                </p>
+              </a>
+            </li>
+            <li role="menuitem">
+              <a href="https://hacktoberfest.digitalocean.com" class="with_image">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <use xlink:href="#do_nav-hacktoberfest"></use>
+                </svg>
+                <p>
+                  <strong>Hacktoberfest</strong>
+                  Contribute to Open Source
+                </p>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="section column">
+          <header>
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+              <use xlink:href="#do_nav-build"></use>
+            </svg>
+            Build with DigitalOcean
+          </header>
+          <ul role="menu" class="indent">
+            <li role="menuitem">
+              <a title="Community-built tools and integrations that use the DigitalOcean API" href="/community/tools">Community Tools and Integrations</a>
+            </li>
+            <li role="menuitem"><a href="https://www.digitalocean.com/hatch/" title="Build your startup on DigitalOcean.">Hatch Startup Program</a></li>
+            <li role="menuitem"><a href="https://marketplace.digitalocean.com/vendors/" title="List your open source One-Click Application in the DigitalOcean Marketplace">Marketplace Partner Program</a></li>
+            <li role="menuitem"><a href="https://www.digitalocean.com/droplets-for-demos/" title="DigitalOcean credits to fund research for conference and meetup presentations">Presentation Grants</a></li>
+            <li role="menuitem"><a href="https://github.com/digitalocean">DigitalOcean on GitHub</a></li>
+          </ul>
+        </div>
+      </div>
+    </li>
+    <li role="menuitem" data-show="mobile" data-flex="grow" class="right">
+      <a href="javascript:void(0);" data-js="modal_toggle">
+        <span class="icon-menu-thin"></span>
+      </a>
+    </li>
+    <li role="menuitem" aria-haspopup="true" data-flex="grow">
+      <form name="do_nav-search" method="GET" action="https://www.digitalocean.com/community/search">
+        <label for="q">
+          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" shape-rendering="auto"
+               width="14px" height="14px">
+            <use xlink:href="#do_nav-search"></use>
+          </svg>
+        </label>
+        <input type="text" name="q" id="q" title="Search" placeholder="Search DigitalOcean" autocomplete="off" spellcheck="false" class="search" />
+        </form>
+        <div class="mini search-results-dropdown" aria-expanded="false">
+            <div class="header-search-results-list"></div>
+            <div id="btn-wrap">
+              <a class="more-search-results" data-search-path="/community/search" href="/community/search">
+                View All Results
+              </a>
+            </div>
+        </div>
+        <script type='text/template' id='autocomplete-hits-template'>
+          <div class="inner-search">
+            <ul>
+              <li class="section">
+                <p>{{section}}</p>
+              </li>
+
+              {{#hits}}
+                <li>
+                  <span class='icon icon-{{css_name}}'></span>
+                  <a href='{{url}}'>{{title}}</a>
+                </li>
+              {{/hits}}
+            </ul>
+
+            {{#hasMoreResults}}
+              <a href="/community/search?q={{query}}">View All Results</a>
+            {{/hasMoreResults}}
+          </div>
+        </script>
+    </li>
+    <li role="menuitem">
+      <a class="button primary" href="/community/auth/digitalocean?display=sessionless+register">Sign Up</a>
+    </li>
+  </ul>
+
+  <div class="mobile_nav_bg" data-js="modal_toggle"></div>
+  <div class="mobile_nav">
+    <a data-dismiss='modal' aria-label="close" href="javascript:void(0);" data-js="modal_toggle"><span class="icon-close"></span></a>
+    <div class="mobile_nav_content">
+      <header>Community</header>
+      <ul role="menu">
+        <li role="menuitem">
+          <a data-activatable="true" href="/community/tutorials">Tutorials</a>
+        </li>
+        <li role="menuitem">
+          <a data-activatable="true" href="/community/questions">Questions</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.meetup.com/pro/digitalocean">Meetups</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/write-for-donations/">Write for us</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://hacktoberfest.digitalocean.com">Hacktoberfest</a>
+        </li>
+        <li role="menuitem">
+          <a href="/community/tools">Community Projects</a>
+        </li>
+      </ul>
+      <header>Products</header>
+      <ul role="menu">
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/">Homepage</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/pricing">Pricing</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/products">Product Overview</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://marketplace.digitalocean.com/">Marketplace</a>
+        </li>
+      </ul>
+      <header>Customers</header>
+      <ul role="menu">
+        <li role="menuitem">
+          <a href="https://cloud.digitalocean.com/login">Control panel</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/docs/">Documentation</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/company/contact/#support">Contact Support</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/company/contact/sales/">Contact Sales</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<header>
+  <div class="legacy-header ">
+    <div class="flash-container">
+      
+    </div>
+
+    <div class="wrapper">
+      
+    </div>
+  </div>
+</header>
+
+
+
+      
+
+      <div class='wrapper layout-wrapper'>
+
+        
+
+
+
+
+
+
+
+
+
+
+<div class="section-content section-content-growable content Tutorial-content">
+  <div class='postable-info-bar-container'>
+  <div class='postable-info-bar'>
+    <div class="author-byline">
+      
+    </div>
+
+    <div class='right-section'>
+      
+
+
+        <div class='section-item table-of-contents-triggers'><div class="toc-trigger-mobile" data-toggle="modal" data-target="#contents-modal">
+  <a href="javascript:void(0);">
+    <span class="icon icon-contents"></span>
+    <span class="title">Contents</span>
+    <span class="icon icon-arrow-down"></span>
+  </a>
+</div>
+
+</div>
+
+    </div>
+  </div>
+</div>
+
+
+
+  <div class="container tutorial-header">
+    
+
+      <div class="featured-items-right-bar">
+        <h3>Related</h3>
+          <a href="/community/tutorials/how-to-use-the-django-one-click-install-image-for-ubuntu-14-04">
+            <div class="featured-item-regular">
+                  How To Use the Django One-Click Install Image for Ubuntu 14.04
+                  <span class="featured-item-category">
+                    <img width="14" height="14" alt="Tutorial" src="/assets/community/tutorials/featured-item-tutorial-icon-2150ccbef202144a53cea261312af267.png" />
+                    Tutorial
+                  </span>
+                </div>
+</a>          <a href="/community/tutorials/how-to-deliver-messages-based-on-routing-keys-using-the-rabbitmq-and-puka-python-library">
+            <div class="featured-item-regular">
+                  How To Deliver Messages Based on Routing Keys Using the RabbitMQ and Puka Python Library
+                  <span class="featured-item-category">
+                    <img width="14" height="14" alt="Tutorial" src="/assets/community/tutorials/featured-item-tutorial-icon-2150ccbef202144a53cea261312af267.png" />
+                    Tutorial
+                  </span>
+                </div>
+</a>      </div>
+
+
+
+    <h1 class="content-title Tutorial-header">Bias-Variance for Deep Reinforcement Learning: How To Build a Bot for Atari with OpenAI Gym</h1>
+
+    <span class="meta-section timestamp"><span class="tutorial-date-text">Posted</span><span class="tutorial-date">January 24, 2019</span></span>
+
+    <span class="meta-section pageviews"><span class="icon icon-eye v-mid"></span><span class="views-count v-mid">9.7k</span><span class="sr-only"> views</span></span>
+
+    <span class="meta-section tags">
+      <a class="tag" href="/community/tags/machine-learning?type=tutorials">Machine Learning</a> <a class="tag" href="/community/tags/python?type=tutorials">Python</a> <a class="tag" href="/community/tags/project?type=tutorials">Programming Project</a> <a class="dev-tag" href="/community/tags/development?type=tutorials">Development</a>
+      <a class="tag" href="/community/tags/ubuntu?type=tutorials">Ubuntu</a> <a class="tag" href="/community/tags/ubuntu-16-04?type=tutorials">Ubuntu 16.04</a>
+    </span>
+  </div>
+
+  <div class="tutorial-authors">
+    <div class="component-collaborators-container">
+  <ul class="component-collaborators-content">
+        <li class="collaborator-byline-avatar">
+          <a href="/community/users/alvinwan">
+            <img class="avatar avatar-large" src="https://community-cdn-digitalocean-com.global.ssl.fastly.net/assets/users/avatars/large/794f2abaf4288f05674c58bcc075b03b7078965c.jpg?1478984333" alt="794f2abaf4288f05674c58bcc075b03b7078965c" />
+</a>        </li>
+
+    <li class="collaborators-byline-data">
+        <p class="names">By <a href="/community/users/alvinwan">Alvin Wan</a></p>
+
+      <p>
+          <a class="advice" href="https://www.digitalocean.com/community/write-for-digitalocean">Become an author</a>
+      </p>
+    </li>
+  </ul>
+</div>
+
+  </div>
+
+
+    <div class="content-body tutorial-content" data-growable-markdown>
+      
+      <p><em>The author selected <a href="https://www.brightfunds.org/organizations/girls-who-code">Girls Who Code</a> to receive a donation as part of the <a href="https://do.co/w4do-cta">Write for DOnations</a> program.</em></p>
+
+<h3 id="introduction">Introduction</h3>
+
+<p><a href="https://en.wikipedia.org/wiki/Reinforcement_learning">Reinforcement learning</a> is a subfield within control theory, which concerns controlling systems that change over time and broadly includes applications such as self-driving cars, robotics, and bots for games. Throughout this guide, you will use reinforcement learning to build a bot for Atari video games. This bot is not given access to internal information about the game. Instead, it&rsquo;s only given access to the game&rsquo;s rendered display and the reward for that display, meaning that it can only see what a human player would see.</p>
+
+<p>In machine learning, a bot is formally known as an <em>agent</em>. In the case of this tutorial, an agent is a &ldquo;player&rdquo; in the system that acts according to a decision-making function, called a <em>policy</em>. The primary goal is to develop strong agents by arming them with strong policies. In other words, our aim is to develop intelligent bots by arming them with strong decision-making capabilities.</p>
+
+<p>You will begin this tutorial by training a basic reinforcement learning agent that takes random actions when playing Space Invaders, the classic Atari arcade game, which will serve as your baseline for comparison. Following this, you will explore several other techniques — including <a href="https://en.wikipedia.org/wiki/Q-learning">Q-learning</a>, <a href="https://en.wikipedia.org/wiki/Q-learning#Deep_Q-learning">deep Q-learning</a>, and <a href="https://en.wikipedia.org/wiki/Least_squares">least squares</a> — while building agents that play Space Invaders and Frozen Lake, a simple game environment included in <a href="https://gym.openai.com/">Gym</a>, a reinforcement learning toolkit released by <a href="https://openai.com/">OpenAI</a>. By following this tutorial, you will gain an understanding of the fundamental concepts that govern one&rsquo;s choice of model complexity in machine learning.</p>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<p>To complete this tutorial, you will need:</p>
+
+<ul>
+<li>A server running Ubuntu 18.04, with at least 1GB of RAM. This server should have a non-root user with <code>sudo</code> privileges configured, as well as a firewall set up with UFW. You can set this up by following this <a href="https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-18-04">Initial Server Setup Guide for Ubuntu 18.04</a>.</li>
+<li>A Python 3 virtual environment which you can achieve by reading our guide “<a href="https://www.digitalocean.com/community/tutorials/how-to-install-python-3-and-set-up-a-programming-environment-on-an-ubuntu-18-04-server">How To Install Python 3 and Set Up a Programming Environment on an Ubuntu 18.04 Server</a>.”</li>
+</ul>
+
+<p>Alternatively, if you are using a local machine, you can install Python 3 and set up a local programming environment by reading the appropriate tutorial for your operating system via our <a href="https://www.digitalocean.com/community/tutorial_series/how-to-install-and-set-up-a-local-programming-environment-for-python-3">Python Installation and Setup Series</a>. </p>
+
+<h2 id="step-1-—-creating-the-project-and-installing-dependencies">Step 1 — Creating the Project and Installing Dependencies</h2>
+
+<p>In order to set up the development environment for your bots, you must download the game itself and the libraries needed for computation.</p>
+
+<p>Begin by creating a workspace for this project named <code>AtariBot</code>:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">mkdir ~/AtariBot
+</li></ul></code></pre>
+<p>Navigate to the new <code>AtariBot</code> directory:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">cd ~/AtariBot
+</li></ul></code></pre>
+<p>Then create a new virtual environment for the project. You can name this virtual environment anything you&rsquo;d like; here, we will name it <code>ataribot</code>:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">python3 -m venv <span class="highlight">ataribot</span>
+</li></ul></code></pre>
+<p>Activate your environment:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">source <span class="highlight">ataribot</span>/bin/activate
+</li></ul></code></pre>
+<p>On Ubuntu, as of version 16.04, OpenCV requires a few more packages to be installed in order to function. These include CMake — an application that manages software build processes — as well as a session manager, miscellaneous extensions, and digital image composition. Run the following command to install these packages:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="(ataribot) sammy@your_server:~/AtariBot$">sudo apt-get install -y cmake libsm6 libxext6 libxrender-dev libz-dev
+</li></ul></code></pre>
+<span class='note'><p>
+<strong>NOTE:</strong> If you&rsquo;re following this guide on a local machine running MacOS, the only additional software you need to install is CMake. Install it using Homebrew (which you will have installed if you followed the <a href="https://www.digitalocean.com/community/tutorials/how-to-install-python-3-and-set-up-a-local-programming-environment-on-macos">prerequisite MacOS tutorial</a>) by typing:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="(ataribot) sammy@your_server:~/AtariBot$">brew install cmake
+</li></ul></code></pre>
+<p></p></span>
+
+<p>Next, use <code>pip</code> to install the <code>wheel</code> package, the reference implementation of the wheel packaging standard. A Python library, this package serves as an extension for building wheels and includes a command line tool for working with <code>.whl</code> files:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="(my_env) sammy@server:~$">python -m pip install wheel
+</li></ul></code></pre>
+<p>In addition to <code>wheel</code>, you&rsquo;ll need to install the following packages:</p>
+
+<ul>
+<li><a href="https://gym.openai.com/"><strong>Gym</strong></a>, a Python library that makes various games available for research, as well as all dependencies for the Atari games. Developed by <a href="https://openai.com/">OpenAI</a>, Gym offers public benchmarks for each of the games so that the performance for various agents and algorithms can be uniformly /evaluated.</li>
+<li><a href="https://www.tensorflow.org/"><strong>Tensorflow</strong></a>, a deep learning library. This library gives us the ability to run computations more efficiently. Specifically, it does this by building mathematical functions using Tensorflow&rsquo;s abstractions that run exclusively on your GPU.</li>
+<li><a href="https://opencv.org/"><strong>OpenCV</strong></a>, the computer vision library mentioned previously.</li>
+<li><a href="https://www.scipy.org/"><strong>SciPy</strong></a>, a scientific computing library that offers efficient optimization algorithms.</li>
+<li><a href="http://www.numpy.org/"><strong>NumPy</strong></a>, a linear algebra library.</li>
+</ul>
+
+<p>Install each of these packages with the following command. Note that this command specifies which version of each package to install:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="(ataribot) sammy@your_server:~/AtariBot$">python -m pip install gym==0.9.5 tensorflow==1.5.0 tensorpack==0.8.0 numpy==1.14.0 scipy==1.1.0 opencv-python==3.4.1.15
+</li></ul></code></pre>
+<p>Following this, use <code>pip</code> once more to install Gym&rsquo;s Atari environments, which includes a variety of Atari video games, including Space Invaders:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="(ataribot) sammy@your_server:~/AtariBot$">python -m pip install gym[atari]
+</li></ul></code></pre>
+<p>If your installation of the <code>gym[atari]</code> package was successful, your output will end with the following:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>Installing collected packages: atari-py, Pillow, PyOpenGL
+Successfully installed Pillow-5.4.1 PyOpenGL-3.1.0 atari-py-0.1.7
+</code></pre>
+<p>With these dependencies installed, you&rsquo;re ready to move on and build an agent that plays randomly to serve as your baseline for comparison.</p>
+
+<h2 id="step-2-—-creating-a-baseline-random-agent-with-gym">Step 2 — Creating a Baseline Random Agent with Gym</h2>
+
+<p>Now that the required software is on your server, you will set up an agent that will play a simplified version of the classic Atari game, Space Invaders. For any experiment, it is necessary to obtain a baseline to help you understand how well your model performs. Because this agent takes random actions at each frame, we&rsquo;ll refer to it as our random, baseline agent. In this case, you will compare against this baseline agent to understand how well your agents perform in later steps.</p>
+
+<p>With Gym, you maintain your own <em>game loop</em>. This means that you handle every step of the game&rsquo;s execution: at every time step, you give the <code>gym</code> a new action and ask <code>gym</code> for the <em>game state</em>. In this tutorial, the game state is the game&rsquo;s appearance at a given time step, and is precisely what you would see if you were playing the game.</p>
+
+<p>Using your preferred text editor, create a Python file named <code>bot_2_random.py</code>. Here, we&rsquo;ll use <code>nano</code>:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="(ataribot) sammy@your_server:~/AtariBot$">nano bot_2_random.py
+</li></ul></code></pre>
+<p><span class='note'><strong>Note:</strong> Throughout this guide, the bots&rsquo; names are aligned with the Step number in which they appear, rather than the order in which they appear. Hence, this bot is named <code>bot_2_random.py</code> rather than <code>bot_1_random.py</code>.<br></span></p>
+
+<p>Start this script by adding the following highlighted lines. These lines include a comment block that explains what this script will do and two <code>import</code> statements that will import the packages this script will ultimately need in order to function:</p>
+<div class="code-label " title="/AtariBot/bot_2_random.py">/AtariBot/bot_2_random.py</div><pre class="code-pre "><code langs=""><span class="highlight">"""</span>
+<span class="highlight">Bot 2 -- Make a random, baseline agent for the SpaceInvaders game.</span>
+<span class="highlight">"""</span>
+
+<span class="highlight">import gym</span>
+<span class="highlight">import random</span>
+</code></pre>
+<p>Add a <code>main</code> function. In this function, create the game environment — <code>SpaceInvaders-v0</code> — and then initialize the game using <code>env.reset</code>:</p>
+<div class="code-label " title="/AtariBot/bot_2_random.py">/AtariBot/bot_2_random.py</div><pre class="code-pre "><code langs="">. . .
+import gym
+import random
+
+<span class="highlight">def main():</span>
+    <span class="highlight">env = gym.make('SpaceInvaders-v0')</span>
+    <span class="highlight">env.reset()</span>
+
+</code></pre>
+<p>Next, add an <code>env.step</code> function. This function can return the following kinds of values:</p>
+
+<ul>
+<li><code>state</code>: The new state of the game, after applying the provided action.</li>
+<li><code>reward</code>: The increase in score that the state incurs. By way of example, this could be when a bullet has destroyed an alien, and the score increases by 50 points. Then, <code>reward = 50</code>. In playing any score-based game, the player&rsquo;s goal is to maximize the score. This is synonymous with maximizing the total reward.</li>
+<li><code>done</code>: Whether or not the episode has ended, which usually occurs when a player has lost all lives.</li>
+<li><code>info</code>: Extraneous information that you&rsquo;ll put aside for now.</li>
+</ul>
+
+<p>You will use <code>reward</code> to count your total reward. You&rsquo;ll also use <code>done</code> to determine when the player dies, which will be when <code>done</code> returns <code>True</code>.</p>
+
+<p>Add the following game loop, which instructs the game to loop until the player dies:</p>
+<div class="code-label " title="/AtariBot/bot_2_random.py">/AtariBot/bot_2_random.py</div><pre class="code-pre "><code langs="">. . .
+def main():
+    env = gym.make('SpaceInvaders-v0')
+    env.reset()
+
+    <span class="highlight">episode_reward = 0</span>
+    <span class="highlight">while True:</span>
+        <span class="highlight">action = env.action_space.sample()</span>
+        <span class="highlight">_, reward, done, _ = env.step(action)</span>
+        <span class="highlight">episode_reward += reward</span>
+        <span class="highlight">if done:</span>
+            <span class="highlight">print('Reward: %s' % episode_reward)</span>
+            <span class="highlight">break</span>
+
+</code></pre>
+<p>Finally, run the <code>main</code> function. Include a <code>__name__</code> check to ensure that <code>main</code> only runs when you invoke it directly with <code>python bot_2_random.py</code>. If you do not add the <code>if</code> check, <code>main</code> will always be triggered when the Python file is executed, <strong>even when you import the file</strong>. Consequently, it&rsquo;s a good practice to place the code in a <code>main</code> function, executed only when <code>__name__ == '__main__'</code>.</p>
+<div class="code-label " title="/AtariBot/bot_2_random.py">/AtariBot/bot_2_random.py</div><pre class="code-pre "><code langs="">. . .
+def main():
+    . . .
+    if done:
+        print('Reward %s' % episode_reward)
+        break
+
+<span class="highlight">if __name__ == '__main__':</span>
+    <span class="highlight">main()</span>
+</code></pre>
+<p>Save the file and exit the editor. If you&rsquo;re using <code>nano</code>, do so by pressing <code>CTRL+X</code>, <code>Y</code>, then <code>ENTER</code>. Then, run your script by typing:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="(ataribot) sammy@your_server:~/AtariBot$">python bot_2_random.py
+</li></ul></code></pre>
+<p>Your program will output a number, akin to the following. Note that each time you run the file you will get a different result:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>Making new env: SpaceInvaders-v0
+Reward: <span class="highlight">210.0</span>
+</code></pre>
+<p>These random results present an issue. In order to produce work that other researchers and practitioners can benefit from, your results and trials must be reproducible. To correct this, reopen the script file:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="(ataribot) sammy@your_server:~/AtariBot$">nano bot_2_random.py
+</li></ul></code></pre>
+<p>After <code>import random</code>, add <code>random.seed(0)</code>. After <code>env = gym.make('SpaceInvaders-v0')</code>, add <code>env.seed(0)</code>. Together, these lines &ldquo;seed&rdquo; the environment with a consistent starting point, ensuring that the results will always be reproducible. Your final file will match the following, exactly:</p>
+<div class="code-label " title="/AtariBot/bot_2_random.py">/AtariBot/bot_2_random.py</div><pre class="code-pre "><code class="code-highlight language-python">"""
+Bot 2 -- Make a random, baseline agent for the SpaceInvaders game.
+"""
+
+import gym
+import random
+<span class="highlight">random.seed(0)</span>
+
+
+def main():
+    env = gym.make('SpaceInvaders-v0')
+    <span class="highlight">env.seed(0)</span>
+
+    env.reset()
+    episode_reward = 0
+    while True:
+        action = env.action_space.sample()
+        _, reward, done, _ = env.step(action)
+        episode_reward += reward
+        if done:
+            print('Reward: %s' % episode_reward)
+            break
+
+
+if __name__ == '__main__':
+    main()
+</code></pre>
+<p>Save the file and close your editor, then run the script by typing the following in your terminal:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="(ataribot) sammy@your_server:~/AtariBot$">python bot_2_random.py
+</li></ul></code></pre>
+<p>This will output the following reward, exactly:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>Making new env: SpaceInvaders-v0
+Reward: 555.0
+</code></pre>
+<p>This is your very first bot, although it&rsquo;s rather unintelligent since it doesn&rsquo;t account for the surrounding environment when it makes decisions. For a more reliable estimate of your bot&rsquo;s performance, you could have the agent run for multiple episodes at a time, reporting rewards averaged across multiple episodes. To configure this, first reopen the file:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="(ataribot) sammy@your_server:~/AtariBot$">nano bot_2_random.py
+</li></ul></code></pre>
+<p>After <code>random.seed(0)</code>, add the following highlighted line which tells the agent to play the game for 10 episodes:</p>
+<div class="code-label " title="/AtariBot/bot_2_random.py">/AtariBot/bot_2_random.py</div><pre class="code-pre "><code langs="">. . .
+random.seed(0)
+
+<span class="highlight">num_episodes = 10</span>
+. . .
+</code></pre>
+<p>Right after <code>env.seed(0)</code>, start a new list of rewards:</p>
+<div class="code-label " title="/AtariBot/bot_2_random.py">/AtariBot/bot_2_random.py</div><pre class="code-pre "><code langs="">. . .
+    env.seed(0)
+    <span class="highlight">rewards = []</span>
+. . .
+</code></pre>
+<p>Nest all code from <code>env.reset()</code> to the end of <code>main()</code> in a <code>for</code> loop, iterating <code>num_episodes</code> times. Make sure to indent each line from <code>env.reset()</code> to <code>break</code> by four spaces:</p>
+<div class="code-label " title="/AtariBot/bot_2_random.py">/AtariBot/bot_2_random.py</div><pre class="code-pre "><code langs="">. . .
+def main():
+    env = gym.make('SpaceInvaders-v0')
+    env.seed(0)
+    rewards = []
+
+    <span class="highlight">for _ in range(num_episodes):</span>
+        env.reset()
+        episode_reward = 0
+
+        while True:
+            &hellip;
+</code></pre>
+<p>Right before <code>break</code>, currently the last line of the main game loop, add the current episode&rsquo;s reward to the list of all rewards:</p>
+<div class="code-label " title="/AtariBot/bot_2_random.py">/AtariBot/bot_2_random.py</div><pre class="code-pre "><code langs="">. . .
+        if done:
+            print('Reward: %s' % episode_reward)
+            <span class="highlight">rewards.append(episode_reward)</span>
+            break
+. . .
+</code></pre>
+<p>At the end of the <code>main</code> function, report the average reward:</p>
+<div class="code-label " title="/AtariBot/bot_2_random.py">/AtariBot/bot_2_random.py</div><pre class="code-pre "><code langs="">. . .
+def main():
+    &hellip;
+            print('Reward: %s' % episode_reward)
+            break
+    <span class="highlight">print('Average reward: %.2f' % (sum(rewards) / len(rewards)))</span>
+    . . .
+</code></pre>
+<p>Your file will now align with the following. Please note that the following code block includes a few comments to clarify key parts of the script:</p>
+<div class="code-label " title="/AtariBot/bot_2_random.py">/AtariBot/bot_2_random.py</div><pre class="code-pre "><code class="code-highlight language-python">"""
+Bot 2 -- Make a random, baseline agent for the SpaceInvaders game.
+"""
+
+import gym
+import random
+random.seed(0)  # make results reproducible
+
+num_episodes = 10
+
+
+def main():
+    env = gym.make('SpaceInvaders-v0')  # create the game
+    env.seed(0)  # make results reproducible
+    rewards = []
+
+    for _ in range(num_episodes):
+        env.reset()
+        episode_reward = 0
+        while True:
+            action = env.action_space.sample()
+            _, reward, done, _ = env.step(action)  # random action
+            episode_reward += reward
+            if done:
+                print('Reward: %d' % episode_reward)
+                rewards.append(episode_reward)
+                break
+    print('Average reward: %.2f' % (sum(rewards) / len(rewards)))
+
+
+if __name__ == '__main__':
+    main()
+</code></pre>
+<p>Save the file, exit the editor, and run the script:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="(ataribot) sammy@your_server:~/AtariBot$">python bot_2_random.py
+</li></ul></code></pre>
+<p>This will print the following average reward, exactly:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>Making new env: SpaceInvaders-v0
+. . .
+Average reward: 163.50
+</code></pre>
+<p>We now have a more reliable estimate of the baseline score to beat. To create a superior agent, though, you will need to understand the framework for reinforcement learning. How can one make the abstract notion of &ldquo;decision-making&rdquo; more concrete?</p>
+
+<h2 id="understanding-reinforcement-learning">Understanding Reinforcement Learning</h2>
+
+<p>In any game, the player&rsquo;s goal is to maximize their score. In this guide, the player&rsquo;s score is referred to as its <em>reward</em>. To maximize their reward, the player must be able to refine its decision-making abilities. Formally, a decision is the process of looking at the game, or observing the game&rsquo;s state, and picking an action. Our decision-making function is called a <em>policy</em>; a policy accepts a state as input and &ldquo;decides&rdquo; on an action:</p>
+<pre class="code-pre "><code langs="">policy: state -&gt; action
+</code></pre>
+<p>To build such a function, we will start with a specific set of algorithms in reinforcement learning called <em>Q-learning algorithms</em>. To illustrate these, consider the initial state of a game, which we&rsquo;ll call <code>state0</code>: your spaceship and the aliens are all in their starting positions. Then, assume we have access to a magical &ldquo;Q-table&rdquo; which tells us how much reward each action will earn:</p>
+
+<table><thead>
+<tr>
+<th>state</th>
+<th>action</th>
+<th>reward</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>state0</td>
+<td>shoot</td>
+<td>10</td>
+</tr>
+<tr>
+<td>state0</td>
+<td>right</td>
+<td>3</td>
+</tr>
+<tr>
+<td>state0</td>
+<td>left</td>
+<td>3</td>
+</tr>
+</tbody></table>
+
+<p>The <code>shoot</code> action will maximize your reward, as it results in the reward with the highest value: 10. As you can see, a Q-table provides a straightforward way to make decisions, based on the observed state:</p>
+<pre class="code-pre "><code langs="">policy: state -&gt; look at Q-table, pick action with greatest reward
+</code></pre>
+<p>However, most games have too many states to list in a table. In such cases, the Q-learning agent learns a <em>Q-function</em> instead of a Q-table. We use this Q-function similarly to how  we used the Q-table previously. Rewriting the table entries as functions gives us the following:</p>
+<pre class="code-pre "><code langs="">Q(state0, shoot) = 10
+Q(state0, right) = 3
+Q(state0, left) = 3
+</code></pre>
+<p>Given a particular state, it&rsquo;s easy for us to make a decision: we simply look at each possible action and its reward, then take the action that corresponds with the highest expected reward. Reformulating the earlier policy more formally, we have:</p>
+<pre class="code-pre "><code langs="">policy: state -&gt; argmax_{action} Q(state, action)
+</code></pre>
+<p>This satisfies the requirements of a decision-making function: given a state in the game, it decides on an action. However, this solution depends on knowing <code>Q(state, action)</code> for every state and action. To estimate <code>Q(state, action)</code>, consider the following:</p>
+
+<ol>
+<li>Given many observations of an agent&rsquo;s states, actions, and rewards, one can obtain an estimate of the reward for every state and action by taking a running average.</li>
+<li>Space Invaders is a game with delayed rewards: the player is rewarded when the alien is blown up and not when the player shoots. However, the player taking an action by shooting is the true impetus for the reward. Somehow, the Q-function must assign <code>(state0, shoot)</code> a positive reward.</li>
+</ol>
+
+<p>These two insights are codified in the following equations:</p>
+<pre class="code-pre "><code langs="">Q(state, action) = (1 - learning_rate) * Q(state, action) + learning_rate * Q_target
+Q_target = reward + discount_factor * max_{action'} Q(state', action')
+</code></pre>
+<p>These equations use the following definitions:</p>
+
+<ul>
+<li><code>state</code>: the state at current time step</li>
+<li><code>action</code>: the action taken at current time step</li>
+<li><code>reward</code>: the reward for current time step</li>
+<li><code>state'</code>: the new state for next time step, given that we took action <code>a</code></li>
+<li><code>action'</code>: all possible actions</li>
+<li><code>learning_rate</code>: the learning rate</li>
+<li><code>discount_factor</code>: the discount factor, how much reward &ldquo;degrades&rdquo; as we propagate it</li>
+</ul>
+
+<p>For a complete explanation of these two equations, see this article on <a href="http://alvinwan.com/understanding-deep-q-learning#q-learning">Understanding Q-Learning</a>.</p>
+
+<p>With this understanding of reinforcement learning in mind, all that remains is to actually run the game and obtain these Q-value estimates for a new policy.</p>
+
+<h2 id="step-3-—-creating-a-simple-q-learning-agent-for-frozen-lake">Step 3 — Creating a Simple Q-learning Agent for Frozen Lake</h2>
+
+<p>Now that you have a baseline agent, you can begin creating new agents and compare them against the original. In this step, you will create an agent that uses <a href="https://en.wikipedia.org/wiki/Q-learning">Q-learning</a>, a reinforcement learning technique used to teach an agent which action to take given a certain state. This agent will play a new game, <a href="https://gym.openai.com/envs/FrozenLake-v0/">FrozenLake</a>. The setup for this game is described as follows on the Gym website:</p>
+
+<blockquote>
+<p>Winter is here. You and your friends were tossing around a frisbee at the park when you made a wild throw that left the frisbee out in the middle of the lake. The water is mostly frozen, but there are a few holes where the ice has melted. If you step into one of those holes, you&rsquo;ll fall into the freezing water. At this time, there&rsquo;s an international frisbee shortage, so it&rsquo;s absolutely imperative that you navigate across the lake and retrieve the disc. However, the ice is slippery, so you won&rsquo;t always move in the direction you intend.</p>
+
+<p>The surface is described using a grid like the following:</p>
+</blockquote>
+<pre class="code-pre "><code langs="">SFFF       (S: starting point, safe)
+FHFH       (F: frozen surface, safe)
+FFFH       (H: hole, fall to your doom)
+HFFG       (G: goal, where the frisbee is located)
+</code></pre>
+<p>The player starts at the top left, denoted by <code>S</code>, and works its way to the goal at the bottom right, denoted by <code>G</code>. The available actions are <strong>right</strong>, <strong>left</strong>, <strong>up</strong>, and <strong>down</strong>, and reaching the goal results in a score of 1. There are a number of holes, denoted <code>H</code>, and falling into one immediately results in a score of 0.</p>
+
+<p>In this section, you will implement a simple Q-learning agent. Using what you&rsquo;ve learned previously, you will create an agent that trades off between <em>exploration</em> and <em>exploitation</em>. In this context, exploration means the agent acts randomly, and exploitation means it uses its Q-values to choose what it believes to be the optimal action. You will also create a table to hold the Q-values, updating it incrementally as the agent acts and learns.</p>
+
+<p>Make a copy of your script from Step 2:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="(ataribot) sammy@your_server:~/AtariBot$">cp bot_2_random.py bot_3_q_table.py
+</li></ul></code></pre>
+<p>Then open up this new file for editing:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="(ataribot) sammy@your_server:~/AtariBot$">nano bot_3_q_table.py
+</li></ul></code></pre>
+<p>Begin by updating the comment at the top of the file that describes the script&rsquo;s purpose. Because this is only a comment, this change isn&rsquo;t necessary for the script to function properly, but it can be helpful for keeping track of what the script does:</p>
+<div class="code-label " title="/AtariBot/bot_3_q_table.py">/AtariBot/bot_3_q_table.py</div><pre class="code-pre "><code langs="">"""
+<span class="highlight">Bot 3 -- Build simple q-learning agent for FrozenLake</span>
+"""
+
+. . .
+</code></pre>
+<p>Before you make functional modifications to the script, you will need to import <code>numpy</code> for its linear algebra utilities. Right underneath <code>import gym</code>, add the highlighted line:</p>
+<div class="code-label " title="/AtariBot/bot_3_q_table.py">/AtariBot/bot_3_q_table.py</div><pre class="code-pre "><code langs="">"""
+Bot 3 -- Build simple q-learning agent for FrozenLake
+"""
+
+import gym
+<span class="highlight">import numpy as np</span>
+import random
+random.seed(0)  # make results reproducible
+. . .
+</code></pre>
+<p>Underneath <code>random.seed(0)</code>, add a seed for <code>numpy</code>:</p>
+<div class="code-label " title="/AtariBot/bot_3_q_table.py">/AtariBot/bot_3_q_table.py</div><pre class="code-pre "><code langs="">. . .
+import random
+random.seed(0)  # make results reproducible
+<span class="highlight">np.random.seed(0)</span>
+. . .
+</code></pre>
+<p>Next, make the game states accessible. Update the <code>env.reset()</code> line to say the following, which stores the initial state of the game in the variable <code>state</code>:</p>
+<div class="code-label " title="/AtariBot/bot_3_q_table.py">/AtariBot/bot_3_q_table.py</div><pre class="code-pre "><code langs="">. . .
+    for _ in range(num_episodes):
+        <span class="highlight">state = </span>env.reset()
+        . . .
+</code></pre>
+<p>Update the <code>env.step(&hellip;)</code> line to say the following, which stores the next state, <code>state2</code>. You will need both the current <code>state</code> and the next one — <code>state2</code> — to update the Q-function.</p>
+<div class="code-label " title="/AtariBot/bot_3_q_table.py">/AtariBot/bot_3_q_table.py</div><pre class="code-pre "><code langs="">        . . .
+        while True:
+            action = env.action_space.sample()
+            <span class="highlight">state2</span>, reward, done, _ = env.step(action)
+            . . .
+</code></pre>
+<p>After <code>episode_reward += reward</code>, add a line updating the variable <code>state</code>. This keeps the variable <code>state</code> updated for the next iteration, as you will expect <code>state</code> to reflect the current state:</p>
+<div class="code-label " title="/AtariBot/bot_3_q_table.py">/AtariBot/bot_3_q_table.py</div><pre class="code-pre "><code langs="">. . .
+        while True:
+            . . .
+            episode_reward += reward
+            <span class="highlight">state = state2</span>
+            if done:
+                . . .
+</code></pre>
+<p>In the <code>if done</code> block, delete the <code>print</code> statement which prints the reward for each episode. Instead, you&rsquo;ll output the average reward over many episodes. The <code>if done</code> block will then look like this:</p>
+<div class="code-label " title="/AtariBot/bot_3_q_table.py">/AtariBot/bot_3_q_table.py</div><pre class="code-pre "><code langs="">            . . .
+            if done:
+                rewards.append(episode_reward)
+                break
+                . . .
+</code></pre>
+<p>After these modifications your game loop will match the following:</p>
+<div class="code-label " title="/AtariBot/bot_3_q_table.py">/AtariBot/bot_3_q_table.py</div><pre class="code-pre "><code class="code-highlight language-python">. . .
+    for _ in range(num_episodes):
+        state = env.reset()
+        episode_reward = 0
+        while True:
+            action = env.action_space.sample()
+            state2, reward, done, _ = env.step(action)
+            episode_reward += reward
+            state = state2
+            if done:
+                rewards.append(episode_reward))
+                break
+                . . .
+</code></pre>
+<p>Next, add the ability for the agent to trade off between exploration and exploitation. Right before your main game loop (which starts with <code>for&hellip;</code>), create the Q-value table:</p>
+<div class="code-label " title="/AtariBot/bot_3_q_table.py">/AtariBot/bot_3_q_table.py</div><pre class="code-pre "><code langs="">. . .
+    <span class="highlight">Q = np.zeros((env.observation_space.n, env.action_space.n))</span>
+    for _ in range(num_episodes):
+      . . .
+</code></pre>
+<p>Then, rewrite the <code>for</code> loop to expose the episode number:</p>
+<div class="code-label " title="/AtariBot/bot_3_q_table.py">/AtariBot/bot_3_q_table.py</div><pre class="code-pre "><code langs="">. . .
+    Q = np.zeros((env.observation_space.n, env.action_space.n))
+    for <span class="highlight">episode in range(1, num_episodes + 1)</span>:
+      . . .
+</code></pre>
+<p>Inside the <code>while True:</code> inner game loop, create <code>noise</code>. <em>Noise</em>, or meaningless, random data, is sometimes introduced when training deep neural networks because it can improve both the performance and the accuracy of the model. Note that the higher the noise, the less the values in <code>Q[state, :]</code> matter. As a result, the higher the noise, the more likely that the agent acts independently of its knowledge of the game. In other words, higher noise encourages the agent to <em>explore</em> random actions:</p>
+<div class="code-label " title="/AtariBot/bot_3_q_table.py">/AtariBot/bot_3_q_table.py</div><pre class="code-pre "><code langs="">        . . .
+        while True:
+            <span class="highlight">noise = np.random.random((1, env.action_space.n)) / (episode**2.)</span>
+            action = env.action_space.sample()
+            . . .
+</code></pre>
+<p>Note that as <code>episodes</code> increases, the amount of noise decreases quadratically: as time goes on, the agent explores less and less because it can trust its own assessment of the game&rsquo;s reward and begin to <em>exploit</em> its knowledge.</p>
+
+<p>Update the <code>action</code> line to have your agent pick actions according to the Q-value table, with some exploration built in:</p>
+<div class="code-label " title="/AtariBot/bot_3_q_table.py">/AtariBot/bot_3_q_table.py</div><pre class="code-pre "><code langs="">            . . .
+            noise = np.random.random((1, env.action_space.n)) / (episode**2.)
+            action = <span class="highlight">np.argmax(Q[state, :] + noise)</span>
+            state2, reward, done, _ = env.step(action)
+            . . .
+</code></pre>
+<p>Your main game loop will then match the following:</p>
+<div class="code-label " title="/AtariBot/bot_3_q_table.py">/AtariBot/bot_3_q_table.py</div><pre class="code-pre "><code class="code-highlight language-python">. . .
+    Q = np.zeros((env.observation_space.n, env.action_space.n))
+    for episode in range(1, num_episodes + 1):
+        state = env.reset()
+        episode_reward = 0
+        while True:
+            noise = np.random.random((1, env.action_space.n)) / (episode**2.)
+            action = np.argmax(Q[state, :] + noise)
+            state2, reward, done, _ = env.step(action)
+            episode_reward += reward
+            state = state2
+            if done:
+                rewards.append(episode_reward)
+                break
+                . . .
+</code></pre>
+<p>Next, you will update your Q-value table using the <a href="https://en.wikipedia.org/wiki/Bellman_equation">Bellman update equation</a>, an equation widely used in machine learning to find the optimal policy within a given environment.</p>
+
+<p>The Bellman equation incorporates two ideas that are highly relevant to this project. First, taking a particular action from a particular state many times will result in a good estimate for the Q-value associated with that state and action. To this end, you will increase the number of episodes this bot must play through in order to return a stronger Q-value estimate. Second, rewards must propagate through time, so that the original action is assigned a non-zero reward. This idea is clearest in games with delayed rewards; for example, in Space Invaders, the player is rewarded when the alien is blown up and not when the player shoots. However, the player shooting is the true impetus for a reward. Likewise, the Q-function must assign (<code>state0</code>, <code>shoot</code>) a positive reward.</p>
+
+<p>First, update <code>num_episodes</code> to equal 4000:</p>
+<div class="code-label " title="/AtariBot/bot_3_q_table.py">/AtariBot/bot_3_q_table.py</div><pre class="code-pre "><code langs="">. . .
+np.random.seed(0)
+
+num_episodes = <span class="highlight">4000</span>
+. . .
+</code></pre>
+<p>Then, add the necessary hyperparameters to the top of the file in the form of two more variables:</p>
+<div class="code-label " title="/AtariBot/bot_3_q_table.py">/AtariBot/bot_3_q_table.py</div><pre class="code-pre "><code langs="">. . .
+num_episodes = 4000
+<span class="highlight">discount_factor = 0.8</span>
+<span class="highlight">learning_rate = 0.9</span>
+. . .
+</code></pre>
+<p>Compute the new target Q-value, right after the line containing <code>env.step(&hellip;)</code>:</p>
+<div class="code-label " title="/AtariBot/bot_3_q_table.py">/AtariBot/bot_3_q_table.py</div><pre class="code-pre "><code langs="">            . . .
+            state2, reward, done, _ = env.step(action)
+            <span class="highlight">Qtarget = reward + discount_factor * np.max(Q[state2, :])</span>
+            episode_reward += reward
+            . . .
+</code></pre>
+<p>On the line directly after <code>Qtarget</code>, update the Q-value table using a weighted average of the old and new Q-values:</p>
+<div class="code-label " title="/AtariBot/bot_3_q_table.py">/AtariBot/bot_3_q_table.py</div><pre class="code-pre "><code langs="">            . . .
+            Qtarget = reward + discount_factor * np.max(Q[state2, :])
+            <span class="highlight">Q[state, action] = (1-learning_rate) * Q[state, action] + learning_rate * Qtarget</span>
+            episode_reward += reward
+            . . .
+</code></pre>
+<p>Check that your main game loop now matches the following:</p>
+<div class="code-label " title="/AtariBot/bot_3_q_table.py">/AtariBot/bot_3_q_table.py</div><pre class="code-pre "><code class="code-highlight language-python">. . .
+    Q = np.zeros((env.observation_space.n, env.action_space.n))
+    for episode in range(1, num_episodes + 1):
+        state = env.reset()
+        episode_reward = 0
+        while True:
+            noise = np.random.random((1, env.action_space.n)) / (episode**2.)
+            action = np.argmax(Q[state, :] + noise)
+            state2, reward, done, _ = env.step(action)
+            Qtarget = reward + discount_factor * np.max(Q[state2, :])
+            Q[state, action] = (1-learning_rate) * Q[state, action] + learning_rate * Qtarget
+            episode_reward += reward
+            state = state2
+            if done:
+                rewards.append(episode_reward)
+                break
+                . . .
+</code></pre>
+<p>Our logic for training the agent is now complete. All that&rsquo;s left is to add reporting mechanisms.</p>
+
+<p>Even though Python does not enforce strict type checking, add types to your function declarations for cleanliness. At the top of the file, before the first line reading <code>import gym</code>, import the <code>List</code> type:</p>
+<div class="code-label " title="/AtariBot/bot_3_q_table.py">/AtariBot/bot_3_q_table.py</div><pre class="code-pre "><code langs="">. . .
+<span class="highlight">from typing import List</span>
+import gym
+. . .
+</code></pre>
+<p>Right after <code>learning_rate = 0.9</code>, outside of the <code>main</code> function, declare the interval and format for reports:</p>
+<div class="code-label " title="/AtariBot/bot_3_q_table.py">/AtariBot/bot_3_q_table.py</div><pre class="code-pre "><code langs="">. . .
+learning_rate = 0.9
+<span class="highlight">report_interval = 500</span>
+<span class="highlight">report = '100-ep Average: %.2f . Best 100-ep Average: %.2f . Average: %.2f ' \</span>
+         <span class="highlight">'(Episode %d)'</span>
+
+def main():
+  . . .
+</code></pre>
+<p>Before the <code>main</code> function, add a new function that will populate this <code>report</code> string, using the list of all rewards:</p>
+<div class="code-label " title="/AtariBot/bot_3_q_table.py">/AtariBot/bot_3_q_table.py</div><pre class="code-pre "><code langs="">. . .
+report = '100-ep Average: %.2f . Best 100-ep Average: %.2f . Average: %.2f ' \
+         '(Episode %d)'
+
+<span class="highlight">def print_report(rewards: List, episode: int):</span>
+    <span class="highlight">"""Print rewards report for current episode</span>
+    <span class="highlight">- Average for last 100 episodes</span>
+    <span class="highlight">- Best 100-episode average across all time</span>
+    <span class="highlight">- Average for all episodes across time</span>
+    <span class="highlight">"""</span>
+    <span class="highlight">print(report % (</span>
+        <span class="highlight">np.mean(rewards[-100:]),</span>
+        <span class="highlight">max([np.mean(rewards[i:i+100]) for i in range(len(rewards) - 100)]),</span>
+        <span class="highlight">np.mean(rewards),</span>
+        <span class="highlight">episode))</span>
+
+
+def main():
+  . . .
+</code></pre>
+<p>Change the game to <code>FrozenLake</code> instead of <code>SpaceInvaders</code>:</p>
+<div class="code-label " title="/AtariBot/bot_3_q_table.py">/AtariBot/bot_3_q_table.py</div><pre class="code-pre "><code langs="">. . .
+def main():
+    env = gym.make('<span class="highlight">FrozenLake-v0</span>')  # create the game
+    . . .
+</code></pre>
+<p>After <code>rewards.append(&hellip;)</code>, print the average reward over the last 100 episodes and print the average reward across all episodes:</p>
+<div class="code-label " title="/AtariBot/bot_3_q_table.py">/AtariBot/bot_3_q_table.py</div><pre class="code-pre "><code langs="">            . . .
+            if done:
+                rewards.append(episode_reward)
+                <span class="highlight">if episode % report_interval == 0:</span>
+                    <span class="highlight">print_report(rewards, episode)</span>
+                . . .
+</code></pre>
+<p>At the end of the <code>main()</code> function, report both averages once more. Do this by replacing the line that reads <code>print('Average reward: %.2f' % (sum(rewards) / len(rewards)))</code> with the following highlighted line:</p>
+<div class="code-label " title="/AtariBot/bot_3_q_table.py">/AtariBot/bot_3_q_table.py</div><pre class="code-pre "><code langs="">. . .
+def main():
+    &hellip;
+                break
+    <span class="highlight">print_report(rewards, -1)</span>
+. . .
+</code></pre>
+<p>Finally, you have completed your Q-learning agent. Check that your script aligns with the following:</p>
+<div class="code-label " title="/AtariBot/bot_3_q_table.py">/AtariBot/bot_3_q_table.py</div><pre class="code-pre "><code class="code-highlight language-python">"""
+Bot 3 -- Build simple q-learning agent for FrozenLake
+"""
+
+from typing import List
+import gym
+import numpy as np
+import random
+random.seed(0)  # make results reproducible
+np.random.seed(0)  # make results reproducible
+
+num_episodes = 4000
+discount_factor = 0.8
+learning_rate = 0.9
+report_interval = 500
+report = '100-ep Average: %.2f . Best 100-ep Average: %.2f . Average: %.2f ' \
+         '(Episode %d)'
+
+
+def print_report(rewards: List, episode: int):
+    """Print rewards report for current episode
+    - Average for last 100 episodes
+    - Best 100-episode average across all time
+    - Average for all episodes across time
+    """
+    print(report % (
+        np.mean(rewards[-100:]),
+        max([np.mean(rewards[i:i+100]) for i in range(len(rewards) - 100)]),
+        np.mean(rewards),
+        episode))
+
+
+def main():
+    env = gym.make('FrozenLake-v0')  # create the game
+    env.seed(0)  # make results reproducible
+    rewards = []
+
+    Q = np.zeros((env.observation_space.n, env.action_space.n))
+    for episode in range(1, num_episodes + 1):
+        state = env.reset()
+        episode_reward = 0
+        while True:
+            noise = np.random.random((1, env.action_space.n)) / (episode**2.)
+            action = np.argmax(Q[state, :] + noise)
+            state2, reward, done, _ = env.step(action)
+            Qtarget = reward + discount_factor * np.max(Q[state2, :])
+            Q[state, action] = (1-learning_rate) * Q[state, action] + learning_rate * Qtarget
+            episode_reward += reward
+            state = state2
+            if done:
+                rewards.append(episode_reward)
+                if episode % report_interval == 0:
+                    print_report(rewards, episode)
+                break
+    print_report(rewards, -1)
+
+if __name__ == '__main__':
+    main()
+</code></pre>
+<p>Save the file, exit your editor, and run the script:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="(ataribot) sammy@your_server:~/AtariBot$">python bot_3_q_table.py
+</li></ul></code></pre>
+<p>Your output will match the following:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>100-ep Average: 0.11 . Best 100-ep Average: 0.12 . Average: 0.03 (Episode 500)
+100-ep Average: 0.25 . Best 100-ep Average: 0.24 . Average: 0.09 (Episode 1000)
+100-ep Average: 0.39 . Best 100-ep Average: 0.48 . Average: 0.19 (Episode 1500)
+100-ep Average: 0.43 . Best 100-ep Average: 0.55 . Average: 0.25 (Episode 2000)
+100-ep Average: 0.44 . Best 100-ep Average: 0.55 . Average: 0.29 (Episode 2500)
+100-ep Average: 0.64 . Best 100-ep Average: 0.68 . Average: 0.32 (Episode 3000)
+100-ep Average: 0.63 . Best 100-ep Average: 0.71 . Average: 0.36 (Episode 3500)
+100-ep Average: 0.56 . Best 100-ep Average: 0.78 . Average: 0.40 (Episode 4000)
+100-ep Average: 0.56 . Best 100-ep Average: 0.78 . Average: 0.40 (Episode -1)
+</code></pre>
+<p>You now have your first non-trivial bot for games, but let&rsquo;s put this average reward of <code>0.78</code> into perspective. According to the <a href="https://gym.openai.com/envs/FrozenLake-v0/">Gym FrozenLake page</a>, &ldquo;solving&rdquo; the game means attaining a 100-episode average of <code>0.78</code>. Informally, &ldquo;solving&rdquo; means &ldquo;plays the game very well&rdquo;. While not in record time, the Q-table agent is able to solve FrozenLake in 4000 episodes.</p>
+
+<p>However, the game may be more complex. Here, you used a table to store all of the 144 possible states, but consider tic tac toe in which there are 19,683 possible states. Likewise, consider Space Invaders where there are too many possible states to count. A Q-table is not sustainable as games grow increasingly complex. For this reason, you need some way to approximate the Q-table. As you continue experimenting in the next step, you will design a function that can accept states and actions as inputs and output a Q-value.</p>
+
+<h2 id="step-4-—-building-a-deep-q-learning-agent-for-frozen-lake">Step 4 — Building a Deep Q-learning Agent for Frozen Lake</h2>
+
+<p>In reinforcement learning, the neural network effectively predicts the value of Q based on the <code>state</code> and <code>action</code> inputs, using a table to store all the possible values, but this becomes unstable in complex games. Deep reinforcement learning instead uses a neural network to approximate the Q-function. For more details, see <a href="http://alvinwan.com/understanding-deep-q-learning#deep-q-learning">Understanding Deep Q-Learning</a>.</p>
+
+<p>To get accustomed to <a href="https://www.tensorflow.org/">Tensorflow</a>, a deep learning library you installed in Step 1, you will reimplement all of the logic used so far with Tensorflow&rsquo;s abstractions and you&rsquo;ll use a neural network to approximate your Q-function. However, your neural network will be extremely simple: your output <code>Q(s)</code> is a matrix <code>W</code> multiplied by your input <code>s</code>. This is known as a neural network with one <em>fully-connected layer</em>:</p>
+<pre class="code-pre "><code langs="">Q(s) = Ws
+</code></pre>
+<p>To reiterate, the goal is to reimplement all of the logic from the bots we&rsquo;ve already built using Tensorflow&rsquo;s abstractions. This will make your operations more efficient, as Tensorflow can then perform all computation on the GPU.</p>
+
+<p>Begin by duplicating your Q-table script from Step 3:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="(ataribot) sammy@your_server:~/AtariBot$">cp bot_3_q_table.py bot_4_q_network.py
+</li></ul></code></pre>
+<p>Then open the new file with <code>nano</code> or your preferred text editor:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="(ataribot) sammy@your_server:~/AtariBot$">nano bot_4_q_network.py
+</li></ul></code></pre>
+<p>First, update the comment at the top of the file:</p>
+<div class="code-label " title="/AtariBot/bot_4_q_network.py">/AtariBot/bot_4_q_network.py</div><pre class="code-pre "><code langs="">"""
+<span class="highlight">Bot 4 -- Use Q-learning network to train bot</span>
+"""
+
+. . .
+</code></pre>
+<p>Next, import the Tensorflow package by adding an <code>import</code> directive right below <code>import random</code>. Additionally, add <code>tf.set_radon_seed(0)</code> right below <code>np.random.seed(0)</code>. This will ensure that the results of this script will be repeatable across all sessions:</p>
+<div class="code-label " title="/AtariBot/bot_4_q_network.py">/AtariBot/bot_4_q_network.py</div><pre class="code-pre "><code langs="">. . .
+import random
+<span class="highlight">import tensorflow as tf</span>
+random.seed(0)
+np.random.seed(0)
+<span class="highlight">tf.set_random_seed(0)</span>
+. . .
+</code></pre>
+<p>Redefine your hyperparameters at the top of the file to match the following and add a function called <code>exploration_probability</code>, which will return the probability of exploration at each step. Remember that, in this context, &ldquo;exploration&rdquo; means taking a random action, as opposed to taking the action recommended by the Q-value estimates:</p>
+<div class="code-label " title="/AtariBot/bot_4_q_network.py">/AtariBot/bot_4_q_network.py</div><pre class="code-pre "><code langs="">. . .
+num_episodes = 4000
+discount_factor = <span class="highlight">0.99</span>
+learning_rate = <span class="highlight">0.15</span>
+report_interval = 500
+<span class="highlight">exploration_probability = lambda episode: 50. / (episode + 10)</span>
+report = '100-ep Average: %.2f . Best 100-ep Average: %.2f . Average: %.2f ' \
+         '(Episode %d)'
+. . .
+</code></pre>
+<p>Next, you will add a <em>one-hot encoding</em> function. In short, one-hot encoding is a process through which variables are converted into a form that helps machine learning algorithms make better predictions. If you&rsquo;d like to learn more about one-hot encoding, you can check out <a href="https://hackmd.io/s/SkOZwiT-M">Adversarial Examples in Computer Vision: How to Build then Fool an Emotion-Based Dog Filter</a>.</p>
+
+<p>Directly beneath <code>report = &hellip;</code>, add a <code>one_hot</code> function:</p>
+<div class="code-label " title="/AtariBot/bot_4_q_network.py">/AtariBot/bot_4_q_network.py</div><pre class="code-pre "><code langs="">. . .
+report = '100-ep Average: %.2f . Best 100-ep Average: %.2f . Average: %.2f ' \
+         '(Episode %d)'
+
+<span class="highlight">def one_hot(i: int, n: int) -&gt; np.array:</span>
+    <span class="highlight">"""Implements one-hot encoding by selecting the ith standard basis vector"""</span>
+    <span class="highlight">return np.identity(n)[i].reshape((1, -1))</span>
+
+def print_report(rewards: List, episode: int):
+. . .
+</code></pre>
+<p>Next, you will rewrite your algorithm logic using Tensorflow&rsquo;s abstractions. Before doing that, though, you&rsquo;ll need to first create <em>placeholders</em> for your data.</p>
+
+<p>In your <code>main</code> function, directly beneath <code>rewards=[]</code>, insert the following highlighted content. Here, you define placeholders for your observation at time <strong>t</strong> (as <code>obs_t_ph</code>) and time <strong>t+1</strong> (as <code>obs_tp1_ph</code>), as well as placeholders for your action, reward, and Q target:</p>
+<div class="code-label " title="/AtariBot/bot_4_q_network.py">/AtariBot/bot_4_q_network.py</div><pre class="code-pre "><code langs="">. . .
+def main():
+    env = gym.make('FrozenLake-v0')  # create the game
+    env.seed(0)  # make results reproducible
+    rewards = []
+
+    <span class="highlight"># 1. Setup placeholders</span>
+    <span class="highlight">n_obs, n_actions = env.observation_space.n, env.action_space.n</span>
+    <span class="highlight">obs_t_ph = tf.placeholder(shape=[1, n_obs], dtype=tf.float32)</span>
+    <span class="highlight">obs_tp1_ph = tf.placeholder(shape=[1, n_obs], dtype=tf.float32)</span>
+    <span class="highlight">act_ph = tf.placeholder(tf.int32, shape=())</span>
+    <span class="highlight">rew_ph = tf.placeholder(shape=(), dtype=tf.float32)</span>
+    <span class="highlight">q_target_ph = tf.placeholder(shape=[1, n_actions], dtype=tf.float32)</span>
+
+    Q = np.zeros((env.observation_space.n, env.action_space.n))
+    for episode in range(1, num_episodes + 1):
+        . . .
+</code></pre>
+<p>Directly beneath the line beginning with <code>q_target_ph =</code>, insert the following highlighted lines. This code starts your computation by computing <strong>Q(s, a)</strong> for all <strong>a</strong> to make <code>q_current</code> and <strong>Q(s&rsquo;, a&rsquo;)</strong> for all <strong>a&rsquo;</strong> to make <code>q_target</code>:</p>
+<div class="code-label " title="/AtariBot/bot_4_q_network.py">/AtariBot/bot_4_q_network.py</div><pre class="code-pre "><code langs="">    . . .
+    rew_ph = tf.placeholder(shape=(), dtype=tf.float32)
+    q_target_ph = tf.placeholder(shape=[1, n_actions], dtype=tf.float32)
+
+    <span class="highlight"># 2. Setup computation graph</span>
+    <span class="highlight">W = tf.Variable(tf.random_uniform([n_obs, n_actions], 0, 0.01))</span>
+    <span class="highlight">q_current = tf.matmul(obs_t_ph, W)</span>
+    <span class="highlight">q_target = tf.matmul(obs_tp1_ph, W)</span>
+
+    Q = np.zeros((env.observation_space.n, env.action_space.n))
+    for episode in range(1, num_episodes + 1):
+        . . .
+</code></pre>
+<p>Again directly beneath the last line you added, insert the following higlighted code. The first two lines are equivalent to the line added in Step 3 that computes <code>Qtarget</code>, where <code>Qtarget = reward + discount_factor * np.max(Q[state2, :])</code>. The next two lines set up your loss, while the last line computes the action that maximizes your Q-value:</p>
+<div class="code-label " title="/AtariBot/bot_4_q_network.py">/AtariBot/bot_4_q_network.py</div><pre class="code-pre "><code langs="">    . . .
+    q_current = tf.matmul(obs_t_ph, W)
+    q_target = tf.matmul(obs_tp1_ph, W)
+
+    <span class="highlight">q_target_max = tf.reduce_max(q_target_ph, axis=1)</span>
+    <span class="highlight">q_target_sa = rew_ph + discount_factor * q_target_max</span>
+    <span class="highlight">q_current_sa = q_current[0, act_ph]</span>
+    <span class="highlight">error = tf.reduce_sum(tf.square(q_target_sa - q_current_sa))</span>
+    <span class="highlight">pred_act_ph = tf.argmax(q_current, 1)</span>
+
+    Q = np.zeros((env.observation_space.n, env.action_space.n))
+    for episode in range(1, num_episodes + 1):
+        . . .
+</code></pre>
+<p>After setting up your algorithm and the loss function, define your optimizer:</p>
+<div class="code-label " title="/AtariBot/bot_4_q_network.py">/AtariBot/bot_4_q_network.py</div><pre class="code-pre "><code langs="">    . . .
+    error = tf.reduce_sum(tf.square(q_target_sa - q_current_sa))
+    pred_act_ph = tf.argmax(q_current, 1)
+
+    <span class="highlight"># 3. Setup optimization</span>
+    <span class="highlight">trainer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate)</span>
+    <span class="highlight">update_model = trainer.minimize(error)</span>
+
+    Q = np.zeros((env.observation_space.n, env.action_space.n))
+    for episode in range(1, num_episodes + 1):
+        . . .
+</code></pre>
+<p>Next, set up the body of the game loop. To do this, pass data to the Tensorflow placeholders and Tensorflow&rsquo;s abstractions will handle the computation on the GPU, returning the result of the algorithm.</p>
+
+<p>Start by deleting the old Q-table and logic. Specifically, delete the lines that define <code>Q</code> (right before the <code>for</code> loop), <code>noise</code> (in the <code>while</code> loop), <code>action</code>, <code>Qtarget</code>, and <code>Q[state, action]</code>. Rename <code>state</code> to <code>obs_t</code> and <code>state2</code> to <code>obs_tp1</code> to align with the Tensorflow placeholders you set previously. When finished, your <code>for</code> loop will match the following:</p>
+<div class="code-label " title="/AtariBot/bot_4_q_network.py">/AtariBot/bot_4_q_network.py</div><pre class="code-pre "><code langs="">    . . .
+    # 3. Setup optimization
+    trainer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate)
+    update_model = trainer.minimize(error)
+
+    for episode in range(1, num_episodes + 1):
+        <span class="highlight">obs_t</span> = env.reset()
+        episode_reward = 0
+        while True:
+
+            <span class="highlight">obs_tp1</span>, reward, done, _ = env.step(action)
+
+            episode_reward += reward
+            <span class="highlight">obs_t = obs_tp1</span>
+            if done:
+                &hellip;
+</code></pre>
+<p>Directly above the <code>for</code> loop, add the following two highlighted lines. These lines initialize a Tensorflow session which in turn manages the resources needed to run operations on the GPU. The second line initializes all the variables in your computation graph; for example, initializing weights to 0 before updating them. Additionally, you will nest the <code>for</code> loop within the <code>with</code> statement, so indent the entire <code>for</code> loop by four spaces:</p>
+<div class="code-label " title="/AtariBot/bot_4_q_network.py">/AtariBot/bot_4_q_network.py</div><pre class="code-pre "><code langs="">    . . .
+    trainer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate)
+        update_model = trainer.minimize(error)
+
+    <span class="highlight">with tf.Session() as session:</span>
+        <span class="highlight">session.run(tf.global_variables_initializer())</span>
+
+        for episode in range(1, num_episodes + 1):
+            obs_t = env.reset()
+            &hellip;
+</code></pre>
+<p>Before the line reading <code>obs_tp1, reward, done, _ = env.step(action)</code>, insert the following lines to compute the <code>action</code>. This code evaluates the corresponding placeholder and replaces the action with a random action with some probability:</p>
+<div class="code-label " title="/AtariBot/bot_4_q_network.py">/AtariBot/bot_4_q_network.py</div><pre class="code-pre "><code langs="">            . . .
+            while True:
+                <span class="highlight"># 4. Take step using best action or random action</span>
+                <span class="highlight">obs_t_oh = one_hot(obs_t, n_obs)</span>
+                <span class="highlight">action = session.run(pred_act_ph, feed_dict={obs_t_ph: obs_t_oh})[0]</span>
+                <span class="highlight">if np.random.rand(1) &lt; exploration_probability(episode):</span>
+                    <span class="highlight">action = env.action_space.sample()</span>
+                . . .
+</code></pre>
+<p>After the line containing <code>env.step(action)</code>, insert the following to train the neural network in estimating your Q-value function:</p>
+<div class="code-label " title="/AtariBot/bot_4_q_network.py">/AtariBot/bot_4_q_network.py</div><pre class="code-pre "><code langs="">                . . .
+                obs_tp1, reward, done, _ = env.step(action)
+
+                <span class="highlight"># 5. Train model</span>
+                <span class="highlight">obs_tp1_oh = one_hot(obs_tp1, n_obs)</span>
+                <span class="highlight">q_target_val = session.run(q_target, feed_dict={obs_tp1_ph: obs_tp1_oh})</span>
+                <span class="highlight">session.run(update_model, feed_dict={</span>
+                    <span class="highlight">obs_t_ph: obs_t_oh,</span>
+                    <span class="highlight">rew_ph: reward,</span>
+                    <span class="highlight">q_target_ph: q_target_val,</span>
+                    <span class="highlight">act_ph: action</span>
+                <span class="highlight">})</span>
+                episode_reward += reward
+                . . .
+</code></pre>
+<p>Your final file will match <a href="https://github.com/do-community/bots-for-atari-games/blob/master/src/bot_4_q_network.py">this file hosted on GitHub</a>. Save the file, exit your editor, and run the script:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="(ataribot) sammy@your_server:~/AtariBot$">python bot_4_q_network.py
+</li></ul></code></pre>
+<p>Your output will end with the following, exactly:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>100-ep Average: 0.11 . Best 100-ep Average: 0.11 . Average: 0.05 (Episode 500)
+100-ep Average: 0.41 . Best 100-ep Average: 0.54 . Average: 0.19 (Episode 1000)
+100-ep Average: 0.56 . Best 100-ep Average: 0.73 . Average: 0.31 (Episode 1500)
+100-ep Average: 0.57 . Best 100-ep Average: 0.73 . Average: 0.36 (Episode 2000)
+100-ep Average: 0.65 . Best 100-ep Average: 0.73 . Average: 0.41 (Episode 2500)
+100-ep Average: 0.65 . Best 100-ep Average: 0.73 . Average: 0.43 (Episode 3000)
+100-ep Average: 0.69 . Best 100-ep Average: 0.73 . Average: 0.46 (Episode 3500)
+100-ep Average: 0.77 . Best 100-ep Average: 0.79 . Average: 0.48 (Episode 4000)
+100-ep Average: 0.77 . Best 100-ep Average: 0.79 . Average: 0.48 (Episode -1)
+</code></pre>
+<p>You&rsquo;ve now trained your very first deep Q-learning agent. For a game as simple as FrozenLake, your deep Q-learning agent required 4000 episodes to train. Imagine if the game were far more complex. How many training samples would that require to train? As it turns out, the agent could require <em>millions</em> of samples. The number of samples required is referred to as <em>sample complexity</em>, a concept explored further in the next section.</p>
+
+<h2 id="understanding-bias-variance-tradeoffs">Understanding Bias-Variance Tradeoffs</h2>
+
+<p>Generally speaking, sample complexity is at odds with model complexity in machine learning:</p>
+
+<ol>
+<li><strong>Model complexity</strong>: One wants a sufficiently complex model to solve their problem. For example, a model as simple as a line is not sufficiently complex to predict a car&rsquo;s trajectory.</li>
+<li><strong>Sample complexity</strong>: One would like a model that does not require many samples. This could be because they have a limited access to labeled data, an insufficient amount of computing power, limited memory, etc.</li>
+</ol>
+
+<p>Say we have two models, one simple and one extremely complex. For both models to attain the same performance, bias-variance tells us that the extremely complex model will need exponentially more samples to train. Case in point: your neural network-based Q-learning agent required 4000 episodes to solve FrozenLake. Adding a second layer to the neural network agent quadruples the number of necessary training episodes. With increasingly complex neural networks, this divide only grows. To maintain the same error rate, increasing model complexity increases the sample complexity exponentially. Likewise, decreasing sample complexity decreases model complexity. Thus, we cannot maximize model complexity and minimize sample complexity to our heart&rsquo;s desire.</p>
+
+<p>We can, however, leverage our knowledge of this tradeoff. For a visual interpretation of the mathematics behind the <em>bias-variance decomposition</em>, see <a href="http://alvinwan.com/understanding-the-bias-variance-tradeoff">Understanding the Bias-Variance Tradeoff</a>. At a high level, the bias-variance decomposition is a breakdown of &ldquo;true error&rdquo; into two components: bias and variance. We refer to &ldquo;true error&rdquo; as <em>mean squared error</em> (MSE), which is the expected difference between our predicted labels and the true labels. The following is a plot showing the change of &ldquo;true error&rdquo; as model complexity increases:</p>
+
+<p><img src="https://assets.digitalocean.com/articles/atari_bias_variance/Graph01.png" alt="Mean Squared Error curve"></p>
+
+<h2 id="step-5-—-building-a-least-squares-agent-for-frozen-lake">Step 5 — Building a Least Squares Agent for Frozen Lake</h2>
+
+<p>The <em>least squares</em> method, also known as <em>linear regression</em>, is a means of regression analysis used widely in the fields of mathematics and data science. In machine learning, it&rsquo;s often used to find the optimal linear model of two parameters or datasets.</p>
+
+<p>In Step 4, you built a neural network to compute Q-values. Instead of a neural network, in this step you will use <em>ridge regression</em>, a variant of least squares, to compute this vector of Q-values. The hope is that with a model as uncomplicated as least squares, solving the game will require fewer training episodes.</p>
+
+<p>Start by duplicating the script from Step 3:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="(ataribot) sammy@your_server:~/AtariBot$">cp bot_3_q_table.py bot_5_ls.py
+</li></ul></code></pre>
+<p>Open the new file:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="(ataribot) sammy@your_server:~/AtariBot$">nano bot_5_ls.py
+</li></ul></code></pre>
+<p>Again, update the comment at the top of the file describing what this script will do:</p>
+<div class="code-label " title="/AtariBot/bot_4_q_network.py">/AtariBot/bot_4_q_network.py</div><pre class="code-pre "><code langs="">"""
+<span class="highlight">Bot 5 -- Build least squares q-learning agent for FrozenLake</span>
+"""
+
+. . .
+</code></pre>
+<p>Before the block of imports near the top of your file, add two more imports for type checking:</p>
+<div class="code-label " title="/AtariBot/bot_5_ls.py">/AtariBot/bot_5_ls.py</div><pre class="code-pre "><code langs="">. . .
+<span class="highlight">from typing import Tuple</span>
+<span class="highlight">from typing import Callable</span>
+from typing import List
+import gym
+. . .
+</code></pre>
+<p>In your list of hyperparameters, add another hyperparameter, <code>w_lr</code>, to control the second Q-function&rsquo;s learning rate. Additionally, update the number of episodes to 5000 and the discount factor to <code>0.85</code>. By changing both the <code>num_episodes</code> and <code>discount_factor</code> hyperparameters to larger values, the agent will be able to issue a stronger performance:</p>
+<div class="code-label " title="/AtariBot/bot_5_ls.py">/AtariBot/bot_5_ls.py</div><pre class="code-pre "><code langs="">. . .
+num_episodes = <span class="highlight">5000</span>
+discount_factor = <span class="highlight">0.85</span>
+learning_rate = 0.9
+<span class="highlight">w_lr = 0.5</span>
+report_interval = 500
+. . .
+</code></pre>
+<p>Before your <code>print_report</code> function, add the following higher-order function. It returns a lambda — an anonymous function — that abstracts away the model:</p>
+<div class="code-label " title="/AtariBot/bot_5_ls.py">/AtariBot/bot_5_ls.py</div><pre class="code-pre "><code langs="">. . .
+report_interval = 500
+report = '100-ep Average: %.2f . Best 100-ep Average: %.2f . Average: %.2f ' \
+         '(Episode %d)'
+
+<span class="highlight">def makeQ(model: np.array) -&gt; Callable[[np.array], np.array]:</span>
+    <span class="highlight">"""Returns a Q-function, which takes state -&gt; distribution over actions"""</span>
+    <span class="highlight">return lambda X: X.dot(model)</span>
+
+def print_report(rewards: List, episode: int):
+    . . .
+</code></pre>
+<p>After <code>makeQ</code>, add another function, <code>initialize</code>, which initializes the model using normally-distributed values:</p>
+<div class="code-label " title="/AtariBot/bot_5_ls.py">/AtariBot/bot_5_ls.py</div><pre class="code-pre "><code langs="">. . .
+def makeQ(model: np.array) -&gt; Callable[[np.array], np.array]:
+    """Returns a Q-function, which takes state -&gt; distribution over actions"""
+    return lambda X: X.dot(model)
+
+<span class="highlight">def initialize(shape: Tuple):</span>
+    <span class="highlight">"""Initialize model"""</span>
+    <span class="highlight">W = np.random.normal(0.0, 0.1, shape)</span>
+    <span class="highlight">Q = makeQ(W)</span>
+    <span class="highlight">return W, Q</span>
+
+def print_report(rewards: List, episode: int):
+    . . .
+</code></pre>
+<p>After the <code>initialize</code> block, add a <code>train</code> method that computes the ridge regression closed-form solution, then weights the old model with the new one. It returns both the model and the abstracted Q-function:</p>
+<div class="code-label " title="/AtariBot/bot_5_ls.py">/AtariBot/bot_5_ls.py</div><pre class="code-pre "><code langs="">. . .
+def initialize(shape: Tuple):
+    &hellip;
+    return W, Q
+
+<span class="highlight">def train(X: np.array, y: np.array, W: np.array) -&gt; Tuple[np.array, Callable]:</span>
+    <span class="highlight">"""Train the model, using solution to ridge regression"""</span>
+    <span class="highlight">I = np.eye(X.shape[1])</span>
+    <span class="highlight">newW = np.linalg.inv(X.T.dot(X) + 10e-4 * I).dot(X.T.dot(y))</span>
+    <span class="highlight">W = w_lr * newW + (1 - w_lr) * W</span>
+    <span class="highlight">Q = makeQ(W)</span>
+    <span class="highlight">return W, Q</span>
+
+def print_report(rewards: List, episode: int):
+    . . .
+</code></pre>
+<p>After <code>train</code>, add one last function, <code>one_hot</code>, to perform one-hot encoding for your states and actions:</p>
+<div class="code-label " title="/AtariBot/bot_5_ls.py">/AtariBot/bot_5_ls.py</div><pre class="code-pre "><code langs="">. . .
+def train(X: np.array, y: np.array, W: np.array) -&gt; Tuple[np.array, Callable]:
+    &hellip;
+    return W, Q
+
+<span class="highlight">def one_hot(i: int, n: int) -&gt; np.array:</span>
+    <span class="highlight">"""Implements one-hot encoding by selecting the ith standard basis vector"""</span>
+    <span class="highlight">return np.identity(n)[i]</span>
+
+def print_report(rewards: List, episode: int):
+    . . .
+</code></pre>
+<p>Following this, you will need to modify the training logic. In the previous script you wrote, the Q-table was updated every iteration. This script, however, will collect samples and labels every time step and train a new model every 10 steps. Additionally, instead of holding a Q-table or a neural network, it will use a least squares model to predict Q-values.</p>
+
+<p>Go to the <code>main</code> function and replace the definition of the Q-table (<code>Q = np.zeros(&hellip;)</code>) with the following:</p>
+<div class="code-label " title="/AtariBot/bot_5_ls.py">/AtariBot/bot_5_ls.py</div><pre class="code-pre "><code langs="">. . .
+def main():
+    &hellip;
+    rewards = []
+
+    <span class="highlight">n_obs, n_actions = env.observation_space.n, env.action_space.n</span>
+    <span class="highlight">W, Q = initialize((n_obs, n_actions))</span>
+    <span class="highlight">states, labels = [], []</span>
+    for episode in range(1, num_episodes + 1):
+        . . .
+</code></pre>
+<p>Scroll down before the <code>for</code> loop. Directly below this, add the following lines which reset the <code>states</code> and <code>labels</code> lists if there is too much information stored:</p>
+<div class="code-label " title="/AtariBot/bot_5_ls.py">/AtariBot/bot_5_ls.py</div><pre class="code-pre "><code langs="">. . .
+def main():
+    &hellip;
+    for episode in range(1, num_episodes + 1):
+        <span class="highlight">if len(states) &gt;= 10000:</span>
+            <span class="highlight">states, labels = [], []</span>
+            . . .
+</code></pre>
+<p>Modify the line directly after this one, which defines <code>state = env.reset()</code>, so that it becomes the following. This will one-hot encode the state immediately, as all of its usages will require a one-hot vector:</p>
+<div class="code-label " title="/AtariBot/bot_5_ls.py">/AtariBot/bot_5_ls.py</div><pre class="code-pre "><code langs="">. . .
+    for episode in range(1, num_episodes + 1):
+        if len(states) &gt;= 10000:
+            states, labels = [], []
+        state = <span class="highlight">one_hot(env.reset(), n_obs)</span>
+. . .
+</code></pre>
+<p>Before the first line in your <code>while</code> main game loop, amend the list of <code>states</code>:</p>
+<div class="code-label " title="/AtariBot/bot_5_ls.py">/AtariBot/bot_5_ls.py</div><pre class="code-pre "><code langs="">. . .
+    for episode in range(1, num_episodes + 1):
+        &hellip;
+        episode_reward = 0
+        while True:
+            <span class="highlight">states.append(state)</span>
+            noise = np.random.random((1, env.action_space.n)) / (episode**2.)
+            . . .
+</code></pre>
+<p>Update the computation for <code>action</code>, decrease the probability of noise, and modify the Q-function evaluation:</p>
+<div class="code-label " title="/AtariBot/bot_5_ls.py">/AtariBot/bot_5_ls.py</div><pre class="code-pre "><code langs="">. . .
+        while True:
+            states.append(state)
+            <span class="highlight">noise = np.random.random((1, n_actions)) / episode</span>
+            <span class="highlight">action = np.argmax(Q(state) + noise)</span>
+            state2, reward, done, _ = env.step(action)
+            . . .
+</code></pre>
+<p>Add a one-hot version of <code>state2</code> and amend the Q-function call in your definition for <code>Qtarget</code> as follows:</p>
+<div class="code-label " title="/AtariBot/bot_5_ls.py">/AtariBot/bot_5_ls.py</div><pre class="code-pre "><code langs="">. . .
+        while True:
+            &hellip;
+            state2, reward, done, _ = env.step(action)
+
+            <span class="highlight">state2 = one_hot(state2, n_obs)</span>
+            Qtarget = reward + discount_factor * np.max(<span class="highlight">Q(state2)</span>)
+            . . .
+</code></pre>
+<p>Delete the line that updates <code>Q[state,action] = &hellip;</code> and replace it with the following lines. This code takes the output of the current model and updates only the value in this output that corresponds to the current action taken. As a result, Q-values for the other actions don&rsquo;t incur loss:</p>
+<div class="code-label " title="/AtariBot/bot_5_ls.py">/AtariBot/bot_5_ls.py</div><pre class="code-pre "><code langs="">. . .
+            state2 = one_hot(state2, n_obs)
+            Qtarget = reward + discount_factor * np.max(Q(state2))
+            <span class="highlight">label = Q(state)</span>
+            <span class="highlight">label[action] = (1 - learning_rate) * label[action] + learning_rate * Qtarget</span>
+            <span class="highlight">labels.append(label)</span>
+
+            episode_reward += reward
+            . . .
+</code></pre>
+<p>Right after <code>state = state2</code>, add a periodic update to the model. This trains your model every 10 time steps:</p>
+<div class="code-label " title="/AtariBot/bot_5_ls.py">/AtariBot/bot_5_ls.py</div><pre class="code-pre "><code langs="">. . .
+            state = state2
+            <span class="highlight">if len(states) % 10 == 0:</span>
+                <span class="highlight">W, Q = train(np.array(states), np.array(labels), W)</span>
+            if done:
+            . . .
+</code></pre>
+<p>Double check that your file matches <a href="https://github.com/do-community/bots-for-atari-games/blob/master/src/bot_5_ls.py">the source code</a>. Then, save the file, exit the editor, and run the script:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="(ataribot) sammy@your_server:~/AtariBot$">python bot_5_ls.py
+</li></ul></code></pre>
+<p>This will output the following:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>100-ep Average: 0.17 . Best 100-ep Average: 0.17 . Average: 0.09 (Episode 500)
+100-ep Average: 0.11 . Best 100-ep Average: 0.24 . Average: 0.10 (Episode 1000)
+100-ep Average: 0.08 . Best 100-ep Average: 0.24 . Average: 0.10 (Episode 1500)
+100-ep Average: 0.24 . Best 100-ep Average: 0.25 . Average: 0.11 (Episode 2000)
+100-ep Average: 0.32 . Best 100-ep Average: 0.31 . Average: 0.14 (Episode 2500)
+100-ep Average: 0.35 . Best 100-ep Average: 0.38 . Average: 0.16 (Episode 3000)
+100-ep Average: 0.59 . Best 100-ep Average: 0.62 . Average: 0.22 (Episode 3500)
+100-ep Average: 0.66 . Best 100-ep Average: 0.66 . Average: 0.26 (Episode 4000)
+100-ep Average: 0.60 . Best 100-ep Average: 0.72 . Average: 0.30 (Episode 4500)
+100-ep Average: 0.75 . Best 100-ep Average: 0.82 . Average: 0.34 (Episode 5000)
+100-ep Average: 0.75 . Best 100-ep Average: 0.82 . Average: 0.34 (Episode -1)
+</code></pre>
+<p>Recall that, according to the <a href="https://gym.openai.com/envs/FrozenLake-v0/">Gym FrozenLake page</a>, &ldquo;solving&rdquo; the game means attaining a 100-episode average of 0.78. Here the agent acheives an average of 0.82, meaning it was able to solve the game in 5000 episodes. Although this does not solve the game in fewer episodes, this basic least squares method is still able to solve a simple game with roughly the same number of training episodes. Although your neural networks may grow in complexity, you&rsquo;ve shown that simple models are sufficient for FrozenLake.</p>
+
+<p>With that, you have explored three Q-learning agents: one using a Q-table, another using a neural network, and a third using least squares. Next, you will build a deep reinforcement learning agent for a more complex game: Space Invaders.</p>
+
+<h2 id="step-6-—-creating-a-deep-q-learning-agent-for-space-invaders">Step 6 — Creating a Deep Q-learning Agent for Space Invaders</h2>
+
+<p>Say you tuned the previous Q-learning algorithm&rsquo;s model complexity and sample complexity perfectly, regardless of whether you picked a neural network or least squares method. As it turns out, this unintelligent Q-learning agent still performs poorly on more complex games, even with an especially high number of training episodes. This section will cover two techniques that can improve performance, then you will test an agent that was trained using these techniques.</p>
+
+<p>The first general-purpose agent able to continually adapt its behavior without any human intervention was developed by the researchers at DeepMind, who also trained their agent to play a variety of Atari games. <a href="https://www.cs.toronto.edu/%7Evmnih/docs/dqn.pdf">DeepMind&rsquo;s original deep Q-learning (DQN) paper</a> recognized two important issues:</p>
+
+<ol>
+<li><strong>Correlated states</strong>: Take the state of our game at time 0, which we will call <strong>s0</strong>. Say we update <strong>Q(s0)</strong>, according to the rules we derived previously. Now, take the state at time 1, which we call <strong>s1</strong>, and update <strong>Q(s1)</strong> according to the same rules. Note that the game&rsquo;s state at time 0 is very similar to its state at time 1. In Space Invaders, for example, the aliens may have moved by one pixel each. Said more succinctly, <strong>s0</strong> and <strong>s1</strong> are very similar. Likewise, we also expect <strong>Q(s0)</strong> and <strong>Q(s1)</strong> to be very similar, so updating one affects the other. This leads to fluctuating Q values, as an update to <strong>Q(s0)</strong> may in fact counter the update to <strong>Q(s1)</strong>. More formally, <strong>s0</strong> and <strong>s1</strong> are <em>correlated</em>. Since the Q-function is deterministic, <strong>Q(s1)</strong> is correlated with <strong>Q(s0)</strong>.</li>
+<li><strong>Q-function instability</strong>: Recall that the <strong>Q</strong> function is both the model we train and the source of our labels. Say that our labels are randomly-selected values that truly represent a <em>distribution</em>, <strong>L</strong>. Every time we update <strong>Q</strong>, we change <strong>L</strong>, meaning that our model is trying to learn a moving target. This is an issue, as the models we use assume a fixed distribution.</li>
+</ol>
+
+<p>To combat correlated states and an unstable Q-function:</p>
+
+<ol>
+<li>One could keep a list of states called a <em>replay buffer</em>. Each time step, you add the game state that you observe to this replay buffer. You also randomly sample a subset of states from this list, and train on those states.</li>
+<li>The team at DeepMind duplicated <strong>Q(s, a)</strong>. One is called <strong>Q_current(s, a)</strong>, which is the Q-function you update. You need another Q-function for successor states, <strong>Q_target(s&rsquo;, a&rsquo;)</strong>, which you won&rsquo;t update. Recall <strong>Q_target(s&rsquo;, a&rsquo;)</strong> is used to generate your labels. By separating <strong>Q_current</strong> from <strong>Q_target</strong> and fixing the latter, you fix the distribution your labels are sampled from. Then, your deep learning model can spend a short period learning this distribution. After a period of time, you then re-duplicate <strong>Q_current</strong> for a new <strong>Q_target</strong>.</li>
+</ol>
+
+<p>You won&rsquo;t implement these yourself, but you will load pretrained models that trained with these solutions. To do this, create a new directory where you will store these models&rsquo; parameters:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="(ataribot) sammy@your_server:~/AtariBot$">mkdir models
+</li></ul></code></pre>
+<p>Then use <code>wget</code> to download a pretrained Space Invaders model&rsquo;s parameters:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="(ataribot) sammy@your_server:~/AtariBot$">wget http://models.tensorpack.com/OpenAIGym/SpaceInvaders-v0.tfmodel -P models
+</li></ul></code></pre>
+<p>Next, download a Python script that specifies the model associated with the parameters you just downloaded. Note that this pretrained model has two constraints on the input that are necessary to keep in mind:</p>
+
+<ul>
+<li>The states must be downsampled, or reduced in size, to 84 x 84.</li>
+<li>The input consists of four states, stacked.</li>
+</ul>
+
+<p>We will address these constraints in more detail later on. For now, download the script by typing:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="(ataribot) sammy@your_server:~/AtariBot$">wget https://github.com/alvinwan/bots-for-atari-games/raw/master/src/bot_6_a3c.py
+</li></ul></code></pre>
+<p>You will now run this pretrained Space Invaders agent to see how it performs. Unlike the past few bots we&rsquo;ve used, you will write this script from scratch.</p>
+
+<p>Create a new script file:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="(ataribot) sammy@your_server:~/AtariBot$">nano bot_6_dqn.py
+</li></ul></code></pre>
+<p>Begin this script by adding a header comment, importing the necessary utilities, and beginning the main game loop:</p>
+<div class="code-label " title="/AtariBot/bot_6_dqn.py">/AtariBot/bot_6_dqn.py</div><pre class="code-pre "><code langs=""><span class="highlight">"""</span>
+<span class="highlight">Bot 6 - Fully featured deep q-learning network.</span>
+<span class="highlight">"""</span>
+
+<span class="highlight">import cv2</span>
+<span class="highlight">import gym</span>
+<span class="highlight">import numpy as np</span>
+<span class="highlight">import random</span>
+<span class="highlight">import tensorflow as tf</span>
+<span class="highlight">from bot_6_a3c import a3c_model</span>
+
+
+<span class="highlight">def main():</span>
+
+<span class="highlight">if __name__ == '__main__':</span>
+    <span class="highlight">main()</span>
+</code></pre>
+<p>Directly after your imports, set random seeds to make your results reproducible. Also, define a hyperparameter <code>num_episodes</code> which will tell the script how many episodes to run the agent for:</p>
+<div class="code-label " title="/AtariBot/bot_6_dqn.py">/AtariBot/bot_6_dqn.py</div><pre class="code-pre "><code langs="">. . .
+import tensorflow as tf
+from bot_6_a3c import a3c_model
+<span class="highlight">random.seed(0)  # make results reproducible</span>
+<span class="highlight">tf.set_random_seed(0)</span>
+
+<span class="highlight">num_episodes = 10</span>
+
+def main():
+  . . .
+</code></pre>
+<p>Two lines after declaring <code>num_episodes</code>, define a <code>downsample</code> function that downsamples all images to a size of 84 x 84. You will downsample all images before passing them into the pretrained neural network, as the pretrained model was trained on 84 x 84 images:</p>
+<div class="code-label " title="/AtariBot/bot_6_dqn.py">/AtariBot/bot_6_dqn.py</div><pre class="code-pre "><code langs="">. . .
+num_episodes = 10
+
+<span class="highlight">def downsample(state):</span>
+    <span class="highlight">return cv2.resize(state, (84, 84), interpolation=cv2.INTER_LINEAR)[None]</span>
+
+def main():
+  . . .
+</code></pre>
+<p>Create the game environment at the start of your <code>main</code> function and seed the environment so that the results are reproducible:</p>
+<div class="code-label " title="/AtariBot/bot_6_dqn.py">/AtariBot/bot_6_dqn.py</div><pre class="code-pre "><code langs="">. . .
+def main():
+    <span class="highlight">env = gym.make('SpaceInvaders-v0')  # create the game</span>
+    <span class="highlight">env.seed(0)  # make results reproducible</span>
+    . . .
+</code></pre>
+<p>Directly after the environment seed, initialize an empty list to hold the rewards:</p>
+<div class="code-label " title="/AtariBot/bot_6_dqn.py">/AtariBot/bot_6_dqn.py</div><pre class="code-pre "><code langs="">. . .
+def main():
+    env = gym.make('SpaceInvaders-v0')  # create the game
+    env.seed(0)  # make results reproducible
+    <span class="highlight">rewards = []</span>
+    . . .
+</code></pre>
+<p>Initialize the pretrained model with the pretrained model parameters that you downloaded at the beginning of this step:</p>
+<div class="code-label " title="/AtariBot/bot_6_dqn.py">/AtariBot/bot_6_dqn.py</div><pre class="code-pre "><code langs="">. . .
+def main():
+    env = gym.make('SpaceInvaders-v0')  # create the game
+    env.seed(0)  # make results reproducible
+    rewards = []
+    <span class="highlight">model = a3c_model(load='models/SpaceInvaders-v0.tfmodel')</span>
+    . . .
+</code></pre>
+<p>Next, add some lines telling the script to iterate for <code>num_episodes</code> times to compute average performance and initialize each episode&rsquo;s reward to 0. Additionally, add a line to reset the environment (<code>env.reset()</code>), collecting the new initial state in the process, downsample this initial state with <code>downsample()</code>, and start the game loop using a <code>while</code> loop:</p>
+<div class="code-label " title="/AtariBot/bot_6_dqn.py">/AtariBot/bot_6_dqn.py</div><pre class="code-pre "><code langs="">. . .
+def main():
+    env = gym.make('SpaceInvaders-v0')  # create the game
+    env.seed(0)  # make results reproducible
+    rewards = []
+    model = a3c_model(load='models/SpaceInvaders-v0.tfmodel')
+    <span class="highlight">for _ in range(num_episodes):</span>
+        <span class="highlight">episode_reward = 0</span>
+        <span class="highlight">states = [downsample(env.reset())]</span>
+        <span class="highlight">while True:</span>
+        . . .
+</code></pre>
+<p>Instead of accepting one state at a time, the new neural network accepts four states at a time. As a result, you must wait until the list of <code>states</code> contains at least four states before applying the pretrained model. Add the following lines below the line reading <code>while True:</code>. These tell the agent to take a random action if there are fewer than four states or to concatenate the states and pass it to the pretrained model if there are at least four:</p>
+<div class="code-label " title="/AtariBot/bot_6_dqn.py">/AtariBot/bot_6_dqn.py</div><pre class="code-pre "><code langs="">        . . .
+        while True:
+            <span class="highlight">if len(states) &lt; 4:</span>
+                <span class="highlight">action = env.action_space.sample()</span>
+            <span class="highlight">else:</span>
+                <span class="highlight">frames = np.concatenate(states[-4:], axis=3)</span>
+                <span class="highlight">action = np.argmax(model([frames]))</span>
+                . . .
+</code></pre>
+<p>Then take an action and update the relevant data. Add a downsampled version of the observed state, and update the reward for this episode:</p>
+<div class="code-label " title="/AtariBot/bot_6_dqn.py">/AtariBot/bot_6_dqn.py</div><pre class="code-pre "><code langs="">        . . .
+        while True:
+            &hellip;
+                action = np.argmax(model([frames]))
+            <span class="highlight">state, reward, done, _ = env.step(action)</span>
+            <span class="highlight">states.append(downsample(state))</span>
+            <span class="highlight">episode_reward += reward</span>
+            . . .
+</code></pre>
+<p>Next, add the following lines which check whether the episode is <code>done</code> and, if it is, print the episode&rsquo;s total reward and amend the list of all results and break the <code>while</code> loop early:</p>
+<div class="code-label " title="/AtariBot/bot_6_dqn.py">/AtariBot/bot_6_dqn.py</div><pre class="code-pre "><code langs="">        . . .
+        while True:
+            &hellip;
+            episode_reward += reward
+            <span class="highlight">if done:</span>
+                <span class="highlight">print('Reward: %d' % episode_reward)</span>
+                <span class="highlight">rewards.append(episode_reward)</span>
+                <span class="highlight">break</span>
+                . . .
+</code></pre>
+<p>Outside of the <code>while</code> and <code>for</code> loops, print the average reward. Place this at the end of your <code>main</code> function:</p>
+<div class="code-label " title="/AtariBot/bot_6_dqn.py">/AtariBot/bot_6_dqn.py</div><pre class="code-pre "><code langs="">def main():
+    &hellip;
+                break
+    <span class="highlight">print('Average reward: %.2f' % (sum(rewards) / len(rewards)))</span>
+</code></pre>
+<p>Check that your file matches the following:</p>
+<div class="code-label " title="/AtariBot/bot_6_dqn.py">/AtariBot/bot_6_dqn.py</div><pre class="code-pre "><code class="code-highlight language-python">"""
+Bot 6 - Fully featured deep q-learning network.
+"""
+
+import cv2
+import gym
+import numpy as np
+import random
+import tensorflow as tf
+from bot_6_a3c import a3c_model
+random.seed(0)  # make results reproducible
+tf.set_random_seed(0)
+
+num_episodes = 10
+
+
+def downsample(state):
+    return cv2.resize(state, (84, 84), interpolation=cv2.INTER_LINEAR)[None]
+
+def main():
+    env = gym.make('SpaceInvaders-v0')  # create the game
+    env.seed(0)  # make results reproducible
+    rewards = []
+
+    model = a3c_model(load='models/SpaceInvaders-v0.tfmodel')
+    for _ in range(num_episodes):
+        episode_reward = 0
+        states = [downsample(env.reset())]
+        while True:
+            if len(states) &lt; 4:
+                action = env.action_space.sample()
+            else:
+                frames = np.concatenate(states[-4:], axis=3)
+                action = np.argmax(model([frames]))
+            state, reward, done, _ = env.step(action)
+            states.append(downsample(state))
+            episode_reward += reward
+            if done:
+                print('Reward: %d' % episode_reward)
+                rewards.append(episode_reward)
+                break
+    print('Average reward: %.2f' % (sum(rewards) / len(rewards)))
+
+
+if __name__ == '__main__':
+    main()
+</code></pre>
+<p>Save the file and exit your editor. Then, run the script:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="(ataribot) sammy@your_server:~/AtariBot$">python bot_6_dqn.py
+</li></ul></code></pre>
+<p>Your output will end with the following:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>. . .
+Reward: 1230
+Reward: 4510
+Reward: 1860
+Reward: 2555
+Reward: 515
+Reward: 1830
+Reward: 4100
+Reward: 4350
+Reward: 1705
+Reward: 4905
+Average reward: 2756.00
+</code></pre>
+<p>Compare this to the result from the first script, where you ran a random agent for Space Invaders. The average reward in that case was only about 150, meaning this result is over twenty times better. However, you only ran your code for three episodes, as it&rsquo;s fairly slow, and the average of three episodes is not a reliable metric. Running this over 10 episodes, the average is 2756; over 100 episodes, the average is around 2500. Only with these averages can you comfortably conclude that your agent is indeed performing an order of magnitude better, and that you now have an agent that plays Space Invaders reasonably well.</p>
+
+<p>However, recall the issue that was raised in the previous section regarding sample complexity. As it turns out, this Space Invaders agent takes millions of samples to train. In fact, this agent required 24 hours on four Titan X GPUs to train up to this current level; in other words, it took a significant amount of compute to train it adequately. Can you train a similarly high-performing agent with far fewer samples? The previous steps should arm you with enough knowledge to begin exploring this question. Using far simpler models and per bias-variance tradeoffs, it may be possible.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>In this tutorial, you built several bots for games and explored a fundamental concept in machine learning called bias-variance. A natural next question is: Can you build bots for more complex games, such as StarCraft 2? As it turns out, this is a pending research question, supplemented with open-source tools from collaborators across Google, DeepMind, and Blizzard. If these are problems that interest you, see <a href="https://openai.com/requests-for-research/">open calls for research at OpenAI</a>, for current problems.</p>
+
+<p>The main takeaway from this tutorial is the bias-variance tradeoff. It is up to the machine learning practitioner to consider the effects of model complexity. Whereas it is possible to leverage highly complex models and layer on excessive amounts of compute, samples, and time, reduced model complexity could significantly reduce the resources required.</p>
+
+    </div>
+</div>
+
+<div class="tutorial-footer">
+  
+<div class='tutorial-footer-details'>
+
+  <div class='postable-info-bar-container'>
+  <div class='postable-info-bar'>
+
+    <div class="author-byline">
+      <div class="component-collaborators-container">
+  <ul class="component-collaborators-content">
+        <li class="collaborator-byline-avatar">
+          <a href="/community/users/alvinwan">
+            <img class="avatar avatar-large" src="https://community-cdn-digitalocean-com.global.ssl.fastly.net/assets/users/avatars/large/794f2abaf4288f05674c58bcc075b03b7078965c.jpg?1478984333" alt="794f2abaf4288f05674c58bcc075b03b7078965c" />
+</a>        </li>
+
+    <li class="collaborators-byline-data">
+        <p class="names">By <a href="/community/users/alvinwan">Alvin Wan</a></p>
+
+      <p>
+      </p>
+    </li>
+  </ul>
+</div>
+
+    </div>
+  </div>
+</div>
+
+
+  <div class='section-content tutorial-contributors two'>
+    <div class="component-collaborators-container">
+      <ul class="component-collaborators-content">
+
+          <li class="collaborator-byline-avatar">
+            <a href="/community/users/mdrake">
+                <div class="mod-avatar mod-avatar-large"><img class="avatar avatar-large" src="https://community-cdn-digitalocean-com.global.ssl.fastly.net/assets/users/avatars/large/3072b0699d3add2e0d0f31b97397dd68302c8842.jpg?1509387385" alt="3072b0699d3add2e0d0f31b97397dd68302c8842" /><span class="mod-star" title="MOD" data-toggle="tooltip" data-container="body"><span class="mod-star-icon" /></span></div>
+</a>          </li>
+
+
+        <li class="collaborators-byline-data">
+            <p class="names">Editor: <a href="/community/users/mdrake">Mark Drake</a></p>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+    
+<div class="hsb--content">
+  <div class="hsb--undo hsb--hide">
+    <span class="icon icon-helpfulness-upvoted"></span>
+    <span class="hsb--question">You rated this helpful.</span>
+    <button name="button" type="submit" class="hsb--button-down hsb--vote-down-js" data-upvotable-type="Tutorial">Undo</button>
+  </div>
+
+  <div class="hsb--flagging-undo hsb--hide">
+    <span class="icon icon-helpfulness-flag"></span>
+    <span class="hsb--question">You reported this tutorial.</span>
+    <button name="button" type="submit" class="hsb--button-down hsb--unflagging-js">Undo</button>
+  </div>
+
+  <div class="hsb--do">
+    <span class="hsb--question">Was this helpful?</span>
+    <button name="button" type="submit" class="hsb--button hsb--vote-up-js" data-upvotable-id="2892" data-upvotable-type="Tutorial">Yes</button>
+    <button name="button" type="submit" class="hsb--button hsb--flagging-js" data-url="/community/tutorials/how-to-build-atari-bot-with-openai-gym/flag" data-flaggable-id="2892">No</button>
+  </div>
+
+  <div class="hsb--social-and-comments">
+    <div class="hsb--social-sharing">
+      <a target="_blank" class="share-popup" href="http://twitter.com/share?text=Bias-Variance for Deep Reinforcement Learning: How To Build a Bot for Atari with OpenAI Gym&amp;url=https://www.digitalocean.com/community/tutorials/how-to-build-atari-bot-with-openai-gym?utm_content=how-to-build-atari-bot-with-openai-gym&amp;utm_medium=community&amp;utm_source=twshare">
+        <span class="icon icon-helpfulness-twitter"></span>
+</a>
+      <a target="_blank" class="share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/how-to-build-atari-bot-with-openai-gym?utm_content=how-to-build-atari-bot-with-openai-gym&amp;utm_medium=community&amp;utm_source=fbshare">
+        <span class="icon icon-helpfulness-facebook"></span>
+</a>
+      <a target="_blank" class="share-popup" href="https://news.ycombinator.com/submitlink?t=Bias-Variance for Deep Reinforcement Learning: How To Build a Bot for Atari with OpenAI Gym&amp;u=https://www.digitalocean.com/community/tutorials/how-to-build-atari-bot-with-openai-gym?utm_content=how-to-build-atari-bot-with-openai-gym&amp;utm_medium=community&amp;utm_source=hnshare">
+        <span class="icon icon-helpfulness-hacker-news"></span>
+</a>    </div>
+
+    <div class="hsb--comment">
+      <span class="icon icon-helpfulness-comment"></span>
+      <strong class="amount">0</strong>
+    </div>
+  </div>
+</div>
+
+
+</div>
+
+
+  
+    <div class='related-tutorials'>
+    <div class='section-content'>
+      <h2>Related</h2>
+
+      <ul>
+        <li title="How To Use the Django One-Click Install Image for Ubuntu 14.04">
+  <a class="panel" href="/community/tutorials/how-to-use-the-django-one-click-install-image-for-ubuntu-14-04">
+    <h6>Tutorial</h6>
+    <div class="panel-data">
+      <h5>How To Use the Django One-Click Install Image for Ubuntu 14.04</h5>
+      <p>Django is a high-level Python framework for developing web applications rapidly. DigitalOcean&#39;s Django One-Click app quickly deploys a preconfigured development environment to your VPS employing Django, Nginx, Gunicorn, and Postgres.</p>
+    </div>
+  </a>
+</li>
+<li title="How To Deliver Messages Based on Routing Keys Using the RabbitMQ and Puka Python Library">
+  <a class="panel" href="/community/tutorials/how-to-deliver-messages-based-on-routing-keys-using-the-rabbitmq-and-puka-python-library">
+    <h6>Tutorial</h6>
+    <div class="panel-data">
+      <h5>How To Deliver Messages Based on Routing Keys Using the RabbitMQ and Puka Python Library</h5>
+      <p>This article reviews how to deliver messages based on routing keys using the RabbitMQ and Puka Python libraries.</p>
+    </div>
+  </a>
+</li>
+<li title="How To Set Up Ubuntu Cloud Servers For Python Web-Applications">
+  <a class="panel" href="/community/tutorials/how-to-set-up-ubuntu-cloud-servers-for-python-web-applications">
+    <h6>Tutorial</h6>
+    <div class="panel-data">
+      <h5>How To Set Up Ubuntu Cloud Servers For Python Web-Applications</h5>
+      <p>In this DigitalOcean article, we are going to learn how to prepare an Ubuntu cloud server from scratch to host Python web-applications. By following this tutorial, you will have a solid Ubuntu installation, equipped with almost all necessary tools to deploy your Python project.    </p>
+    </div>
+  </a>
+</li>
+<li title="How To Use RabbitMQ and Python&#39;s Puka to Deliver Messages to Multiple Consumers">
+  <a class="panel" href="/community/tutorials/how-to-use-rabbitmq-and-python-s-puka-to-deliver-messages-to-multiple-consumers">
+    <h6>Tutorial</h6>
+    <div class="panel-data">
+      <h5>How To Use RabbitMQ and Python&#39;s Puka to Deliver Messages to Multiple Consumers</h5>
+      <p>This article goes over how to use RabbitMQ and Python&#39;s Puka to deliver messages to multiple consumers.</p>
+    </div>
+  </a>
+</li>
+
+      </ul>
+    </div>
+  </div>
+
+
+  <div class='looking-for-an-answer'>
+  <div class='section-content'>
+    <h4>Still looking for an answer?</h4>
+
+    <div class="lfa--actions">
+      <a href="/community/questions/new?tags=Programming+Project%2CMachine+Learning%2CDevelopment%2CPython" class="lfa--action-box">
+        <span class="icon icon-look-for-answer-question"></span>
+        Ask a question
+      </a>
+      <a href="#q" class="lfa--action-box">
+        <span class="icon icon-look-for-answer-search-thin"></span>
+        Search for more help
+      </a>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="content-comments">
+  <div class="section-content">
+    <div class="tutorial commentable" id="tutorial_2892">
+
+  <div class="comments-header">
+    <h4 class="comments-count">
+        <span>0 Comments</span>
+    </h4>
+  </div>
+
+    <div class="response response-form no-avatar no-comments">
+  <div class="js-display-on-error flash error hidden"></div>
+
+
+  <form class="content-form disabled-form" id="new_comment" action="/community/tutorials/how-to-build-atari-bot-with-openai-gym/comments" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="&#x2713;" />
+
+    <textarea name="comment[content]" id="comment_content" placeholder="Leave a comment..." class="js-comment-content tutorial-comment-field" data-markdown="true">
+</textarea>
+
+      <div class="log-in-notice "><a href="/community/auth/digitalocean">Log In to Comment</a></div>
+
+    <div class='clearfix'></div>
+</form>
+</div>
+
+
+  <div class="comments">
+    <ul class="response-list">
+    </ul>
+
+  </div>
+
+  <div class='load-more-container'></div>
+</div>
+
+
+  </div>
+</div>
+
+<div class="creative-commons">
+  <a class="creative-commons-image" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><img rel="license" alt="Creative Commons License" src="/assets/community/creativecommons-08b32a9279fcd47fcd78ac6a26331389.png" /></a>
+    <div class="license-text">This work is licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.</div>
+</div>
+
+
+
+
+
+
+        <div class="clearfix"></div>
+      </div>
+
+            <footer>
+        <section>
+            <a href="https://www.digitalocean.com/write-for-donations/" class="panel">
+            <div class="photo_wrap">
+              <img class="photo" src="https://digitalocean.cdn.prismic.io/digitalocean/70910e9fdeb57be46aaa209ce8d9b4dc8e117fab_w4do2.jpg" alt="">
+            </div>
+            <span class="heading">Become a contributor</span>
+            <p>
+                You get paid; we donate to tech nonprofits.
+            </p>
+          </a>
+            <a href="https://www.meetup.com/pro/digitalocean" class="panel">
+            <div class="photo_wrap">
+              <img class="photo" src="https://digitalocean.cdn.prismic.io/digitalocean/2491485f96735e5982e330914d8a617f85395fab_meetups.jpg" alt="">
+            </div>
+            <span class="heading">Connect with other developers</span>
+            <p>
+                Find a DigitalOcean Meetup near you.
+            </p>
+          </a>
+            <a href="https://www.digitalocean.com/community/newsletter" class="panel">
+            <div class="photo_wrap">
+              <img class="photo" src="https://digitalocean.cdn.prismic.io/digitalocean/ca12c951cc76f33037f3384bba9942545d160d82_iaan_illo.jpg" alt="">
+            </div>
+            <span class="heading">Get our biweekly newsletter</span>
+            <p>
+                Sign up for Infrastructure as a Newsletter.
+            </p>
+          </a>
+      </section>
+      <section class="slim ">
+        <span class="heading">Featured on Community</span>
+            <a href="https://www.digitalocean.com/community/tutorials/an-introduction-to-kubernetes">Intro to Kubernetes</a>
+            <a href="https://www.digitalocean.com/community/tutorial_series/how-to-code-in-python-3">Learn Python 3</a>
+            <a href="https://www.digitalocean.com/community/tutorials/machine-learning-projects-python-a-digitalocean-ebook">Machine Learning in Python</a>
+            <a href="https://www.digitalocean.com/community/tutorials/how-to-write-your-first-program-in-go">Getting started with Go</a>
+            <a href="https://www.digitalocean.com/community/tutorial_series/from-containers-to-kubernetes-with-node-js">Migrate Node.js to Kubernetes</a>
+        <hr>
+        <span class="heading">DigitalOcean Products</span>
+            <a href="https://www.digitalocean.com/products/droplets/">Droplets</a>
+            <a href="https://www.digitalocean.com/products/managed-databases/">Managed Databases</a>
+            <a href="https://www.digitalocean.com/products/kubernetes/">Managed Kubernetes</a>
+            <a href="https://www.digitalocean.com/products/spaces/">Spaces Object Storage</a>
+            <a href="https://marketplace.digitalocean.com/">Marketplace</a>
+      </section>
+        <section class="product">
+          <a class="copy" href="/products">
+            <h3>Welcome to the developer cloud</h3>
+            <p>DigitalOcean makes it simple to launch in the cloud and scale up as you grow – whether you’re running one virtual machine or ten thousand.</p>
+            <span class="link_text">Learn More</a>
+          </div>
+          <div class="feature">
+            <a class="img_wrap" href="/products">
+              <img class="photo" src="https://digitalocean.cdn.prismic.io/digitalocean/95c1215227aa7f39f2bd23076de28feb969741c7_cloud.digitalocean.com_projects_63f9252f-652b-4645-9c0c-bee96f2bc503_resources_ic0ce81-2.png" alt="DigitalOcean Cloud Control Panel">
+            </a>
+          </div>
+        </section>
+        <section class="dark">
+          <div class="vlist grow">
+            <a href="https://www.digitalocean.com">
+              <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+                <title>DigitalOcean Homepage</title>
+                <g fill="#0080FF" fill-rule="evenodd">
+                  <path
+                    d="M24.9153 50v-9.661c10.226 0 18.1638-10.1413 14.2372-20.904-1.4406-3.983-4.6327-7.1751-8.6158-8.6158C19.774 6.921 9.6327 14.8305 9.6327 25.0565H0C0 8.7571 15.7627-3.9548 32.8531 1.3842c7.4576 2.3446 13.418 8.2768 15.7345 15.7344C53.9266 34.2373 41.2429 50 24.9153 50">
+                  </path>
+                  <path
+                    d="M15.339 40.3672h9.6045v-9.6045H15.339zM7.9379 47.7684h7.401v-7.4012H7.938zM1.7514 40.3672H7.938v-6.1864H1.7514z">
+                  </path>
+                </g>
+              </svg>
+            </a>
+            <br><br>
+            © <script type="text/javascript">
+              document.write(new Date().getFullYear());
+
+            </script> DigitalOcean, LLC. All rights reserved.
+          </div>
+
+              <div class="vlist">
+                <span class="heading">Company</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/about/">About</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/about/leadership/">Leadership</a>
+                    </li>
+                    <li>
+                      <a href="https://blog.digitalocean.com/">Blog</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/careers/">Careers</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/partners/">Partners</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/referral-program/">Referral Program</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/press/">Press</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/legal/">Legal &amp; Security</a>
+                    </li>
+                </ul>
+              </div>
+              <div class="vlist">
+                <span class="heading">Products</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/">Products Overview</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/pricing/">Pricing</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/droplets/">Droplets</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/kubernetes/">Kubernetes</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/managed-databases/">Managed Databases</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/spaces/">Spaces</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/marketplace/">Marketplace</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/load-balancer/">Load Balancers</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/block-storage/">Block Storage</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/tools-and-integrations/">Tools &amp; Integrations</a>
+                    </li>
+                    <li>
+                      <a href="https://developers.digitalocean.com/documentation/">API</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/docs">Documentation</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/docs/release-notes/">Release Notes</a>
+                    </li>
+                </ul>
+              </div>
+              <div class="vlist">
+                <span class="heading">Community</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/tutorials">Tutorials</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/questions">Q&amp;A</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/tools">Tools and Integrations</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/tags">Tags</a>
+                    </li>
+                    <li>
+                      <a href="https://ideas.digitalocean.com/">Product Ideas</a>
+                    </li>
+                    <li>
+                      <a href="https://www.meetup.com/pro/digitalocean/?utm_source=do_www">Meetups</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/write-for-donations/">Write for DOnations</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/droplets-for-demos/">Droplets for Demos</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/hatch/">Hatch Startup Program</a>
+                    </li>
+                    <li>
+                      <a href="http://store.digitalocean.com/">Shop Swag</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/research/">Research Program</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/currents/">Currents Research</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/open-source/">Open Source</a>
+                    </li>
+                </ul>
+              </div>
+              <div class="vlist">
+                <span class="heading">Contact</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/support/">Support</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/company/contact/sales/">Sales</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/company/contact/#abuse">Report Abuse</a>
+                    </li>
+                    <li>
+                      <a href="https://status.digitalocean.com/">System Status</a>
+                    </li>
+                </ul>
+              </div>
+        </section>
+      </footer>
+
+
+      <div id='sign-in-modal' class='modal fade mini-modal' style="display: none;">
+  <div class='modal-dialog'>
+    <div class='modal-content'>
+      <div class='modal-header'>
+        <h1>Almost there!</h1>
+        <a class='close-button' data-dismiss='modal' aria-label="close"  href=''><span class='icon icon-close-light'></span></a>
+      </div>
+      <div class='modal-body'>
+        <div class='sign-in-message'>Sign into your account, or create a new one, to start interacting.</div>
+
+        <div class='sign-in-modal-actions'>
+          <a class="sign-in-link button blue-button" data-default-url="/community/auth/digitalocean" href="/community/auth/digitalocean">Log In</a>
+          <a class="sign-up-link button blue-button" data-default-url="/community/auth/digitalocean?display=sessionless+register" href="/community/auth/digitalocean?display=sessionless+register">Sign Up</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+      <script>
+    $(function() {
+      window.initHelpfulnessActions(2892);
+    });
+  </script>
+  <script>
+    $(function() {
+      var p, h5, panel, remainingSpace;
+      var lineHeight = 31, clamp = 1;
+
+      var panels = document.querySelectorAll('li .panel-data');
+
+      for (var i = 0, len = panels.length; i < len; i++) {
+        panel = panels[i];
+
+        p = panel.querySelector('p');
+        h5 = panel.querySelector('h5');
+        remainingSpace = panel.offsetHeight - h5.offsetHeight;
+
+        // Clamp text only when the remaining space isn't enought for p content.
+        if (remainingSpace < p.scrollHeight) {
+          clamp = parseInt(p.offsetHeight / lineHeight);
+
+          p.style.cssText = "-webkit-line-clamp:" + clamp +
+            "; display: -webkit-box; -webkit-box-orient: vertical;";
+        }
+      }
+    });
+  </script>
+
+  <script>
+    $(function() {
+      if (!!window.init_sharing) {
+        window.init_sharing();
+      }
+      new window.NewsletterSignup();
+      new window.GrowableMarkdown({ target: '[data-growable-markdown]' });
+    });
+  </script>
+  <script type="application/ld+json">
+    {"@context":"http://schema.org","@type":"Article","name":"Bias-Variance for Deep Reinforcement Learning: How To Build a Bot for Atari with OpenAI Gym","headline":"Bias-Variance for Deep Reinforcement Learning: How To Build a Bot for Atari with OpenAI Gym","alternativeHeadline":"Bias-Variance for Deep Reinforcement Learning: How To Build a Bot for Atari with OpenAI Gym","description":"Reinforcement learning is a subfield within control theory, which concerns controlling systems that change over time and broadly includes applications such as self-driving cars, robotics, and bots for games. Throughout this guide, you will use reinforcement learning to build a bot for Atari video games. By following this tutorial, you will have gained an understanding of the fundamental concepts that govern one's choice of model complexity in machine learning.","keywords":"Machine Learning,Python,Programming Project,Development","url":"https://www.digitalocean.com/community/tutorials/how-to-build-atari-bot-with-openai-gym","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.digitalocean.com/community/tutorials/how-to-build-atari-bot-with-openai-gym"},"dateModified":"2019-03-28T20:56:52Z","inLanguage":"en","accessMode":"textual","accessModeSufficient":"textual","isAccessibleForFree":true,"license":"https://creativecommons.org/licenses/by-nc-sa/4.0/","publishingPrinciples":"https://www.digitalocean.com/community/tutorials/technical-recommendations-and-best-practices-for-digitalocean-s-tutorials","author":[{"@type":"Person","name":"Alvin Wan","@id":"https://www.digitalocean.com/community/users/alvinwan"}],"datePublished":"2019-01-24T19:28:40Z","editor":{"@type":"Person","name":"Mark Drake","@id":"mdrake"},"image":{"@type":"ImageObject","url":"https://www.digitalocean.com/assets/community/illustrations/DigitalOcean_Community-02cc36407e7a978ed4fc9ed98f3ed87c.jpg","height":375,"width":750},"interactionStatistic":[{"@type":"InteractionCounter","interactionType":"http://schema.org/LikeAction","userInteractionCount":"3"},{"@type":"InteractionCounter","interactionType":"http://schema.org/CommentAction","userInteractionCount":"0"}],"sourceOrganization":{"@type":"Organization","name":"DigitalOcean Community","url":"https://www.digitalocean.com/community"},"publisher":{"@type":"Organization","name":"DigitalOcean","url":"https://www.digitalocean.com","logo":{"@type":"ImageObject","url":"https://assets.digitalocean.com/logos/DO_Logo_horizontal_blue.png","width":351,"height":60}}}
+  </script>
+
+
+    
+  </body>
+</html>

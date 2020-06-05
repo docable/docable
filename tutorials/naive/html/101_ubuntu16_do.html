@@ -1,0 +1,1846 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>How To Configure MySQL Backups with Percona XtraBackup on Ubuntu 16.04 | DigitalOcean</title>
+
+<meta name="description" content="Databases are often some of the most important systems in your infrastructure due to the value of the information they store. Because of this, it is important to have reliable backups to guard against data loss in the event of an accident or hardware">
+<meta name="keywords" content="Backups MySQL">
+
+<meta name="og:title" content="How To Configure MySQL Backups with Percona XtraBackup on Ubuntu 16.04 | DigitalOcean">
+<meta name="og:description" content="Databases are often some of the most important systems in your infrastructure due to the value of the information they store. Because of this, it is important to have reliable backups to guard against data loss in the event of an accident or hardware">
+<meta name="og:site_name" content="DigitalOcean">
+<meta name="og:type" content="article">
+<meta name="og:image" content="https://www.digitalocean.com/assets/community/illustrations/DigitalOcean_Community-02cc36407e7a978ed4fc9ed98f3ed87c.jpg">
+
+<meta name="twitter:site" content="DigitalOcean">
+<meta name="twitter:title" content="How To Configure MySQL Backups with Percona XtraBackup on Ubuntu 16.04 | DigitalOcean">
+<meta name="twitter:description" content="Databases are often some of the most important systems in your infrastructure due to the value of the information they store. Because of this, it is important to have reliable backups to guard against data loss in the event of an accident or hardware">
+<meta name="twitter:creator" content="DigitalOcean">
+<meta name="twitter:card" content="photo" />
+<meta name="twitter:url" content="https://www.digitalocean.com/community/tutorials/how-to-configure-mysql-backups-with-percona-xtrabackup-on-ubuntu-16-04"/>
+<meta name="twitter:image" content="https://www.digitalocean.com/assets/community/illustrations/DigitalOcean_Community-02cc36407e7a978ed4fc9ed98f3ed87c.jpg">
+
+  <link rel='canonical' href='https://www.digitalocean.com/community/tutorials/how-to-configure-mysql-backups-with-percona-xtrabackup-on-ubuntu-16-04'>
+
+<link rel="preconnect" href="https://digitalocean.cdn.prismic.io">
+<link rel="preconnect" href="https://hello.myfonts.net">
+
+
+    <link rel="stylesheet" media="all" href="/assets/community/application-b828e623bec3c41208f9f701850222a0.css" />
+
+    
+    <meta name="csrf-param" content="authenticity_token" />
+<meta name="csrf-token" content="t3a2YxgoihK3Or6kK3kA3ErBrGwO19Dtm/OZ6fdigqA6DWQUJyn5VYHxhK0Mzu48sbiWY2oDKDLMWWAXPBK8wQ==" />
+    <script src="/assets/community/prerequisites-9a51dfaadf0d3629cc636286133a958d.js"></script>
+    <script>
+//<![CDATA[
+
+  window.cookieDomain = '.digitalocean.com';
+
+//]]>
+</script><script src="https://assets.digitalocean.com/cookieConsent/cookieConsent.js"></script>
+<link rel="stylesheet" href="https://assets.digitalocean.com/cookieConsent/cookieConsent.css">
+
+    <script type="text/javascript">
+  if(window.analytics=window.analytics||[],window.analytics.included)window.console&&console.error&&console.error("analytics.js included twice");else{window.analytics.included=!0,window.analytics.methods=["identify","group","track","page","pageview","alias","ready","on","once","off","trackLink","trackForm","trackClick","trackSubmit"],window.analytics.factory=function(a){return function(){var n=Array.prototype.slice.call(arguments);return n.unshift(a),window.analytics.push(n),window.analytics}};for(var i=0;i<window.analytics.methods.length;i++){var key=window.analytics.methods[i];window.analytics[key]=window.analytics.factory(key)}window.analytics.load=function(a){var n=document.createElement("script");n.type="text/javascript",n.async=!0,n.src=("https:"===document.location.protocol?"https://":"http://")+"cdn.segment.com/analytics.js/v1/"+a+"/analytics.min.js";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(n,t)},window.analytics.SNIPPET_VERSION="2.0.9",window.analytics.load("puo3uv968t")}
+  window.analytics.page();
+</script>
+
+<!-- Google Tag Manager -->
+<script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-KHWBBT');
+</script>
+<!-- End Google Tag Manager -->
+
+<script src="/assets/community/internalCookies-d2a3579f6b37d00c8045b16853b90462.js"></script>
+
+      <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="/community/tutorials/feed">
+    <script>
+      window.comApp = {
+        prefix: '/community',
+        svgIconPath: 'https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg',
+        railsEnv: 'production',
+        rootUrl: 'https://www.digitalocean.com/community',
+        algolia_application_id: '6ZHEUVKJ88',
+        algolia_api_key: 'c5470567eae7fa1177d43222e18ba086'
+      };
+    </script>
+      <script src="https://go.digitalocean.com/js/forms2/js/forms2.min.js"></script>
+
+    <script src="/assets/community/application-dd2f12c7d68945c016e67a784d8785fc.js"></script>
+  </head>
+  <body class="feature-filter-bar feature-upvotes tutorials-controller tutorial-single" data-env="production" data-prefix="/community" data-user-id="" data-facebook-app-id="694818843983011"   data-completed-tutorial-id="" data-tutorial-id="2316" data-js="tutorial"
+  data-upvote="null"
+  data-flagged=""
+>
+    
+
+    <div class='outside_viewport'>
+        <div id="contents-modal" class="modal fade mini-modal" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1>Contents</h1>
+          <button class="close-button icon icon-close-light" data-dismiss="modal" aria-label="close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="table-of-contents-modal"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="share-modal" class="modal fade mini-modal" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1>Share</h1>
+        <button type="button" class="close-button icon icon-close-light" aria-label="close" data-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="social-sharing social-sharing-container">
+          <ul class="top ">
+            <li class="shareBtn" id="sbTwitter">
+              <a href="http://twitter.com/share?text=How To Configure MySQL Backups with Percona XtraBackup on Ubuntu 16.04&amp;url=https://www.digitalocean.com/community/tutorials/how-to-configure-mysql-backups-with-percona-xtrabackup-on-ubuntu-16-04?utm_content=how-to-configure-mysql-backups-with-percona-xtrabackup-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=twshare" class="share-icon share-popup" title="Share on Twitter" target="_blank">
+                <span class="sIcon icon-bird"></span>
+              </a>
+              <a href="http://twitter.com/share?text=How To Configure MySQL Backups with Percona XtraBackup on Ubuntu 16.04&amp;url=https://www.digitalocean.com/community/tutorials/how-to-configure-mysql-backups-with-percona-xtrabackup-on-ubuntu-16-04?utm_content=how-to-configure-mysql-backups-with-percona-xtrabackup-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=twshare" class="share-link share-popup" title="Share on Twitter" target="_blank">
+                Twitter
+              </a>
+            </li>
+            <li class="shareBtn" id="sbFacebook">
+              <a class="share-icon share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/how-to-configure-mysql-backups-with-percona-xtrabackup-on-ubuntu-16-04?utm_content=how-to-configure-mysql-backups-with-percona-xtrabackup-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+                <span class="sIcon icon-facebook-B"></span>
+              </a>
+
+              <a class="share-link share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/how-to-configure-mysql-backups-with-percona-xtrabackup-on-ubuntu-16-04?utm_content=how-to-configure-mysql-backups-with-percona-xtrabackup-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+                Facebook
+              </a>
+            </li>
+            <li class="shareBtn" id="sbYC">
+              <a href="https://news.ycombinator.com/submitlink?t=How To Configure MySQL Backups with Percona XtraBackup on Ubuntu 16.04&amp;u=https://www.digitalocean.com/community/tutorials/how-to-configure-mysql-backups-with-percona-xtrabackup-on-ubuntu-16-04?utm_content=how-to-configure-mysql-backups-with-percona-xtrabackup-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=hnshare" class="share-icon share-popup" target="_blank" title="Submit to Hacker News">
+                <span class="sIcon icon-hacker-news"></span>
+              </a>
+              <a href="https://news.ycombinator.com/submitlink?t=How To Configure MySQL Backups with Percona XtraBackup on Ubuntu 16.04&amp;u=https://www.digitalocean.com/community/tutorials/how-to-configure-mysql-backups-with-percona-xtrabackup-on-ubuntu-16-04?utm_content=how-to-configure-mysql-backups-with-percona-xtrabackup-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=hnshare" class="share-link share-popup" target="_blank" title="Submit to Hacker News">
+                Hacker News
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <div class="table-of-contents">
+    <div data-js="tableOfContentsDesktop"></div>
+  </div>
+  
+  
+  
+  <div id="share-modal" class="modal fade mini-modal" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1>Share</h1>
+        <button type="button" class="close-button icon icon-close-light" aria-label="close" data-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="social-sharing social-sharing-container">
+          <ul class="bottom ">
+            <li class="shareBtn" id="sbTwitter">
+              <a href="http://twitter.com/share?text=How To Configure MySQL Backups with Percona XtraBackup on Ubuntu 16.04&amp;url=https://www.digitalocean.com/community/tutorials/how-to-configure-mysql-backups-with-percona-xtrabackup-on-ubuntu-16-04?utm_content=how-to-configure-mysql-backups-with-percona-xtrabackup-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=twshare" class="share-icon share-popup" title="Share on Twitter" target="_blank">
+                <span class="sIcon icon-bird"></span>
+              </a>
+              <a href="http://twitter.com/share?text=How To Configure MySQL Backups with Percona XtraBackup on Ubuntu 16.04&amp;url=https://www.digitalocean.com/community/tutorials/how-to-configure-mysql-backups-with-percona-xtrabackup-on-ubuntu-16-04?utm_content=how-to-configure-mysql-backups-with-percona-xtrabackup-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=twshare" class="share-link share-popup" title="Share on Twitter" target="_blank">
+                Twitter
+              </a>
+            </li>
+            <li class="shareBtn" id="sbFacebook">
+              <a class="share-icon share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/how-to-configure-mysql-backups-with-percona-xtrabackup-on-ubuntu-16-04?utm_content=how-to-configure-mysql-backups-with-percona-xtrabackup-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+                <span class="sIcon icon-facebook-B"></span>
+              </a>
+
+              <a class="share-link share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/how-to-configure-mysql-backups-with-percona-xtrabackup-on-ubuntu-16-04?utm_content=how-to-configure-mysql-backups-with-percona-xtrabackup-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+                Facebook
+              </a>
+            </li>
+            <li class="shareBtn" id="sbYC">
+              <a href="https://news.ycombinator.com/submitlink?t=How To Configure MySQL Backups with Percona XtraBackup on Ubuntu 16.04&amp;u=https://www.digitalocean.com/community/tutorials/how-to-configure-mysql-backups-with-percona-xtrabackup-on-ubuntu-16-04?utm_content=how-to-configure-mysql-backups-with-percona-xtrabackup-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=hnshare" class="share-icon share-popup" target="_blank" title="Submit to Hacker News">
+                <span class="sIcon icon-hacker-news"></span>
+              </a>
+              <a href="https://news.ycombinator.com/submitlink?t=How To Configure MySQL Backups with Percona XtraBackup on Ubuntu 16.04&amp;u=https://www.digitalocean.com/community/tutorials/how-to-configure-mysql-backups-with-percona-xtrabackup-on-ubuntu-16-04?utm_content=how-to-configure-mysql-backups-with-percona-xtrabackup-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=hnshare" class="share-link share-popup" target="_blank" title="Submit to Hacker News">
+                Hacker News
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div id="newsletter-signup-dialog" class="newsletter-signups-dialog" data-newsletter-signup-dialog data-article-target=".content-body">
+  <div class="form-message">
+  <div class="pull-right">
+    <a href="javascript:;" class="newsletter-signups-dialog-dismiss" data-newsletter-signup-dismiss>&times;</a>
+
+  </div>
+  <h4 class="newsletter-signups-dialog-title">
+    Sign up for our newsletter.
+  </h4>
+  <p class="newsletter-signups-dialog-description">
+    Get the latest tutorials on SysAdmin and open source topics.
+  </p>
+  <form class="newsletter-signup" id="new_newsletter_signup" data-newsletter-signup="true" action="/community/newsletter" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="&#x2713;" />
+
+  <input data-newsletter-signup-field="url" type="hidden" name="newsletter_signup[url]" id="newsletter_signup_url" />
+  <input data-newsletter-signup-field="title" type="hidden" name="newsletter_signup[title]" id="newsletter_signup_title" />
+
+  <div class="newsletter-signup-ajax-error" data-newsletter-signup-ajax-error></div>
+
+
+  <div class="form-group">
+    <input placeholder="Enter your email address" required="required" class="field" type="email" name="newsletter_signup[email]" id="newsletter_signup_email" />
+  </div>
+
+  <button data-disable-with="Sign Up" class="button blue-button">
+    Sign Up
+  </button>
+
+</form>
+
+</div>
+
+<div class="thanks-message hidden" data-newsletter-signup-successful> 
+  <div class='pull-right'> 
+    <a href='javascript:;' class='newsletter-signups-dialog-dismiss icon icon-close-light' data-newsletter-signup-dismiss></a> 
+  </div> 
+
+  <span class='newsletter-signups-dialog-success'> 
+    Thanks for signing up! 
+  </span> 
+</div>
+
+</div>
+
+
+      
+    </div>
+
+      
+      
+<div style="display: none;">
+  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <symbol id="do_nav-logo" xmlns="http://www.w3.org/2000/svg"> <title>DigitalOcean home</title> <g fill="currentColor" fill-rule="evenodd"> <path d="M14.4942 29v-5.5674c5.9572 0 10.5633-5.8478 8.2892-12.059-.8425-2.3006-2.693-4.1355-5.0126-4.9706-6.262-2.2534-12.1564 2.3135-12.1573 8.2207 0 0-.0006.0014-.0014.0014H0C0 5.2123 9.1687-2.1167 19.1138.9624c4.3459 1.3457 7.7993 4.7708 9.1561 9.081C31.3742 19.9068 23.985 29 14.4942 29"></path> <path d="M14.507 23.4468H8.9103v-5.549s.0005-.0011.0011-.0011h5.5949c.0006 0 .0009.0006.0009.0006v5.5495M8.9093 27.7118H4.6105l-.0012-.0012v-4.2638h4.3009v4.2638l-.0009.0012M4.6125 23.4468H1.0088c-.0015 0-.0026-.0012-.0026-.0012v-3.5724s.0011-.0025.0026-.0025h3.601c.0015 0 .0027.0011.0027.0011v3.575M43.2806 9.6357h1.649c1.8346 0 3.345.358 4.49 1.0647 1.2714.7603 1.9164 2.2069 1.9164 4.2991 0 2.1554-.6465 3.6671-1.9207 4.4942h-.0008c-1.0971.7196-2.5981 1.0846-4.462 1.0846h-1.6719V9.6357zm8.324-1.0736c-1.6598-1.142-3.7252-1.721-6.1387-1.721h-5.2537V23.373h5.2537c2.4074 0 4.4737-.6113 6.1407-1.8157.907-.6382 1.6197-1.5304 2.1185-2.651.4962-1.1144.7479-2.4288.7479-3.9067 0-1.4605-.2517-2.758-.7482-3.857-.4988-1.104-1.212-1.972-2.1202-2.5804zM58.1303 6.6376c-.5051 0-.9403.1777-1.2906.5254-.3546.335-.5346.7597-.5346 1.2618 0 .501.1791.9322.532 1.2825.3529.35.788.528 1.2932.528.5042 0 .9394-.178 1.2928-.528.3535-.3508.5324-.7821.5324-1.2825 0-.5015-.18-.926-.5324-1.2592-.3534-.3503-.7886-.528-1.2928-.528M56.6247 23.3729h2.9538V11.7294h-2.9538zM69.5321 19.5787c-.5162.5814-1.1793.8635-2.0264.8635-.8471 0-1.5064-.282-2.015-.863-.5065-.5777-.7637-1.3439-.7637-2.2773 0-.9479.2572-1.7238.764-2.3058.502-.576 1.1796-.8683 2.0147-.8683.8465 0 1.5096.284 2.0262.8695.5142.582.7751 1.3573.7751 2.3046 0 .9328-.2609 1.6988-.7749 2.2768zm.775-6.8767c-.8908-.7858-1.8858-1.2444-2.9614-1.2444-1.6305 0-2.9859.5598-4.0276 1.662-1.0555 1.0932-1.5907 2.5006-1.5907 4.1823 0 1.644.5269 3.0464 1.568 4.1709 1.0498 1.088 2.4123 1.6396 4.0503 1.6396 1.139 0 2.1182-.3144 2.9157-.9356v.268c0 .9662-.2608 1.7176-.7751 2.234-.5137.5154-1.226.7764-2.1173.7764-1.3637 0-2.2183-.5314-3.2589-1.9262l-2.0115 1.917.0542.0754c.4346.605 1.1 1.197 1.9785 1.7594.8787.5603 1.9832.8447 3.2832.8447 1.7536 0 3.1726-.5363 4.2172-1.5933 1.0506-1.0628 1.5835-2.486 1.5835-4.2286V11.7294H70.307v.9726zM75.7434 23.3729h2.9541V11.7294h-2.9541zM77.249 6.6376c-.5052 0-.94.1777-1.2906.5254-.3547.335-.5344.7597-.5344 1.2618 0 .501.1789.9322.532 1.2825.353.35.7878.528 1.293.528.5045 0 .9396-.178 1.2928-.528.3535-.3508.5323-.7821.5323-1.2825 0-.5015-.1797-.926-.5323-1.2592-.3532-.3503-.7883-.528-1.2929-.528M85.1724 8.5831h-2.9082v3.1463h-1.6888v2.6702h1.6888v4.8365c0 1.5134.3047 2.5964.9064 3.2181.6031.6247 1.6741.9414 3.1831.9414.48 0 .963-.0156 1.4354-.0463l.133-.0088v-2.6683l-1.013.0526c-.7033 0-1.1728-.1226-1.3961-.3637-.226-.245-.3406-.7636-.3406-1.5404v-4.421h2.7497v-2.6703h-2.7497V8.583M101.7735 23.3729h2.9544V6.8412h-2.9544zM134.5728 19.2094c-.5286.5874-1.0693 1.0966-1.4855 1.3613v.0005c-.4085.2599-.924.3918-1.532.3918-.8703 0-1.5703-.3144-2.1405-.9621-.567-.644-.8545-1.4716-.8545-2.4613s.2838-1.8162.8436-2.4556c.5625-.6434 1.2588-.9562 2.1285-.9562.9515 0 1.9548.5869 2.8145 1.5947l1.9525-1.8568c-1.273-1.6433-2.897-2.4081-4.8352-2.4081-1.622 0-3.028.5862-4.1788 1.7411-1.1446 1.147-1.7251 2.6074-1.7251 4.3409 0 1.7335.58 3.1977 1.7234 4.352 1.1447 1.1557 2.5514 1.7417 4.1805 1.7417 2.139 0 3.8651-.9158 5.029-2.5935l-1.9204-1.8304M140.2405 16.0973c.1422-.5567.401-1.0207.7714-1.381.4005-.3906.9214-.5885 1.5489-.5885.716 0 1.2702.2019 1.6474.6014.3495.3696.5467.8296.588 1.368h-4.5557zm6.4569-2.7414c-.4191-.5788-.9896-1.0448-1.6965-1.3854-.7047-.3404-1.526-.513-2.441-.513-1.6489 0-2.9982.6037-4.0113 1.7946-.9836 1.182-1.4818 2.651-1.4818 4.3665 0 1.7648.547 3.2253 1.6254 4.341 1.0727 1.1105 2.5083 1.6737 4.267 1.6737 1.992 0 3.627-.799 4.8587-2.3752l.0666-.0847-1.9273-1.837c-.1789.2139-.4317.4561-.6628.6722-.2918.273-.5659.4842-.8588.6289-.4415.218-.9369.3255-1.4907.3255-.8187 0-1.4964-.2388-2.0147-.71-.4847-.4403-.768-1.0345-.843-1.7683h7.8265l.0264-1.0693c0-.7569-.1038-1.4862-.3088-2.1677a6.312 6.312 0 0 0-.934-1.8918zM152.797 18.9234c.3352-.2318.8085-.3483 1.4073-.3483.7112 0 1.4654.1413 2.2426.421v1.1421c-.6421.592-1.4996.8922-2.5499.8922-.5114 0-.909-.1126-1.1822-.3355-.2683-.218-.3985-.4955-.3985-.847 0-.3994.1571-.7022.4808-.9245zm5.2452-6.3229h-.0003c-.8952-.758-2.1328-1.143-3.678-1.143-.9829 0-1.902.2144-2.7336.6324-.7691.387-1.5245 1.0275-2.0043 1.8662l.0298.0358 1.8917 1.796c.7791-1.2322 1.6454-1.66 2.7941-1.66.6172 0 1.1298.1643 1.5234.4881.3916.3216.5819.7304.5819 1.249v.5652c-.7324-.221-1.4629-.333-2.1738-.333-1.47 0-2.6663.3432-3.555 1.0193-.9.6852-1.3562 1.665-1.3562 2.9125 0 1.094.3847 1.9829 1.1461 2.6433.7677.6372 1.7275.961 2.8524.961 1.1246 0 2.177-.4495 3.132-1.2191v.9587h2.9089v-7.4852c0-1.4173-.4572-2.523-1.3591-3.2872zM170.7656 12.8285c-.8227-.9092-1.9791-1.371-3.4371-1.371-1.172 0-2.1236.3338-2.8357.9926v-.7207h-2.897v11.6435h2.954v-6.4215c0-.8823.2119-1.5828.6293-2.0826.4162-.4987.989-.741 1.75-.741.6691 0 1.1765.2167 1.5506.662.3759.4474.5662 1.0638.5662 1.8335v6.7496H172v-6.7496c0-1.6127-.415-2.889-1.2344-3.7948M92.8158 18.9234c.3351-.2318.8087-.3483 1.4075-.3483.7112 0 1.4652.1413 2.2426.421v1.1421c-.6421.592-1.4998.8922-2.5502.8922-.5114 0-.9087-.1126-1.1819-.3355-.2683-.218-.3988-.4955-.3988-.847 0-.3994.1574-.7022.4808-.9245zm5.2451-6.3229h-.0003c-.8952-.758-2.1328-1.143-3.6776-1.143-.983 0-1.902.2144-2.7337.6324-.7694.387-1.5247 1.0275-2.0043 1.8662l.0295.0358 1.8917 1.796c.7792-1.2322 1.6458-1.66 2.7941-1.66.6172 0 1.1298.1643 1.5234.4881.3916.3216.5822.7304.5822 1.249v.5652c-.7327-.221-1.4631-.333-2.174-.333-1.47 0-2.6664.3432-3.555 1.0193-.8999.6852-1.3562 1.665-1.3562 2.9125 0 1.094.3847 1.9829 1.1463 2.6433.7677.6372 1.7272.961 2.8524.961 1.1246 0 2.1766-.4495 3.1318-1.2191v.9587H99.42v-7.4852c0-1.4173-.457-2.523-1.359-3.2872zM115.4464 9.5808c-3.0682 0-5.5645 2.4755-5.5645 5.5188s2.4963 5.5188 5.5645 5.5188c3.0682 0 5.5645-2.4755 5.5645-5.5188s-2.4963-5.5188-5.5645-5.5188zm0 14.0408c-4.7383 0-8.5928-3.8228-8.5928-8.522 0-4.6994 3.8545-8.5223 8.5928-8.5223 4.738 0 8.5925 3.8229 8.5925 8.5223 0 4.6992-3.8545 8.522-8.5925 8.522z"></path> </g> </symbol>
+    <symbol id="do_nav-community_logo" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 532.2 99.8" fill="currentColor"> <path class="st0" d="M98.5,23c15.5,0,27.7,12.1,27.7,28.2c0,16.1-12.3,28.1-27.7,28.1c-15.6,0-27.7-11.9-27.7-28.1 C70.8,35.1,82.9,23,98.5,23z M98.5,67.9c8.7,0,14.9-7,14.9-16.8c0-9.8-6.2-16.8-14.9-16.8c-8.8,0-15,7-15,16.8 C83.5,60.9,89.7,67.9,98.5,67.9z"/> <path class="st0" d="M166.8,45.9c0-7-3.5-11.6-9.9-11.6c-7.2,0-11.1,5.3-11.1,13.1V78h-12.5V24.3h12.3V29c2.4-2.8,7-6,13.9-6 c7.3,0,12.2,3.1,15,7c4.4-4.9,10-7,16.8-7c14.4,0,21.4,8.5,21.4,23.8V78h-12.5V45.9c0-7-3.5-11.6-9.9-11.6 c-7.2,0-11.2,5.3-11.2,13.1V78h-12.4V45.9z"/> <path class="st0" d="M255.5,45.9c0-7-3.5-11.6-9.9-11.6c-7.2,0-11.1,5.3-11.1,13.1V78h-12.5V24.3h12.3V29c2.4-2.8,7-6,13.9-6 c7.3,0,12.2,3.1,15,7c4.4-4.9,10-7,16.8-7c14.4,0,21.4,8.5,21.4,23.8V78h-12.5V45.9c0-7-3.5-11.6-9.9-11.6 c-7.2,0-11.2,5.3-11.2,13.1V78h-12.4V45.9z"/> <path class="st0" d="M322.5,56.4c0,7,3.6,11.6,10.1,11.6c7.2,0,11.2-5.6,11.2-13.5V24.3h12.5V78h-12.3v-4.4 c-3.4,3.7-8.1,5.6-13.9,5.6c-11.9,0-20.1-8.4-20.1-23.7V24.3h12.5V56.4z"/> <path class="st0" d="M378.2,78h-12.5V24.3h12.3v4.4c2.7-3.1,7.7-5.7,13.9-5.7c13.1,0,21.3,8.5,21.3,23.8V78h-12.5V46.8 c0-7.5-3.7-12.5-10.6-12.5c-7.8,0-11.8,5.6-11.8,14V78z"/> <path class="st0" d="M427.8,0.2c4.4,0,7.9,3.4,7.9,7.8s-3.5,7.9-7.9,7.9c-4.4,0-7.9-3.5-7.9-7.9S423.4,0.2,427.8,0.2z M421.4,24.3 h12.5V78h-12.5V24.3z"/> <path class="st0" d="M446.7,59.1V35.5h-6.5V24.3h6.5v-15H459v15h12.2v11.2H459v21.7c0,7.8,1.8,9.8,8.8,9.8c1.2,0,4.1-0.2,4.1-0.2 v11.2c0,0-2.4,0.2-6.7,0.2C451.2,78.1,446.7,72.7,446.7,59.1z"/> <path class="st0" d="M497.3,78.7l-21.3-54.4h14.2l14,38.8l14.2-38.8h13.6l-24.1,60.2c-3.7,9.4-7.2,15.3-21.3,15.3 c-2.5,0-4.8-0.1-4.8-0.1V88c0,0,1.5,0.1,2.8,0.1c7.6,0,9.8-2.3,11.8-7.8L497.3,78.7z"/> <path class="st0" d="M62.4,55.9c-5.3,7-12.2,11.4-22.1,11.4c-15.6,0-27-11.7-27-27.5c0-16.1,11.4-27.8,26.5-27.8 c10,0,16.8,4.8,21.3,11.3l8.4-8.8C63.1,5.7,53.3,0,39.7,0C17.1,0,0,15.9,0,39.8c0,23.4,17.1,39.4,40.1,39.4c13.1,0,22-4.9,28.6-12.2 L62.4,55.9z"/> </symbol>
+    <symbol id="do_nav-control_panel_icon" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M19.6875 23.4862C19.6885 23.9722 19.4965 24.4388 19.1537 24.7833C18.8109 25.1279 18.3454 25.3222 17.8594 25.3237H3.23438C2.99366 25.3232 2.75539 25.2753 2.53321 25.1827C2.31102 25.09 2.10927 24.9545 1.93949 24.7839C1.7697 24.6132 1.63522 24.4108 1.54373 24.1881C1.45223 23.9655 1.40552 23.727 1.40626 23.4862V3.25498C1.40577 3.01417 1.45271 2.77562 1.54441 2.55295C1.63611 2.33028 1.77077 2.12785 1.9407 1.95722C2.11063 1.7866 2.31251 1.65111 2.5348 1.5585C2.75709 1.46589 2.99545 1.41797 3.23626 1.41748L17.8613 1.44186C18.347 1.44384 18.812 1.63843 19.1544 1.98292C19.4968 2.32741 19.6885 2.79366 19.6875 3.27936V23.4862Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M43.5863 12.27C43.5828 12.7516 43.3883 13.212 43.0456 13.5503C42.7028 13.8885 42.2397 14.0768 41.7582 14.0738H27.1332C26.8947 14.0755 26.6582 14.0302 26.4372 13.9405C26.2162 13.8507 26.015 13.7183 25.8453 13.5508C25.6755 13.3833 25.5404 13.1839 25.4477 12.9642C25.355 12.7444 25.3065 12.5085 25.3051 12.27V3.24565C25.308 2.76461 25.5019 2.30442 25.8439 1.96621C26.186 1.62799 26.6484 1.43941 27.1294 1.4419L41.7544 1.41753C42.2365 1.41403 42.7002 1.60205 43.0437 1.94027C43.3872 2.27849 43.5823 2.73924 43.5863 3.22128V12.27Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M19.6875 41.7956C19.686 42.0347 19.6375 42.2712 19.5446 42.4915C19.4518 42.7118 19.3164 42.9117 19.1463 43.0797C18.9762 43.2477 18.7747 43.3806 18.5532 43.4707C18.3318 43.5609 18.0947 43.6065 17.8556 43.605L3.23063 43.5806C2.74908 43.5826 2.28644 43.3934 1.94436 43.0545C1.60228 42.7155 1.40873 42.2547 1.40625 41.7731V32.7563C1.40748 32.5175 1.45575 32.2813 1.54831 32.0612C1.64087 31.8412 1.7759 31.6415 1.94569 31.4736C2.11547 31.3057 2.31667 31.173 2.53779 31.0829C2.75892 30.9929 2.99562 30.9473 3.23438 30.9488H17.8594C18.3414 30.9463 18.8047 31.1352 19.1475 31.4742C19.4903 31.8131 19.6845 32.2742 19.6875 32.7563V41.7956Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M27.1349 43.605C26.894 43.6045 26.6555 43.5565 26.433 43.4638C26.2106 43.3711 26.0087 43.2354 25.8387 43.0646C25.6688 42.8937 25.5341 42.6911 25.4426 42.4682C25.351 42.2453 25.3042 42.0066 25.3049 41.7656V21.5381C25.3042 21.2973 25.3509 21.0587 25.4424 20.8359C25.5338 20.6132 25.6683 20.4106 25.8381 20.2398C26.0078 20.069 26.2095 19.9333 26.4317 19.8405C26.6539 19.7476 26.8923 19.6995 27.1331 19.6987H41.7581C41.9989 19.6995 42.2372 19.7476 42.4594 19.8405C42.6816 19.9333 42.8833 20.069 43.0531 20.2398C43.2228 20.4106 43.3573 20.6132 43.4488 20.8359C43.5402 21.0587 43.5869 21.2973 43.5862 21.5381V41.7412C43.5872 42.2271 43.3955 42.6935 43.0532 43.0383C42.7109 43.3831 42.2458 43.5781 41.7599 43.5806L27.1349 43.605Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+    <symbol id="do_nav-community_icon" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#clip0)"> <path d="M12.6562 10.5469C12.6562 9.85155 12.8624 9.17184 13.2487 8.5937C13.635 8.01556 14.1841 7.56495 14.8265 7.29886C15.4689 7.03277 16.1758 6.96315 16.8577 7.0988C17.5397 7.23445 18.1661 7.56929 18.6578 8.06095C19.1495 8.55262 19.4843 9.17905 19.6199 9.86101C19.7556 10.543 19.686 11.2499 19.4199 11.8922C19.1538 12.5346 18.7032 13.0837 18.1251 13.47C17.5469 13.8563 16.8672 14.0625 16.1719 14.0625" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M16.1719 18.2812C16.0328 18.2812 15.8969 18.3225 15.7812 18.3997C15.6656 18.477 15.5755 18.5868 15.5223 18.7153C15.4691 18.8438 15.4551 18.9852 15.4823 19.1215C15.5094 19.2579 15.5764 19.3832 15.6747 19.4816C15.773 19.5799 15.8983 19.6469 16.0347 19.674C16.1711 19.7011 16.3125 19.6872 16.4409 19.634C16.5694 19.5808 16.6792 19.4906 16.7565 19.375C16.8338 19.2594 16.875 19.1234 16.875 18.9844C16.875 18.7979 16.8009 18.6191 16.6691 18.4872C16.5372 18.3553 16.3584 18.2812 16.1719 18.2812Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M32.3438 4.21875V12.6562" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M29.5312 1.40625C30.2772 1.40625 30.9925 1.70257 31.52 2.23001C32.0474 2.75746 32.3438 3.47283 32.3438 4.21875" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M4.21875 1.40625H29.5312" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M1.40625 4.21875C1.40625 3.47283 1.70257 2.75746 2.23001 2.23001C2.75746 1.70257 3.47283 1.40625 4.21875 1.40625" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M1.40625 23.9062V4.21875" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M4.21875 26.7188C3.47283 26.7187 2.75746 26.4224 2.23001 25.895C1.70257 25.3675 1.40625 24.6522 1.40625 23.9062" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M9.84375 26.7188H4.21875" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M9.84375 35.1562V26.7188" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M15.4688 30.9375L9.84375 35.1562" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M43.5938 35.1562H37.9688V43.5938L29.5312 35.1562H21.0938V18.2812H43.5938V35.1562Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M32.3438 23.9062V29.5312" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </g> <defs> <clipPath id="clip0"> <rect width="45" height="45" fill="white"/> </clipPath> </defs> </symbol>
+    <symbol id="do_nav-search" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M15.7 13.3l-3.81-3.83A5.93 5.93 0 0 0 13 6c0-3.31-2.69-6-6-6S1 2.69 1 6s2.69 6 6 6c1.3 0 2.48-.41 3.47-1.11l3.83 3.81c.19.2.45.3.7.3.25 0 .52-.09.7-.3a.996.996 0 0 0 0-1.41v.01zM7 10.7c-2.59 0-4.7-2.11-4.7-4.7 0-2.59 2.11-4.7 4.7-4.7 2.59 0 4.7 2.11 4.7 4.7 0 2.59-2.11 4.7-4.7 4.7z"></path></symbol>
+    <symbol id="do_nav-logomark" x="0px" y="0px" viewBox="65.2 173.5 180 180" fill="currentColor"><path d="M155.2,351.7v-34.2c36.2,0,64.3-35.9,50.4-74c-5.1-14.1-16.4-25.4-30.5-30.5c-38.1-13.8-74,14.2-74,50.4l0,0H67c0-57.7,55.8-102.7,116.3-83.8c26.4,8.3,47.5,29.3,55.7,55.7C257.9,295.9,213,351.7,155.2,351.7z"/> <polygon points="155.3,317.6 121.3,317.6 121.3,283.6 121.3,283.6 155.3,283.6 155.3,283.6"/> <polygon points="121.3,343.8 95.1,343.8 95.1,343.8 95.1,317.6 121.3,317.6"/> <path d="M95.1,317.6H73.2l0,0v-21.9l0,0h21.9l0,0V317.6z"/></symbol>
+    <symbol id="do_nav-write4do" viewBox="0 0 30 30" fill="none" stroke="currentColor"> <path d="M16.3063 17.67L11.6663 18.3338L12.3288 13.6925L24.2613 1.76002C24.7887 1.23257 25.5041 0.936249 26.25 0.936249C26.6194 0.936249 26.9851 1.009 27.3263 1.15034C27.6675 1.29168 27.9776 1.49885 28.2388 1.76002C28.4999 2.02118 28.7071 2.33123 28.8484 2.67246C28.9898 3.01369 29.0625 3.37942 29.0625 3.74877C29.0625 4.11811 28.9898 4.48384 28.8484 4.82507C28.7071 5.1663 28.4999 5.47635 28.2388 5.73752L16.3063 17.67Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M22.935 3.08624L26.9125 7.06374"  stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M23.4375 17.8125V27.1875C23.4375 27.6848 23.24 28.1617 22.8883 28.5133C22.5367 28.865 22.0598 29.0625 21.5625 29.0625H2.8125C2.31522 29.0625 1.83831 28.865 1.48667 28.5133C1.13504 28.1617 0.9375 27.6848 0.9375 27.1875V8.4375C0.9375 7.94022 1.13504 7.46331 1.48667 7.11167C1.83831 6.76004 2.31522 6.5625 2.8125 6.5625H12.1875" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+    <symbol id="do_nav-meetups" viewBox="0 0 30 30" fill="none" stroke="currentColor"> <path d="M27.1901 4.6875H2.81506C1.77953 4.6875 0.940063 5.52697 0.940063 6.5625V27.1875C0.940063 28.223 1.77953 29.0625 2.81506 29.0625H27.1901C28.2256 29.0625 29.0651 28.223 29.0651 27.1875V6.5625C29.0651 5.52697 28.2256 4.6875 27.1901 4.6875Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M0.940063 12.1875H29.0651" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M8.44006 7.5V0.9375" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M21.5651 7.5V0.9375" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+    <symbol id="do_nav-hacktoberfest" viewBox="0 0 30 30" fill="none" stroke="currentColor"> <path d="M19.2063 24.9918L16.5714 22.3569V14.4854L13.986 17.0708V23.5755L12.5615 25L11.1371 23.5591V8.44175L10.7419 8.04652L8.93042 9.8662L8 8.94401L11.9358 5.00823L11.944 5.01647L12.1005 5.16468L13.9778 7.04199V13.8431L16.5632 11.2577V8.42528L15.2705 7.12433L17.3948 5L19.4286 7.03376V20.9572L20.4249 21.9535L21.6352 20.7431L22.5492 21.6571L19.2063 24.9918Z" fill="currentcolor"/> <rect x="0.75" y="0.75" width="28.5" height="28.5" rx="2.25" stroke-width="1.5" stroke="currentColor"/> </symbol>
+    <symbol id="do_nav-build" viewBox="0 0 16 16" fill="none" stroke="currentColor"> <path d="M1.5 14.5C1.23478 14.5 0.98043 14.3946 0.792893 14.2071C0.605357 14.0196 0.5 13.7652 0.5 13.5V2.57667C0.500879 2.29139 0.614596 2.01804 0.81632 1.81632C1.01804 1.6146 1.29139 1.50088 1.57667 1.5H14.4287C14.7125 1.50088 14.9845 1.61403 15.1852 1.81476C15.386 2.01548 15.4991 2.28747 15.5 2.57133V13.4233C15.4991 13.7086 15.3854 13.982 15.1837 14.1837C14.982 14.3854 14.7086 14.4991 14.4233 14.5H1.5Z" stroke-linecap="round" stroke-linejoin="round"/> <path d="M15.5 4.5H0.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M11 7.5L13 9.5L11 11.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M5 7.5L3 9.5L5 11.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M9 7.5L7 11.5" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+  </svg>
+</div>
+
+<nav class="do_nav" role="navigation" aria-label="Navigation">
+  <ul role="menubar" class="utility">
+    <li role="banner" data-flex="grow" data-show="always">
+    </li>
+    <li role="menuitem">
+      <a href="/products/">Products</a>
+    </li>
+    <li role="menuitem">
+      <a href="/pricing/">Pricing</a>
+    </li>
+    <li role="menuitem" aria-haspopup="true" tabindex="0">
+      <span class="expander">Docs</span>
+      <div class="mini" aria-expanded="false">
+        <ul role="menu">
+          <li role="menuitem">
+            <a href="/docs/">Product Docs</a>
+          </li>
+          <li role="menuitem">
+            <a href="https://developers.digitalocean.com/documentation/">API Docs</a>
+          </li>
+        </ul>
+      </div>
+    </li>
+      <li role="menuitem" aria-haspopup="true" tabindex="0">
+      <span class="expander">Log in</span>
+        <div class="mini" aria-expanded="false">
+          <header>Log in to</header>
+          <ul role="menu">
+            <li role="menuitem">
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <use xlink:href="#do_nav-community_icon"></use>
+              </svg>
+              <a id="log-in" href="/community/auth/digitalocean">Community</a>
+            </li>
+            <li role="menuitem">
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <use xlink:href="#do_nav-control_panel_icon"></use>
+              </svg>
+              <a href="https://cloud.digitalocean.com/registrations/new">Control Panel</a>
+            </li>
+          </ul>
+        </div>
+      </li>
+  </ul>
+
+  <ul role="menubar" class="primary">
+    <li role="menuitem" data-show="always">
+      <a href="https://www.digitalocean.com/">
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" shape-rendering="auto">
+          <use xlink:href="#do_nav-logomark"></use>
+        </svg>
+      </a>
+    </li>
+    <li role="menuitem" data-show="always">
+      <a role="home" title="DigitalOcean Community Home" href="/community">
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="120px" height="24px"
+             shape-rendering="auto">
+          <use xlink:href="#do_nav-community_logo"></use>
+        </svg>
+</a>    </li>
+    <li role="menuitem">
+      <a data-activatable="true" href="/community/tutorials">Tutorials</a>
+    </li>
+    <li role="menuitem">
+      <a data-activatable="true" href="/community/questions">Questions</a>
+    </li>
+    <li role="menuitem" aria-haspopup="true" class="mega_parent" tabindex="0">
+      <span class="expander">Get Involved</span>
+      <div class="mega" aria-expanded="false">
+        <div class="section column">
+          <header>Participate</header>
+          <ul role="menu">
+            <li role="menuitem">
+              <a href="https://www.digitalocean.com/write-for-donations/" class="with_image">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <use xlink:href="#do_nav-write4do"></use>
+                </svg>
+                <p>
+                  <strong>Write for DigitalOcean</strong>
+                  You get paid, we donate to tech non-profits.
+                </p>
+              </a>
+            </li>
+            <li role="menuitem">
+              <a href="https://www.meetup.com/pro/digitalocean" class="with_image">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <use xlink:href="#do_nav-meetups"></use>
+                </svg>
+                <p>
+                  <strong>DigitalOcean Meetups</strong>
+                  Find and meet other developers in your city.
+                </p>
+              </a>
+            </li>
+            <li role="menuitem">
+              <a href="https://hacktoberfest.digitalocean.com" class="with_image">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <use xlink:href="#do_nav-hacktoberfest"></use>
+                </svg>
+                <p>
+                  <strong>Hacktoberfest</strong>
+                  Contribute to Open Source
+                </p>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="section column">
+          <header>
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+              <use xlink:href="#do_nav-build"></use>
+            </svg>
+            Build with DigitalOcean
+          </header>
+          <ul role="menu" class="indent">
+            <li role="menuitem">
+              <a title="Community-built tools and integrations that use the DigitalOcean API" href="/community/tools">Community Tools and Integrations</a>
+            </li>
+            <li role="menuitem"><a href="https://www.digitalocean.com/hatch/" title="Build your startup on DigitalOcean.">Hatch Startup Program</a></li>
+            <li role="menuitem"><a href="https://marketplace.digitalocean.com/vendors/" title="List your open source One-Click Application in the DigitalOcean Marketplace">Marketplace Partner Program</a></li>
+            <li role="menuitem"><a href="https://www.digitalocean.com/droplets-for-demos/" title="DigitalOcean credits to fund research for conference and meetup presentations">Presentation Grants</a></li>
+            <li role="menuitem"><a href="https://github.com/digitalocean">DigitalOcean on GitHub</a></li>
+          </ul>
+        </div>
+      </div>
+    </li>
+    <li role="menuitem" data-show="mobile" data-flex="grow" class="right">
+      <a href="javascript:void(0);" data-js="modal_toggle">
+        <span class="icon-menu-thin"></span>
+      </a>
+    </li>
+    <li role="menuitem" aria-haspopup="true" data-flex="grow">
+      <form name="do_nav-search" method="GET" action="https://www.digitalocean.com/community/search">
+        <label for="q">
+          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" shape-rendering="auto"
+               width="14px" height="14px">
+            <use xlink:href="#do_nav-search"></use>
+          </svg>
+        </label>
+        <input type="text" name="q" id="q" title="Search" placeholder="Search DigitalOcean" autocomplete="off" spellcheck="false" class="search" />
+        </form>
+        <div class="mini search-results-dropdown" aria-expanded="false">
+            <div class="header-search-results-list"></div>
+            <div id="btn-wrap">
+              <a class="more-search-results" data-search-path="/community/search" href="/community/search">
+                View All Results
+              </a>
+            </div>
+        </div>
+        <script type='text/template' id='autocomplete-hits-template'>
+          <div class="inner-search">
+            <ul>
+              <li class="section">
+                <p>{{section}}</p>
+              </li>
+
+              {{#hits}}
+                <li>
+                  <span class='icon icon-{{css_name}}'></span>
+                  <a href='{{url}}'>{{title}}</a>
+                </li>
+              {{/hits}}
+            </ul>
+
+            {{#hasMoreResults}}
+              <a href="/community/search?q={{query}}">View All Results</a>
+            {{/hasMoreResults}}
+          </div>
+        </script>
+    </li>
+    <li role="menuitem">
+      <a class="button primary" href="/community/auth/digitalocean?display=sessionless+register">Sign Up</a>
+    </li>
+  </ul>
+
+  <div class="mobile_nav_bg" data-js="modal_toggle"></div>
+  <div class="mobile_nav">
+    <a data-dismiss='modal' aria-label="close" href="javascript:void(0);" data-js="modal_toggle"><span class="icon-close"></span></a>
+    <div class="mobile_nav_content">
+      <header>Community</header>
+      <ul role="menu">
+        <li role="menuitem">
+          <a data-activatable="true" href="/community/tutorials">Tutorials</a>
+        </li>
+        <li role="menuitem">
+          <a data-activatable="true" href="/community/questions">Questions</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.meetup.com/pro/digitalocean">Meetups</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/write-for-donations/">Write for us</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://hacktoberfest.digitalocean.com">Hacktoberfest</a>
+        </li>
+        <li role="menuitem">
+          <a href="/community/tools">Community Projects</a>
+        </li>
+      </ul>
+      <header>Products</header>
+      <ul role="menu">
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/">Homepage</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/pricing">Pricing</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/products">Product Overview</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://marketplace.digitalocean.com/">Marketplace</a>
+        </li>
+      </ul>
+      <header>Customers</header>
+      <ul role="menu">
+        <li role="menuitem">
+          <a href="https://cloud.digitalocean.com/login">Control panel</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/docs/">Documentation</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/company/contact/#support">Contact Support</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/company/contact/sales/">Contact Sales</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<header>
+  <div class="legacy-header ">
+    <div class="flash-container">
+      
+    </div>
+
+    <div class="wrapper">
+      
+    </div>
+  </div>
+</header>
+
+
+
+      
+
+      <div class='wrapper layout-wrapper'>
+
+        
+
+
+
+
+
+
+
+
+
+
+<div class="section-content section-content-growable content Tutorial-content">
+  <div class='postable-info-bar-container'>
+  <div class='postable-info-bar'>
+    <div class="author-byline">
+      
+    </div>
+
+    <div class='right-section'>
+      
+
+
+        <div class='section-item table-of-contents-triggers'><div class="toc-trigger-mobile" data-toggle="modal" data-target="#contents-modal">
+  <a href="javascript:void(0);">
+    <span class="icon icon-contents"></span>
+    <span class="title">Contents</span>
+    <span class="icon icon-arrow-down"></span>
+  </a>
+</div>
+
+</div>
+
+    </div>
+  </div>
+</div>
+
+
+
+  <div class="container tutorial-header">
+    
+
+      <div class="featured-items-right-bar">
+        <h3>Related</h3>
+          <a href="https://www.digitalocean.com/products/managed-databases-mysql/">
+            <div class="featured-item-highlight">
+                  <span class="featured-item-highlight-image"><img width="45" height="45" alt="Product" src="https://digitalocean.cdn.prismic.io/digitalocean%2F1428caea-c011-469a-959e-fec58da0a926_databases.svg" /></span>
+                Now Available: Managed MySQL Databases
+                <span class="featured-item-category">
+                  
+                  Product
+                </span>
+              </div>
+</a>          <a href="/community/tutorials/how-to-use-the-digitalocean-one-click-to-install-redmine-on-ubuntu-14-04-image">
+            <div class="featured-item-regular">
+                  How To Use the DigitalOcean One-Click to Install Redmine on Ubuntu 14.04 Image
+                  <span class="featured-item-category">
+                    <img width="14" height="14" alt="Tutorial" src="/assets/community/tutorials/featured-item-tutorial-icon-2150ccbef202144a53cea261312af267.png" />
+                    Tutorial
+                  </span>
+                </div>
+</a>          <a href="/community/tutorials/how-to-use-haproxy-as-a-layer-7-load-balancer-for-wordpress-and-nginx-on-ubuntu-14-04">
+            <div class="featured-item-regular">
+                  How To Use HAProxy As A Layer 7 Load Balancer For WordPress and Nginx On Ubuntu 14.04
+                  <span class="featured-item-category">
+                    <img width="14" height="14" alt="Tutorial" src="/assets/community/tutorials/featured-item-tutorial-icon-2150ccbef202144a53cea261312af267.png" />
+                    Tutorial
+                  </span>
+                </div>
+</a>      </div>
+
+
+
+    <h1 class="content-title Tutorial-header">How To Configure MySQL Backups with Percona XtraBackup on Ubuntu 16.04</h1>
+
+    <span class="meta-section timestamp"><span class="tutorial-date-text">Updated</span><span class="tutorial-date">August 30, 2017</span></span>
+
+    <span class="meta-section pageviews"><span class="icon icon-eye v-mid"></span><span class="views-count v-mid">42.7k</span><span class="sr-only"> views</span></span>
+
+    <span class="meta-section tags">
+      <a class="tag" href="/community/tags/backups?type=tutorials">Backups</a> <a class="tag" href="/community/tags/mysql?type=tutorials">MySQL</a>
+      <a class="tag" href="/community/tags/ubuntu?type=tutorials">Ubuntu</a> <a class="tag" href="/community/tags/ubuntu-16-04?type=tutorials">Ubuntu 16.04</a>
+    </span>
+  </div>
+
+  <div class="tutorial-authors">
+    <div class="component-collaborators-container">
+  <ul class="component-collaborators-content">
+        <li class="collaborator-byline-avatar">
+          <a href="/community/users/jellingwood">
+            <img alt="jellingwood" class="avatar avatar-large" src="https://secure.gravatar.com/avatar/60d901f61a6146e14a3e989bc1f4ef11?secure=true&d=identicon" width="80" height="80" />
+</a>        </li>
+
+    <li class="collaborators-byline-data">
+        <p class="names">By <a href="/community/users/jellingwood">Justin Ellingwood</a></p>
+
+      <p>
+          <a class="advice" href="https://www.digitalocean.com/community/write-for-digitalocean">Become an author</a>
+      </p>
+    </li>
+  </ul>
+</div>
+
+  </div>
+
+
+    <div class="content-body tutorial-content" data-growable-markdown>
+      
+      <h3 id="introduction">Introduction</h3>
+
+<p>Databases often store some of the most valuable information in your infrastructure.  Because of this, it is important to have reliable backups to guard against data loss in the event of an accident or hardware failure.</p>
+
+<p>The Percona XtraBackup backup tools provide a method of performing &ldquo;hot&rdquo; backups of MySQL data while the system is running.  They do this by copying the data files at the filesystem level and then performing a crash recovery to achieve consistency within the dataset.</p>
+
+<p>In this guide, we will create a system to automate backups of MySQL data on an Ubuntu 16.04 server.  We will use cron and the Percona tools in a group of scripts to create regular, secure backups that we can use for recovery in case of problems.</p>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<p>To complete this guide, you will need an Ubuntu 16.04 server with a non-root <code>sudo</code> user configured for administrative tasks.  You can follow our <a href="https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-16-04">&ldquo;Initial Server Setup with Ubuntu 16.04&rdquo;</a> guide to set up a user with these privileges on your server.</p>
+
+<p>Once you have a <code>sudo</code> user available, you will need to install MySQL.  Either of these guides can be used, depending on which package you would like to use.  The first guide is appropriate if you want to stick with the official Ubuntu repositories, while the second guide is better suited if you require more up-to-date features:</p>
+
+<ul>
+<li><a href="https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-16-04">How To Install MySQL on Ubuntu 16.04</a> (uses the default package in the Ubuntu repositories)</li>
+<li><a href="https://www.digitalocean.com/community/tutorials/how-to-install-the-latest-mysql-on-ubuntu-16-04">How To Install the Latest MySQL on Ubuntu 16.04</a> (uses updated packages provided by the MySQL project)</li>
+</ul>
+
+<p>Once MySQL is installed, log into your server as your <code>sudo</code> user to continue.</p>
+
+<h2 id="installing-the-percona-xtrabackup-tools">Installing the Percona Xtrabackup Tools</h2>
+
+<p>The first thing we need to do is install the actual Percona backup utilities.  The project maintains its own repositories that we can add to our MySQL server to gain access to the packages.</p>
+
+<p>To start, go to the <a href="https://www.percona.com/downloads/percona-release/ubuntu/latest/">Percona release page for Ubuntu</a> to find the latest <code>.deb</code> packages for installing the repository.  Since we are on Ubuntu 16.04, which is codenamed &ldquo;Xenial Xerus&rdquo;, we should choose the &ldquo;xenial&rdquo; package.  Right-click the corresponding link and copy the address.</p>
+
+<span class='note'><p>
+<strong>Note:</strong> You can double-check the release codename of your server at any time by typing:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">lsb_release -c
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>Codename:   xenial
+</code></pre>
+<p></p></span>
+
+<p>Once you have copied the link, move to the <code>/tmp</code> directory and then download the repository configuration package with <code>curl</code>:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">cd /tmp
+</li><li class="line" prefix="$">curl -LO https://repo.percona.com/apt/<span class="highlight">percona-release_0.1-4.xenial_all</span>.deb
+</li></ul></code></pre>
+<p>Next, use <code>dpkg</code> to install the downloaded package, which will configure the Percona <code>apt</code> repository on the system:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo dpkg -i percona*
+</li></ul></code></pre>
+<p>With the new repository configured, we&rsquo;ll update the local package index to pull down information about the newly available packages.  We will then install the XtraBackup tools and the <code>qpress</code> compression utility from the repository:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo apt-get update
+</li><li class="line" prefix="$">sudo apt-get install percona-xtrabackup-24 qpress
+</li></ul></code></pre>
+<p>Among other bundled utilities, the <code>xtrabackup</code>, <code>xbstream</code>, and <code>qpress</code> commands will now be available.  Our scripts will use each of these to perform backups and restore data.</p>
+
+<h2 id="configuring-a-mysql-backup-user-and-adding-test-data">Configuring a MySQL Backup User and Adding Test Data</h2>
+
+<p>To begin, start up an interactive MySQL session with the MySQL root user:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">mysql -u root -p
+</li></ul></code></pre>
+<p>You will be prompted for the administrative password you selected during the MySQL installation.  Once you&rsquo;ve entered the password, you will be dropped into a MySQL session.</p>
+
+<h3 id="create-a-mysql-user-with-appropriate-privileges">Create a MySQL User with Appropriate Privileges</h3>
+
+<p>The first thing we need to do is create a new MySQL user configured to handle backup tasks.  We will only give this user the privileges it needs to copy the data safely while the system is running.</p>
+
+<p>To be explicit about the account&rsquo;s purpose, we will call the new user <code>backup</code>.  We will be placing the user&rsquo;s credentials in a secure file, so feel free to choose a complex password:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="mysql&gt;">CREATE USER 'backup'@'localhost' IDENTIFIED BY '<span class="highlight">password</span>';
+</li></ul></code></pre>
+<p>Next we need to grant the new <code>backup</code> user the permissions it needs to perform all backup actions on the database system.  Grant the required privileges and apply them to the current session by typing:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="mysql&gt;">GRANT RELOAD, LOCK TABLES, REPLICATION CLIENT, CREATE TABLESPACE, PROCESS, SUPER, CREATE, INSERT, SELECT ON *.* TO 'backup'@'localhost';
+</li><li class="line" prefix="mysql&gt;">FLUSH PRIVILEGES;
+</li></ul></code></pre>
+<p>Our MySQL backup user is configured and has the access it requires.</p>
+
+<h3 id="create-test-data-for-the-backups">Create Test Data for the Backups</h3>
+
+<p>Next, we will create some test data.  Run the following commands to create a <code>playground</code> database with an <code>equipment</code> table.  We will start by inserting a single record representing a blue slide:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="mysql&gt;">CREATE DATABASE playground;
+</li><li class="line" prefix="mysql&gt;">CREATE TABLE playground.equipment ( id INT NOT NULL AUTO_INCREMENT, type VARCHAR(50), quant INT, color VARCHAR(25), PRIMARY KEY(id));
+</li><li class="line" prefix="mysql&gt;">INSERT INTO playground.equipment (type, quant, color) VALUES ("slide", 2, "blue");
+</li></ul></code></pre>
+<p>Later in this guide, we will use and alter this data to test our ability to create full and incremental backups.</p>
+
+<p>Before we end our MySQL session, we will check the value of the <code>datadir</code> variable.  We will need to know this value to ensure that our system-level <code>backup</code> user has access to the MySQL data files.</p>
+
+<p>Display the value of the <code>datadir</code> variable by typing:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="mysql&gt;">SELECT @@datadir;
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>+-----------------+
+| @@datadir       |
++-----------------+
+| /var/lib/mysql/ |
++-----------------+
+1 row in set (0.01 sec)
+</code></pre>
+<p>Take a note of the location you find.</p>
+
+<p>This is all that we need to do within MySQL at the moment.  Exit to the shell by typing:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="mysql&gt;">exit
+</li></ul></code></pre>
+<p>Next, we can take a look at some system-level configuration.</p>
+
+<h2 id="configuring-a-systems-backup-user-and-assigning-permissions">Configuring a Systems Backup User and Assigning Permissions</h2>
+
+<p>Now that we have a MySQL user to perform backups, we will ensure that a corresponding Linux user exists with similar limited privileges.</p>
+
+<p>On Ubuntu 16.04, a <code>backup</code> user and corresponding <code>backup</code> group is already available.  Confirm this by checking the <code>/etc/passwd</code> and <code>/etc/group</code> files with the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">grep backup /etc/passwd /etc/group
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>/etc/passwd:backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+/etc/group:backup:x:34:
+</code></pre>
+<p>The first line from the <code>/etc/passwd</code> file describes the <code>backup</code> user, while the second line from the <code>/etc/group</code> file defines the <code>backup</code> group.</p>
+
+<p>The <code>/var/lib/mysql</code> directory where the MySQL data is kept is owned by the <code>mysql</code> user and group.  We can add the <code>backup</code> user to the <code>mysql</code> group to safely allow access to the database files and directories.  We should also add our <code>sudo</code> user to the <code>backup</code> group so that we can access the files we will back up.</p>
+
+<p>Type the following commands to add the <code>backup</code> user to the <code>mysql</code> group and your <code>sudo</code> user to the <code>backup</code> group:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo usermod -aG mysql backup
+</li><li class="line" prefix="$">sudo usermod -aG backup ${USER}
+</li></ul></code></pre>
+<p>If we check the <code>/etc/group</code> files again, you will see that your current user is added to the <code>backup</code> group and that the <code>backup</code> user is added to the <code>mysql</code> group:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">grep backup /etc/group
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>backup:x:34:<span class="highlight">sammy</span>
+mysql:x:116:backup
+</code></pre>
+<p>The new group isn&rsquo;t available in our current session automatically.  To re-evaluate the groups available to our <code>sudo</code> user, either log out and log back in, or type:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">exec su - ${USER}
+</li></ul></code></pre>
+<p>You will be prompted for your <code>sudo</code> user&rsquo;s password to continue.  Confirm that your current session now has access to the <code>backup</code> group by checking our user&rsquo;s groups again:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">id -nG
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div><span class="highlight">sammy</span> sudo backup
+</code></pre>
+<p>Our <code>sudo</code> user will now be able to take advantage of its membership in the <code>backup</code> group.</p>
+
+<p>Next, we need to make the <code>/var/lib/mysql</code> directory and its subdirectories accessible to the <code>mysql</code> group by adding group execute permissions.  Otherwise, the <code>backup</code> user will be unable to enter those directories, even though it is a member of the <code>mysql</code> group.</p>
+
+<p><span class='note'><strong>Note:</strong> If the value of <code>datadir</code> was not <code>/var/lib/mysql</code> when you checked inside of MySQL earlier, substitute the directory you discovered in the commands that follow.<br></span></p>
+
+<p>To give the <code>mysql</code> group access to the MySQL data directories, type:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo find /var/lib/mysql -type d -exec chmod 750 {} \;
+</li></ul></code></pre>
+<p>Our <code>backup</code> user now has the access it needs to the MySQL directory.</p>
+
+<h2 id="creating-the-backup-assets">Creating the Backup Assets</h2>
+
+<p>Now that MySQL and system backup users are available, we can begin to set up the configuration files, encryption keys, and other assets that we need to successfully create and secure our backups.</p>
+
+<h3 id="create-a-mysql-configuration-file-with-the-backup-parameters">Create a MySQL Configuration File with the Backup Parameters</h3>
+
+<p>Begin by creating a minimal MySQL configuration file that the backup script will use.  This will contain the MySQL credentials for the MySQL user.</p>
+
+<p>Open a file at <code>/etc/mysql/backup.cnf</code> in your text editor:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo nano /etc/mysql/backup.cnf
+</li></ul></code></pre>
+<p>Inside, start a <code>[client]</code> section and set the MySQL backup user and password user you defined within MySQL:</p>
+<div class="code-label " title="/etc/mysql/backup.cnf">/etc/mysql/backup.cnf</div><pre class="code-pre "><code langs="">[client]
+user=backup
+password=<span class="highlight">password</span>
+</code></pre>
+<p>Save and close the file when you are finished.</p>
+
+<p>Give ownership of the file to the <code>backup</code> user and then restrict the permissions so that no other users can access the file:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo chown backup /etc/mysql/backup.cnf
+</li><li class="line" prefix="$">sudo chmod 600 /etc/mysql/backup.cnf
+</li></ul></code></pre>
+<p>The backup user will be able to access this file to get the proper credentials but other users will be restricted.</p>
+
+<h3 id="create-a-backup-root-directory">Create a Backup Root Directory</h3>
+
+<p>Next, create a directory for the backup content.  We will use <code>/backups/mysql</code> as the base directory for our backups:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo mkdir -p /backups/mysql
+</li></ul></code></pre>
+<p>Next, assign ownership of the <code>/backups/mysql</code> directory to the <code>backup</code> user and group ownership to the <code>mysql</code> group:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo chown backup:mysql /backups/mysql
+</li></ul></code></pre>
+<p>The <code>backup</code> user should now be able to write backup data to this location.</p>
+
+<h3 id="create-an-encryption-key-to-secure-the-backup-files">Create an Encryption Key to Secure the Backup Files</h3>
+
+<p>Because backups contain all of the data from the database system itself, it is important to secure them properly.  The <code>xtrabackup</code> utility has the ability to encrypt each file as it is backed up and archived.  We just need to provide it with an encryption key.</p>
+
+<p>We can create an encryption key within the backup root directory with the <code>openssl</code> command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">printf '%s' "$(openssl rand -base64 24)" | sudo tee /backups/mysql/encryption_key &amp;&amp; echo
+</li></ul></code></pre>
+<p>It is very important to restrict access to this file as well.  Again, assign ownership to the <code>backup</code> user and deny access to all other users:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo chown backup:backup /backups/mysql/encryption_key
+</li><li class="line" prefix="$">sudo chmod 600 /backups/mysql/encryption_key
+</li></ul></code></pre>
+<p>This key will be used during the backup process and any time you need to restore from a backup.</p>
+
+<h2 id="creating-the-backup-and-restore-scripts">Creating the Backup and Restore Scripts</h2>
+
+<p>We now have everything we need to perform secure backups of the running MySQL instance.</p>
+
+<p>In order to make our backup and restore steps repeatable, we will script the entire process.  We will create the following scripts:</p>
+
+<ul>
+<li><code>backup-mysql.sh</code>: This script backs up the MySQL databases, encrypting and compressing the files in the process.  It creates full and incremental backups and automatically organizes content by day.  By default, the script maintains 3 days worth of backups.</li>
+<li><code>extract-mysql.sh</code>: This script decompresses and decrypts the backup files to create directories with the backed up content.</li>
+<li><code>prepare-mysql.sh</code>: This script &ldquo;prepares&rdquo; the back up directories by processing the files and applying logs.  Any incremental backups are applied to the full backup.  Once the prepare script finishes, the files are ready to be moved back to the data directory.</li>
+</ul>
+
+<p>You can view the scripts in the <a href="https://github.com/do-community/ubuntu-1604-mysql-backup">repository for this tutorial on GitHub</a> at any time.  If you do not want to copy and paste the contents below, you can download them directly from GitHub by typing:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">cd /tmp
+</li><li class="line" prefix="$">curl -LO https://raw.githubusercontent.com/do-community/ubuntu-1604-mysql-backup/master/backup-mysql.sh
+</li><li class="line" prefix="$">curl -LO https://raw.githubusercontent.com/do-community/ubuntu-1604-mysql-backup/master/extract-mysql.sh
+</li><li class="line" prefix="$">curl -LO https://raw.githubusercontent.com/do-community/ubuntu-1604-mysql-backup/master/prepare-mysql.sh
+</li></ul></code></pre>
+<p>Be sure to inspect the scripts after downloading to make sure they were retrieved successfully and that you approve of the actions they will perform.  If you are satisfied, mark the scripts as executable and then move them into the <code>/usr/local/bin</code> directory by typing:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">chmod +x /tmp/{backup,extract,prepare}-mysql.sh
+</li><li class="line" prefix="$">sudo mv /tmp/{backup,extract,prepare}-mysql.sh /usr/local/bin
+</li></ul></code></pre>
+<p>Next, we will set up each of these scripts and discuss them in more detail.</p>
+
+<h3 id="create-the-backup-mysql-sh-script">Create the backup-mysql.sh Script</h3>
+
+<p>If you didn&rsquo;t download the <code>backup-mysql.sh</code> script from GitHub, create a new file in the <code>/usr/local/bin</code> directory called <code>backup-mysql.sh</code>:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo nano /usr/local/bin/backup-mysql.sh
+</li></ul></code></pre>
+<p>Copy and paste the script contents into the file:</p>
+<div class="code-label " title="/usr/local/bin/backup-mysql.sh">/usr/local/bin/backup-mysql.sh</div><pre class="code-pre "><code class="code-highlight language-bash">#!/bin/bash
+
+export LC_ALL=C
+
+days_of_backups=3  # Must be less than 7
+backup_owner="backup"
+parent_dir="/backups/mysql"
+defaults_file="/etc/mysql/backup.cnf"
+todays_dir="${parent_dir}/$(date +%a)"
+log_file="${todays_dir}/backup-progress.log"
+encryption_key_file="${parent_dir}/encryption_key"
+now="$(date +%m-%d-%Y_%H-%M-%S)"
+processors="$(nproc --all)"
+
+# Use this to echo to standard error
+error () {
+    printf "%s: %s\n" "$(basename "${BASH_SOURCE}")" "${1}" &gt;&amp;2
+    exit 1
+}
+
+trap 'error "An unexpected error occurred."' ERR
+
+sanity_check () {
+    # Check user running the script
+    if [ "$(id --user --name)" != "$backup_owner" ]; then
+        error "Script can only be run as the \"$backup_owner\" user"
+    fi
+
+    # Check whether the encryption key file is available
+    if [ ! -r "${encryption_key_file}" ]; then
+        error "Cannot read encryption key at ${encryption_key_file}"
+    fi
+}
+
+set_options () {
+    # List the xtrabackup arguments
+    xtrabackup_args=(
+        "--defaults-file=${defaults_file}"
+        "--backup"
+        "--extra-lsndir=${todays_dir}"
+        "--compress"
+        "--stream=xbstream"
+        "--encrypt=AES256"
+        "--encrypt-key-file=${encryption_key_file}"
+        "--parallel=${processors}"
+        "--compress-threads=${processors}"
+        "--encrypt-threads=${processors}"
+        "--slave-info"
+    )
+
+    backup_type="full"
+
+    # Add option to read LSN (log sequence number) if a full backup has been
+    # taken today.
+    if grep -q -s "to_lsn" "${todays_dir}/xtrabackup_checkpoints"; then
+        backup_type="incremental"
+        lsn=$(awk '/to_lsn/ {print $3;}' "${todays_dir}/xtrabackup_checkpoints")
+        xtrabackup_args+=( "--incremental-lsn=${lsn}" )
+    fi
+}
+
+rotate_old () {
+    # Remove the oldest backup in rotation
+    day_dir_to_remove="${parent_dir}/$(date --date="${days_of_backups} days ago" +%a)"
+
+    if [ -d "${day_dir_to_remove}" ]; then
+        rm -rf "${day_dir_to_remove}"
+    fi
+}
+
+take_backup () {
+    # Make sure today's backup directory is available and take the actual backup
+    mkdir -p "${todays_dir}"
+    find "${todays_dir}" -type f -name "*.incomplete" -delete
+    xtrabackup "${xtrabackup_args[@]}" --target-dir="${todays_dir}" &gt; "${todays_dir}/${backup_type}-${now}.xbstream.incomplete" 2&gt; "${log_file}"
+
+    mv "${todays_dir}/${backup_type}-${now}.xbstream.incomplete" "${todays_dir}/${backup_type}-${now}.xbstream"
+}
+
+sanity_check &amp;&amp; set_options &amp;&amp; rotate_old &amp;&amp; take_backup
+
+# Check success and print message
+if tail -1 "${log_file}" | grep -q "completed OK"; then
+    printf "Backup successful!\n"
+    printf "Backup created at %s/%s-%s.xbstream\n" "${todays_dir}" "${backup_type}" "${now}"
+else
+    error "Backup failure! Check ${log_file} for more information"
+fi
+</code></pre>
+<p>The script has the following functionality:</p>
+
+<ul>
+<li>Creates an encrypted, compressed full backup the first time it is run each day.</li>
+<li>Generates encrypted, compressed incremental backups based on the daily full backup when called again on the same day.</li>
+<li>Maintains backups organized by day.  By default, three days of backups are kept. This can be changed by adjusting the <code>days_of_backups</code> parameter within the script.</li>
+</ul>
+
+<p>When the script is run, a daily directory is created where timestamped files representing individual backups will be written.  The first timestamped file will be a full backup, prefixed by <code>full-</code>.  Subsequent backups for the day will be incremental backups, indicated by an <code>incremental-</code> prefix, representing the changes since the last full or incremental backup.</p>
+
+<p>Backups will generate a file called <code>backup-progress.log</code> in the daily directory with the output from the most recent backup operation.  A file called <code>xtrabackup_checkpoints</code> containing the most recent backup metadata will be created there as well.  This file is needed to produce future incremental backups, so it is important not to remove it.  A file called <code>xtrabackup_info</code>, which contains additional metadata, is also produced but the script does not reference this file.</p>
+
+<p>When you are finished, save and close the file.</p>
+
+<p>Next, if you haven&rsquo;t already done so, make the script executable by typing:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo chmod +x /usr/local/bin/backup-mysql.sh
+</li></ul></code></pre>
+<p>We now have a single command available that will initiate MySQL backups.</p>
+
+<h3 id="create-the-extract-mysql-sh-script">Create the extract-mysql.sh Script</h3>
+
+<p>Next, we will create the <code>extract-mysql.sh</code> script.  This will be used to extract the MySQL data directory structure from individual backup files.</p>
+
+<p>If you did not download the script from the repository, create and open a file called <code>extract-mysql.sh</code> in the <code>/usr/local/bin</code> directory:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo nano /usr/local/bin/extract-mysql.sh
+</li></ul></code></pre>
+<p>Inside, paste the following script:</p>
+<div class="code-label " title="/usr/local/bin/extract-mysql.sh">/usr/local/bin/extract-mysql.sh</div><pre class="code-pre "><code class="code-highlight language-bash">#!/bin/bash
+
+export LC_ALL=C
+
+backup_owner="backup"
+encryption_key_file="/backups/mysql/encryption_key"
+log_file="extract-progress.log"
+number_of_args="${#}"
+processors="$(nproc --all)"
+
+# Use this to echo to standard error
+error () {
+    printf "%s: %s\n" "$(basename "${BASH_SOURCE}")" "${1}" &gt;&amp;2
+    exit 1
+}
+
+trap 'error "An unexpected error occurred.  Try checking the \"${log_file}\" file for more information."' ERR
+
+sanity_check () {
+    # Check user running the script
+    if [ "${USER}" != "${backup_owner}" ]; then
+        error "Script can only be run as the \"${backup_owner}\" user"
+    fi
+
+    # Check whether the qpress binary is installed
+    if ! command -v qpress &gt;/dev/null 2&gt;&amp;1; then
+        error "Could not find the \"qpress\" command.  Please install it and try again."
+    fi
+
+    # Check whether any arguments were passed
+    if [ "${number_of_args}" -lt 1 ]; then
+        error "Script requires at least one \".xbstream\" file as an argument."
+    fi
+
+    # Check whether the encryption key file is available
+    if [ ! -r "${encryption_key_file}" ]; then
+        error "Cannot read encryption key at ${encryption_key_file}"
+    fi
+}
+
+do_extraction () {
+    for file in "${@}"; do
+        base_filename="$(basename "${file%.xbstream}")"
+        restore_dir="./restore/${base_filename}"
+
+        printf "\n\nExtracting file %s\n\n" "${file}"
+
+        # Extract the directory structure from the backup file
+        mkdir --verbose -p "${restore_dir}"
+        xbstream -x -C "${restore_dir}" &lt; "${file}"
+
+        xtrabackup_args=(
+            "--parallel=${processors}"
+            "--decrypt=AES256"
+            "--encrypt-key-file=${encryption_key_file}"
+            "--decompress"
+        )
+
+        xtrabackup "${xtrabackup_args[@]}" --target-dir="${restore_dir}"
+        find "${restore_dir}" -name "*.xbcrypt" -exec rm {} \;
+        find "${restore_dir}" -name "*.qp" -exec rm {} \;
+
+        printf "\n\nFinished work on %s\n\n" "${file}"
+
+    done &gt; "${log_file}" 2&gt;&amp;1
+}
+
+sanity_check &amp;&amp; do_extraction "$@"
+
+ok_count="$(grep -c 'completed OK' "${log_file}")"
+
+# Check the number of reported completions.  For each file, there is an
+# informational "completed OK".  If the processing was successful, an
+# additional "completed OK" is printed. Together, this means there should be 2
+# notices per backup file if the process was successful.
+if (( $ok_count !=  $# )); then
+    error "It looks like something went wrong. Please check the \"${log_file}\" file for additional information"
+else
+    printf "Extraction complete! Backup directories have been extracted to the \"restore\" directory.\n"
+fi
+</code></pre>
+<p>Unlike the <code>backup-mysql.sh</code> script, which is designed to be automated, this script is designed to be used intentionally when you plan to restore from a backup.  Because of this, the script expects you to pass in the <code>.xbstream</code> files that you wish to extract.</p>
+
+<p>The script creates a <code>restore</code> directory within the current directory and then creates individual directories within for each of the backups passed in as arguments.  It will process the provided <code>.xbstream</code> files by extracting directory structure from the archive, decrypting the individual files within, and then decompressing the decrypted files.</p>
+
+<p>After this process has completed, the <code>restore</code> directory should contain directories for each of the provided backups.  This allows you to inspect the directories, examine the contents of the backups, and decide which backups you wish to prepare and restore.</p>
+
+<p>Save and close the file when you are finished.  Afterward, ensure that the script is executable by typing:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo chmod +x /usr/local/bin/extract-mysql.sh
+</li></ul></code></pre>
+<p>This script will allow us to expand individual backup files into the directory structure needed to restore.</p>
+
+<h3 id="create-the-prepare-mysql-sh-script">Create the prepare-mysql.sh Script</h3>
+
+<p>Finally, download or create the <code>prepare-mysql.sh</code> script within the <code>/usr/local/bin</code> directory.  This script will apply the logs to each backup to create a consistent database snapshot.  It will apply any incremental backups to the full backup to incorporate the later changes.</p>
+
+<p>Create the script file in your text editor if you did not download it earlier:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo nano /usr/local/bin/prepare-mysql.sh
+</li></ul></code></pre>
+<p>Inside, paste the following contents:</p>
+<div class="code-label " title="/usr/local/bin/prepare-mysql.sh">/usr/local/bin/prepare-mysql.sh</div><pre class="code-pre "><code class="code-highlight language-bash">#!/bin/bash
+
+export LC_ALL=C
+
+shopt -s nullglob
+incremental_dirs=( ./incremental-*/ )
+full_dirs=( ./full-*/ )
+shopt -u nullglob
+
+backup_owner="backup"
+log_file="prepare-progress.log"
+full_backup_dir="${full_dirs[0]}"
+
+# Use this to echo to standard error
+error() {
+    printf "%s: %s\n" "$(basename "${BASH_SOURCE}")" "${1}" &gt;&amp;2
+    exit 1
+}
+
+trap 'error "An unexpected error occurred.  Try checking the \"${log_file}\" file for more information."' ERR
+
+sanity_check () {
+    # Check user running the script
+    if [ "${USER}" != "${backup_owner}" ]; then
+        error "Script can only be run as the \"${backup_owner}\" user."
+    fi
+
+    # Check whether a single full backup directory are available
+    if (( ${#full_dirs[@]} != 1 )); then
+        error "Exactly one full backup directory is required."
+    fi
+}
+
+do_backup () {
+    # Apply the logs to each of the backups
+    printf "Initial prep of full backup %s\n" "${full_backup_dir}"
+    xtrabackup --prepare --apply-log-only --target-dir="${full_backup_dir}"
+
+    for increment in "${incremental_dirs[@]}"; do
+        printf "Applying incremental backup %s to %s\n" "${increment}" "${full_backup_dir}"
+        xtrabackup --prepare --apply-log-only --incremental-dir="${increment}" --target-dir="${full_backup_dir}"
+    done
+
+    printf "Applying final logs to full backup %s\n" "${full_backup_dir}"
+    xtrabackup --prepare --target-dir="${full_backup_dir}"
+}
+
+sanity_check &amp;&amp; do_backup &gt; "${log_file}" 2&gt;&amp;1
+
+# Check the number of reported completions.  Each time a backup is processed,
+# an informational "completed OK" and a real version is printed.  At the end of
+# the process, a final full apply is performed, generating another 2 messages.
+ok_count="$(grep -c 'completed OK' "${log_file}")"
+
+if (( ${ok_count} == ${#full_dirs[@]} + ${#incremental_dirs[@]} + 1 )); then
+    cat &lt;&lt; EOF
+Backup looks to be fully prepared.  Please check the "prepare-progress.log" file
+to verify before continuing.
+
+If everything looks correct, you can apply the restored files.
+
+First, stop MySQL and move or remove the contents of the MySQL data directory:
+
+        sudo systemctl stop mysql
+        sudo mv /var/lib/mysql/ /tmp/
+
+Then, recreate the data directory and  copy the backup files:
+
+        sudo mkdir /var/lib/mysql
+        sudo xtrabackup --copy-back --target-dir=${PWD}/$(basename "${full_backup_dir}")
+
+Afterward the files are copied, adjust the permissions and restart the service:
+
+        sudo chown -R mysql:mysql /var/lib/mysql
+        sudo find /var/lib/mysql -type d -exec chmod 750 {} \\;
+        sudo systemctl start mysql
+EOF
+else
+    error "It looks like something went wrong.  Check the \"${log_file}\" file for more information."
+fi
+</code></pre>
+<p>The script looks in the current directory for directories beginning with <code>full-</code> or <code>incremental-</code>.  It uses the MySQL logs to apply the committed transactions to the full backup.  Afterwards, it applies any incremental backups to the full backup to update the data with the more recent information, again applying the committed transactions.</p>
+
+<p>Once all of the backups have been combined, the uncommitted transactions are rolled back.  At this point, the <code>full-</code> backup will represent a consistent set of data that can be moved into MySQL&rsquo;s data directory.</p>
+
+<p>In order to minimize chance of data loss, the script stops short of copying the files into the data directory.  This way, the user can manually verify the backup contents and the log file created during this process, and decide what to do with the current contents of the MySQL data directory.  The commands needed to restore the files completely are displayed when the command exits.</p>
+
+<p>Save and close the file when you are finished.  If you did not do so earlier, mark the file as executable by typing:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo chmod +x /usr/local/bin/prepare-mysql.sh
+</li></ul></code></pre>
+<p>This script is the final script that we run before moving the backup files into MySQL&rsquo;s data directory.</p>
+
+<h2 id="testing-the-mysql-backup-and-restore-scripts">Testing the MySQL Backup and Restore Scripts</h2>
+
+<p>Now that the backup and restore scripts are on the server, we should test them.</p>
+
+<h3 id="perform-a-full-backup">Perform a Full Backup</h3>
+
+<p>Begin by calling the <code>backup-mysql.sh</code> script with the <code>backup</code> user:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo -u backup backup-mysql.sh
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>Backup successful!
+Backup created at /backups/mysql/Thu/full-04-20-2017_14-55-17.xbstream
+</code></pre>
+<p>If everything went as planned, the script will execute correctly, indicate success, and output the location of the new backup file.  As the above output indicates, a daily directory (&ldquo;Thu&rdquo; in this case) has been created to house the day&rsquo;s backups.  The backup file itself begins with <code>full-</code> to express that this is a full backup.</p>
+
+<p>Let&rsquo;s move into the daily backup directory and view the contents:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">cd /backups/mysql/"$(date +%a)"
+</li><li class="line" prefix="$">ls
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>backup-progress.log  full-04-20-2017_14-55-17.xbstream  xtrabackup_checkpoints  xtrabackup_info
+</code></pre>
+<p>Here, we see the actual backup file (<code>full-04-20-2017_14-55-17.xbstream</code> in this case), the log of the backup event (<code>backup-progress.log</code>), the <code>xtrabackup_checkpoints</code> file, which includes metadata about the backed up content, and the <code>xtrabackup_info</code> file, which contains additional metadata.</p>
+
+<p>If we tail the <code>backup-progress.log</code>, we can confirm that the backup completed successfully.</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">tail backup-progress.log
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>170420 14:55:19 All tables unlocked
+170420 14:55:19 [00] Compressing, encrypting and streaming ib_buffer_pool to &lt;STDOUT&gt;
+170420 14:55:19 [00]        &hellip;done
+170420 14:55:19 Backup created in directory '/backups/mysql/Thu/'
+170420 14:55:19 [00] Compressing, encrypting and streaming backup-my.cnf
+170420 14:55:19 [00]        &hellip;done
+170420 14:55:19 [00] Compressing, encrypting and streaming xtrabackup_info
+170420 14:55:19 [00]        &hellip;done
+xtrabackup: Transaction log of lsn (2549956) to (2549965) was copied.
+170420 14:55:19 <span class="highlight">completed OK!</span>
+</code></pre>
+<p>If we look at the <code>xtrabackup_checkpoints</code> file, we can view information about the backup.  While this file provides some information that is useful for administrators, it&rsquo;s mainly used by subsequent backup jobs so that they know what data has already been processed.</p>
+
+<p>This is a copy of a file that&rsquo;s included in each archive.  Even though this copy is overwritten with each backup to represent the latest information, each original will still be available inside the backup archive.</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">cat xtrabackup_checkpoints
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>backup_type = full-backuped
+from_lsn = 0
+to_lsn = 2549956
+last_lsn = 2549965
+compact = 0
+recover_binlog_info = 0
+</code></pre>
+<p>The example above tells us that a full backup was taken and that the backup covers log sequence number (LSN) 0 to log sequence number 2549956.  The <code>last_lsn</code> number indicates that some operations occurred during the backup process.</p>
+
+<h3 id="perform-an-incremental-backup">Perform an Incremental Backup</h3>
+
+<p>Now that we have a full backup, we can take additional incremental backups.  Incremental backups record the changes that have been made since the last backup was performed.  The first incremental backup is based on a full backup and subsequent incremental backups are based on the previous incremental backup.</p>
+
+<p>We should add some data to our database before taking another backup so that we can tell which backups have been applied.</p>
+
+<p>Insert another record into the <code>equipment</code> table of our <code>playground</code> database representing 10 yellow swings.  You will be prompted for the MySQL administrative password during this process:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">mysql -u root -p -e 'INSERT INTO playground.equipment (type, quant, color) VALUES ("swing", 10, "yellow");'
+</li></ul></code></pre>
+<p>Now that there is more current data than our most recent backup, we can take an incremental backup to capture the changes.  The <code>backup-mysql.sh</code> script will take an incremental backup if a full backup for the same day exists:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo -u backup backup-mysql.sh
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>Backup successful!
+Backup created at /backups/mysql/Thu/incremental-04-20-2017_17-15-03.xbstream
+</code></pre>
+<p>Check the daily backup directory again to find the incremental backup archive:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">cd /backups/mysql/"$(date +%a)"
+</li><li class="line" prefix="$">ls
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>backup-progress.log                incremental-04-20-2017_17-15-03.xbstream  xtrabackup_info
+full-04-20-2017_14-55-17.xbstream  xtrabackup_checkpoints
+</code></pre>
+<p>The contents of the <code>xtrabackup_checkpoints</code> file now refer to the most recent incremental backup:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">cat xtrabackup_checkpoints
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>backup_type = incremental
+from_lsn = 2549956
+to_lsn = 2550159
+last_lsn = 2550168
+compact = 0
+recover_binlog_info = 0
+</code></pre>
+<p>The backup type is listed as &ldquo;incremental&rdquo; and instead of starting from LSN 0 like our full backup, it starts at the LSN where our last backup ended.</p>
+
+<h3 id="extract-the-backups">Extract the Backups</h3>
+
+<p>Next, let&rsquo;s extract the backup files to create backup directories.  Due to space and security considerations, this should normally only be done when you are ready to restore the data.</p>
+
+<p>We can extract the backups by passing the <code>.xbstream</code> backup files to the <code>extract-mysql.sh</code> script.  Again, this must be run by the <code>backup</code> user:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo -u backup extract-mysql.sh *.xbstream
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>Extraction complete! Backup directories have been extracted to the "restore" directory.
+</code></pre>
+<p>The above output indicates that the process was completed successfully.  If we check the contents of the daily backup directory again, an <code>extract-progress.log</code> file and a <code>restore</code> directory have been created.</p>
+
+<p>If we tail the extraction log, we can confirm that the latest backup was extracted successfully.  The other backup success messages are displayed earlier in the file.</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">tail extract-progress.log
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>170420 17:23:32 [01] decrypting and decompressing ./performance_schema/socket_instances.frm.qp.xbcrypt
+170420 17:23:32 [01] decrypting and decompressing ./performance_schema/events_waits_summary_by_user_by_event_name.frm.qp.xbcrypt
+170420 17:23:32 [01] decrypting and decompressing ./performance_schema/status_by_user.frm.qp.xbcrypt
+170420 17:23:32 [01] decrypting and decompressing ./performance_schema/replication_group_members.frm.qp.xbcrypt
+170420 17:23:32 [01] decrypting and decompressing ./xtrabackup_logfile.qp.xbcrypt
+170420 17:23:33 completed OK!
+
+
+Finished work on incremental-04-20-2017_17-15-03.xbstream
+</code></pre>
+<p>If we move into the <code>restore</code> directory, directories corresponding with the backup files we extracted are now available:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">cd restore
+</li><li class="line" prefix="$">ls -F
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>full-04-20-2017_14-55-17/  incremental-04-20-2017_17-15-03/
+</code></pre>
+<p>The backup directories contains the raw backup files, but they are not yet in a state that MySQL can use though.  To fix that, we need to prepare the files.</p>
+
+<h3 id="prepare-the-final-backup">Prepare the Final Backup</h3>
+
+<p>Next, we will prepare the backup files. To do so, you must be in the <code>restore</code> directory that contains the <code>full-</code> and any <code>incremental-</code> backups.  The script will apply the changes from any <code>incremental-</code> directories onto the <code>full-</code> backup directory.  Afterwards, it will apply the logs to create a consistent dataset that MySQL can use.</p>
+
+<p>If for any reason you don&rsquo;t want to restore some of the changes, now is your last chance to remove those incremental backup directories from the <code>restore</code> directory (the incremental backup files will still be available in the parent directory).  Any remaining <code>incremental-</code> directories within the current directory will be applied to the <code>full-</code> backup directory.</p>
+
+<p>When you are ready, call the <code>prepare-mysql.sh</code> script.  Again, make sure you are in the <code>restore</code> directory where your individual backup directories are located:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo -u backup prepare-mysql.sh
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>Backup looks to be fully prepared.  Please check the "prepare-progress.log" file
+to verify before continuing.
+
+If everything looks correct, you can apply the restored files.
+
+First, stop MySQL and move or remove the contents of the MySQL data directory:
+
+        sudo systemctl stop mysql
+        sudo mv /var/lib/mysql/ /tmp/
+
+Then, recreate the data directory and  copy the backup files:
+
+        sudo mkdir /var/lib/mysql
+        sudo xtrabackup --copy-back --target-dir=/backups/mysql/Thu/restore/full-04-20-2017_14-55-17
+
+Afterward the files are copied, adjust the permissions and restart the service:
+
+        sudo chown -R mysql:mysql /var/lib/mysql
+        sudo find /var/lib/mysql -type d -exec chmod 750 {} \;
+        sudo systemctl start mysql
+</code></pre>
+<p>The output above indicates that the script thinks that the backup is fully prepared and that the <code>full-</code> backup now represents a fully consistent dataset.  As the output states, you should check the <code>prepare-progress.log</code> file to confirm that no errors were reported during the process.</p>
+
+<p>The script stops short of actually copying the files into MySQL&rsquo;s data directory so that you can verify that everything looks correct.</p>
+
+<h3 id="restore-the-backup-data-to-the-mysql-data-directory">Restore the Backup Data to the MySQL Data Directory</h3>
+
+<p>If you are satisfied that everything is in order after reviewing the logs, you can follow the instructions outlined in the <code>prepare-mysql.sh</code> output.</p>
+
+<p>First, stop the running MySQL process:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo systemctl stop mysql
+</li></ul></code></pre>
+<p>Since the backup data may conflict with the current contents of the MySQL data directory, we should remove or move the <code>/var/lib/mysql</code> directory.  If you have space on your filesystem, the best option is to move the current contents to the <code>/tmp</code> directory or elsewhere in case something goes wrong:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo mv /var/lib/mysql/ /tmp
+</li></ul></code></pre>
+<p>Recreate an empty <code>/var/lib/mysql</code> directory.  We will need to fix permissions in a moment, so we do not need to worry about that yet:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo mkdir /var/lib/mysql
+</li></ul></code></pre>
+<p>Now, we can copy the full backup to the MySQL data directory using the <code>xtrabackup</code> utility.  Substitute the path to your prepared full backup in the command below:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo xtrabackup --copy-back --target-dir=/backups/mysql/<span class="highlight">Thu</span>/restore/full-<span class="highlight">04-20-2017_14-55-17</span>
+</li></ul></code></pre>
+<p>A running log of the files being copied will display throughout the process.  Once the files are in place, we need to fix the ownership and permissions again so that the MySQL user and group own and can access the restored structure:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo chown -R mysql:mysql /var/lib/mysql
+</li><li class="line" prefix="$">sudo find /var/lib/mysql -type d -exec chmod 750 {} \;
+</li></ul></code></pre>
+<p>Our restored files are now in the MySQL data directory.</p>
+
+<p>Start up MySQL again to complete the process:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo systemctl start mysql
+</li></ul></code></pre>
+<p>Check whether the data has been restored by viewing the contents of the <code>playground.equipment</code> table.  Again, you will be prompted for the MySQL <code>root</code> password to continue:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">mysql -u root -p -e 'SELECT * FROM playground.equipment;'
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>+----+-------+-------+--------+
+| id | type  | quant | color  |
++----+-------+-------+--------+
+|  1 | slide |     2 | blue   |
+|  2 | swing |    10 | yellow |
++----+-------+-------+--------+
+2 rows in set (0.02 sec)
+</code></pre>
+<p>Our data has been successfully restored.</p>
+
+<p>After restoring your data, it is important to go back and delete the <code>restore</code> directory.  Future incremental backups cannot be applied to the full backup once it has been prepared, so we should remove it.  Furthermore, the backup directories should not be left unencrypted on disk for security reasons:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">cd ~
+</li><li class="line" prefix="$">sudo rm -rf /backups/mysql/"$(date +%a)"/restore
+</li></ul></code></pre>
+<p>The next time we need a clean copies of the backup directories, we can extract them again from the backup files.</p>
+
+<h2 id="creating-a-cron-job-to-run-backups-hourly">Creating a Cron Job to Run Backups Hourly</h2>
+
+<p>Now that we&rsquo;ve verified that the backup and restore process are working smoothly, we should set up a <code>cron</code> job to automatically take regular backups.</p>
+
+<p>We will create a small script within the <code>/etc/cron.hourly</code> directory to automatically run our backup script and log the results.  The <code>cron</code> process will automatically run this every hour:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo nano /etc/cron.hourly/backup-mysql
+</li></ul></code></pre>
+<p>Inside, we will call the backup script with the <code>systemd-cat</code> utility so that the output will be available in the journal.  We&rsquo;ll mark them with a <code>backup-mysql</code> identifier so we can easily filter the logs:</p>
+<div class="code-label " title="/etc/cron.hourly/backup-mysql">/etc/cron.hourly/backup-mysql</div><pre class="code-pre "><code class="code-highlight language-bash">#!/bin/bash
+sudo -u backup systemd-cat --identifier=backup-mysql /usr/local/bin/backup-mysql.sh
+</code></pre>
+<p>Save and close the file when you are finished.  Make the script executable by typing:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo chmod +x /etc/cron.hourly/backup-mysql
+</li></ul></code></pre>
+<p>The backup script will now run hourly.  The script itself will take care of cleaning up backups older than three days ago.</p>
+
+<p>We can test the <code>cron</code> script by running it manually:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo /etc/cron.hourly/backup-mysql
+</li></ul></code></pre>
+<p>After it completes, check the journal for the log messages by typing:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo journalctl -t backup-mysql
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>-- Logs begin at Wed 2017-04-19 18:59:23 UTC, end at Thu 2017-04-20 18:54:49 UTC. --
+Apr 20 18:35:07 myserver backup-mysql[2302]: Backup successful!
+Apr 20 18:35:07 myserver backup-mysql[2302]: Backup created at /backups/mysql/Thu/incremental-04-20-2017_18-35-05.xbstream
+</code></pre>
+<p>Check back in a few hours to make sure that additional backups are being taken.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>In this guide, we&rsquo;ve installed the Percona Xtrabackup tools to help create live snapshots of our MySQL data on a regular basis.  We configured a MySQL and system backup user, set up an encryption key to secure our backup files, and then set up scripts to automate parts of the backup and restore procedures.</p>
+
+<p>The backup script generates a full backup at the start of each day and incremental backups every hour afterwards, keeping three days of backups at any time.  The encrypted files and the encryption key can be used in conjunction with other backup technologies to transfer the data off-site for safekeeping.  The extract and prepare scripts let us assemble the backups for the day into a consistent set of data that can be used to restore the system.</p>
+
+    </div>
+</div>
+
+<div class="tutorial-footer">
+  
+<div class='tutorial-footer-details'>
+
+  <div class='postable-info-bar-container'>
+  <div class='postable-info-bar'>
+
+    <div class="author-byline">
+      <div class="component-collaborators-container">
+  <ul class="component-collaborators-content">
+        <li class="collaborator-byline-avatar">
+          <a href="/community/users/jellingwood">
+            <img alt="jellingwood" class="avatar avatar-large" src="https://secure.gravatar.com/avatar/60d901f61a6146e14a3e989bc1f4ef11?secure=true&d=identicon" width="80" height="80" />
+</a>        </li>
+
+    <li class="collaborators-byline-data">
+        <p class="names">By <a href="/community/users/jellingwood">Justin Ellingwood</a></p>
+
+      <p>
+      </p>
+    </li>
+  </ul>
+</div>
+
+    </div>
+  </div>
+</div>
+
+
+  <div class='section-content tutorial-contributors one'>
+    <div class="component-collaborators-container">
+      <ul class="component-collaborators-content">
+
+
+
+        <li class="collaborators-byline-data">
+        </li>
+      </ul>
+    </div>
+  </div>
+
+    
+<div class="hsb--content">
+  <div class="hsb--undo hsb--hide">
+    <span class="icon icon-helpfulness-upvoted"></span>
+    <span class="hsb--question">You rated this helpful.</span>
+    <button name="button" type="submit" class="hsb--button-down hsb--vote-down-js" data-upvotable-type="Tutorial">Undo</button>
+  </div>
+
+  <div class="hsb--flagging-undo hsb--hide">
+    <span class="icon icon-helpfulness-flag"></span>
+    <span class="hsb--question">You reported this tutorial.</span>
+    <button name="button" type="submit" class="hsb--button-down hsb--unflagging-js">Undo</button>
+  </div>
+
+  <div class="hsb--do">
+    <span class="hsb--question">Was this helpful?</span>
+    <button name="button" type="submit" class="hsb--button hsb--vote-up-js" data-upvotable-id="2316" data-upvotable-type="Tutorial">Yes</button>
+    <button name="button" type="submit" class="hsb--button hsb--flagging-js" data-url="/community/tutorials/how-to-configure-mysql-backups-with-percona-xtrabackup-on-ubuntu-16-04/flag" data-flaggable-id="2316">No</button>
+  </div>
+
+  <div class="hsb--social-and-comments">
+    <div class="hsb--social-sharing">
+      <a target="_blank" class="share-popup" href="http://twitter.com/share?text=How To Configure MySQL Backups with Percona XtraBackup on Ubuntu 16.04&amp;url=https://www.digitalocean.com/community/tutorials/how-to-configure-mysql-backups-with-percona-xtrabackup-on-ubuntu-16-04?utm_content=how-to-configure-mysql-backups-with-percona-xtrabackup-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=twshare">
+        <span class="icon icon-helpfulness-twitter"></span>
+</a>
+      <a target="_blank" class="share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/how-to-configure-mysql-backups-with-percona-xtrabackup-on-ubuntu-16-04?utm_content=how-to-configure-mysql-backups-with-percona-xtrabackup-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=fbshare">
+        <span class="icon icon-helpfulness-facebook"></span>
+</a>
+      <a target="_blank" class="share-popup" href="https://news.ycombinator.com/submitlink?t=How To Configure MySQL Backups with Percona XtraBackup on Ubuntu 16.04&amp;u=https://www.digitalocean.com/community/tutorials/how-to-configure-mysql-backups-with-percona-xtrabackup-on-ubuntu-16-04?utm_content=how-to-configure-mysql-backups-with-percona-xtrabackup-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=hnshare">
+        <span class="icon icon-helpfulness-hacker-news"></span>
+</a>    </div>
+
+    <div class="hsb--comment">
+      <span class="icon icon-helpfulness-comment"></span>
+      <strong class="amount">36</strong>
+    </div>
+  </div>
+</div>
+
+
+</div>
+
+
+  
+    <div class='related-tutorials'>
+    <div class='section-content'>
+      <h2>Related</h2>
+
+      <ul>
+        <li title="How To Use the DigitalOcean One-Click to Install Redmine on Ubuntu 14.04 Image">
+  <a class="panel" href="/community/tutorials/how-to-use-the-digitalocean-one-click-to-install-redmine-on-ubuntu-14-04-image">
+    <h6>Tutorial</h6>
+    <div class="panel-data">
+      <h5>How To Use the DigitalOcean One-Click to Install Redmine on Ubuntu 14.04 Image</h5>
+      <p>ARCHIVED: We have created a one-click Redmine 2.5 installation that uses Nginx/MySQL/Ruby on Rails on Ubuntu 14.04 x64. Redmine is a free and open source project management software to assist with projects, bug-tracking. It supports a variety of version control system. Using the one click image, you will be able to get redmine up and running quickly and painlessly.</p>
+    </div>
+  </a>
+</li>
+<li title="How To Use HAProxy As A Layer 7 Load Balancer For WordPress and Nginx On Ubuntu 14.04">
+  <a class="panel" href="/community/tutorials/how-to-use-haproxy-as-a-layer-7-load-balancer-for-wordpress-and-nginx-on-ubuntu-14-04">
+    <h6>Tutorial</h6>
+    <div class="panel-data">
+      <h5>How To Use HAProxy As A Layer 7 Load Balancer For WordPress and Nginx On Ubuntu 14.04</h5>
+      <p>In this tutorial, we will teach you how to use HAProxy as a layer 7 load balancer to serve multiple applications from a single domain name or IP address. Load balancing can improve the performance, availability, and resilience of your environment.</p>
+    </div>
+  </a>
+</li>
+<li title="How To Optimize WordPress Performance With MySQL Replication On Ubuntu 14.04">
+  <a class="panel" href="/community/tutorials/how-to-optimize-wordpress-performance-with-mysql-replication-on-ubuntu-14-04">
+    <h6>Tutorial</h6>
+    <div class="panel-data">
+      <h5>How To Optimize WordPress Performance With MySQL Replication On Ubuntu 14.04</h5>
+      <p>In this tutorial, we will teach you how to scale up your WordPress MySQL database server setup using master-slave database replication and the HyperDB plugin for WordPress. Adding more database servers to your environment in this manner allows your WordPress application to read from multiple database servers, increasing read performance.</p>
+    </div>
+  </a>
+</li>
+<li title="How To Use BitTorrent Sync to Synchronize Directories in Ubuntu 14.04">
+  <a class="panel" href="/community/tutorials/how-to-use-bittorrent-sync-to-synchronize-directories-in-ubuntu-14-04">
+    <h6>Tutorial</h6>
+    <div class="panel-data">
+      <h5>How To Use BitTorrent Sync to Synchronize Directories in Ubuntu 14.04</h5>
+      <p>BitTorrent Sync allows you to sync directories across servers by leveraging an encrypted version of the BitTorrent protocol.  In this guide, we will demonstrate how to configure BitTorrent Sync between two servers.  We will also configure an SSL reverse proxy through Nginx in order to encrypt our traffic with the web interface.</p>
+    </div>
+  </a>
+</li>
+
+      </ul>
+    </div>
+  </div>
+
+
+  <div class='looking-for-an-answer'>
+  <div class='section-content'>
+    <h4>Still looking for an answer?</h4>
+
+    <div class="lfa--actions">
+      <a href="/community/questions/new?tags=Backups%2CMySQL" class="lfa--action-box">
+        <span class="icon icon-look-for-answer-question"></span>
+        Ask a question
+      </a>
+      <a href="#q" class="lfa--action-box">
+        <span class="icon icon-look-for-answer-search-thin"></span>
+        Search for more help
+      </a>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="content-comments">
+  <div class="section-content">
+    <div class="tutorial commentable" id="tutorial_2316">
+
+  <div class="comments-header">
+    <h4 class="comments-count">
+        <span>36 Comments</span>
+    </h4>
+  </div>
+
+    <div class="response response-form no-avatar">
+  <div class="js-display-on-error flash error hidden"></div>
+
+
+  <form class="content-form disabled-form" id="new_comment" action="/community/tutorials/how-to-configure-mysql-backups-with-percona-xtrabackup-on-ubuntu-16-04/comments" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="&#x2713;" />
+
+    <textarea name="comment[content]" id="comment_content" placeholder="Leave a comment..." class="js-comment-content tutorial-comment-field" data-markdown="true">
+</textarea>
+
+      <div class="log-in-notice "><a href="/community/auth/digitalocean">Log In to Comment</a></div>
+
+    <div class='clearfix'></div>
+</form>
+</div>
+
+
+  <div class="comments">
+    <ul class="response-list">
+          <a class="js-click-on-load hidden" rel="nofollow" data-remote="true" href="/community/tutorials/how-to-configure-mysql-backups-with-percona-xtrabackup-on-ubuntu-16-04/comments">Load</a>
+    </ul>
+
+      <div class='comments-spinner'><div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+</div>
+  </div>
+
+  <div class='load-more-container'></div>
+</div>
+
+
+  </div>
+</div>
+
+<div class="creative-commons">
+  <a class="creative-commons-image" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><img rel="license" alt="Creative Commons License" src="/assets/community/creativecommons-08b32a9279fcd47fcd78ac6a26331389.png" /></a>
+    <div class="license-text">This work is licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.</div>
+</div>
+
+
+
+
+
+
+        <div class="clearfix"></div>
+      </div>
+
+            <footer>
+        <section>
+            <a href="https://www.digitalocean.com/write-for-donations/" class="panel">
+            <div class="photo_wrap">
+              <img class="photo" src="https://digitalocean.cdn.prismic.io/digitalocean/70910e9fdeb57be46aaa209ce8d9b4dc8e117fab_w4do2.jpg" alt="">
+            </div>
+            <span class="heading">Become a contributor</span>
+            <p>
+                You get paid; we donate to tech nonprofits.
+            </p>
+          </a>
+            <a href="https://www.meetup.com/pro/digitalocean" class="panel">
+            <div class="photo_wrap">
+              <img class="photo" src="https://digitalocean.cdn.prismic.io/digitalocean/2491485f96735e5982e330914d8a617f85395fab_meetups.jpg" alt="">
+            </div>
+            <span class="heading">Connect with other developers</span>
+            <p>
+                Find a DigitalOcean Meetup near you.
+            </p>
+          </a>
+            <a href="https://www.digitalocean.com/community/newsletter" class="panel">
+            <div class="photo_wrap">
+              <img class="photo" src="https://digitalocean.cdn.prismic.io/digitalocean/ca12c951cc76f33037f3384bba9942545d160d82_iaan_illo.jpg" alt="">
+            </div>
+            <span class="heading">Get our biweekly newsletter</span>
+            <p>
+                Sign up for Infrastructure as a Newsletter.
+            </p>
+          </a>
+      </section>
+      <section class="slim ">
+        <span class="heading">Featured on Community</span>
+            <a href="https://www.digitalocean.com/community/tutorials/an-introduction-to-kubernetes">Intro to Kubernetes</a>
+            <a href="https://www.digitalocean.com/community/tutorial_series/how-to-code-in-python-3">Learn Python 3</a>
+            <a href="https://www.digitalocean.com/community/tutorials/machine-learning-projects-python-a-digitalocean-ebook">Machine Learning in Python</a>
+            <a href="https://www.digitalocean.com/community/tutorials/how-to-write-your-first-program-in-go">Getting started with Go</a>
+            <a href="https://www.digitalocean.com/community/tutorial_series/from-containers-to-kubernetes-with-node-js">Migrate Node.js to Kubernetes</a>
+        <hr>
+        <span class="heading">DigitalOcean Products</span>
+            <a href="https://www.digitalocean.com/products/droplets/">Droplets</a>
+            <a href="https://www.digitalocean.com/products/managed-databases/">Managed Databases</a>
+            <a href="https://www.digitalocean.com/products/kubernetes/">Managed Kubernetes</a>
+            <a href="https://www.digitalocean.com/products/spaces/">Spaces Object Storage</a>
+            <a href="https://marketplace.digitalocean.com/">Marketplace</a>
+      </section>
+        <section class="product">
+          <a class="copy" href="/products">
+            <h3>Welcome to the developer cloud</h3>
+            <p>DigitalOcean makes it simple to launch in the cloud and scale up as you grow – whether you’re running one virtual machine or ten thousand.</p>
+            <span class="link_text">Learn More</a>
+          </div>
+          <div class="feature">
+            <a class="img_wrap" href="/products">
+              <img class="photo" src="https://digitalocean.cdn.prismic.io/digitalocean/95c1215227aa7f39f2bd23076de28feb969741c7_cloud.digitalocean.com_projects_63f9252f-652b-4645-9c0c-bee96f2bc503_resources_ic0ce81-2.png" alt="DigitalOcean Cloud Control Panel">
+            </a>
+          </div>
+        </section>
+        <section class="dark">
+          <div class="vlist grow">
+            <a href="https://www.digitalocean.com">
+              <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+                <title>DigitalOcean Homepage</title>
+                <g fill="#0080FF" fill-rule="evenodd">
+                  <path
+                    d="M24.9153 50v-9.661c10.226 0 18.1638-10.1413 14.2372-20.904-1.4406-3.983-4.6327-7.1751-8.6158-8.6158C19.774 6.921 9.6327 14.8305 9.6327 25.0565H0C0 8.7571 15.7627-3.9548 32.8531 1.3842c7.4576 2.3446 13.418 8.2768 15.7345 15.7344C53.9266 34.2373 41.2429 50 24.9153 50">
+                  </path>
+                  <path
+                    d="M15.339 40.3672h9.6045v-9.6045H15.339zM7.9379 47.7684h7.401v-7.4012H7.938zM1.7514 40.3672H7.938v-6.1864H1.7514z">
+                  </path>
+                </g>
+              </svg>
+            </a>
+            <br><br>
+            © <script type="text/javascript">
+              document.write(new Date().getFullYear());
+
+            </script> DigitalOcean, LLC. All rights reserved.
+          </div>
+
+              <div class="vlist">
+                <span class="heading">Company</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/about/">About</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/about/leadership/">Leadership</a>
+                    </li>
+                    <li>
+                      <a href="https://blog.digitalocean.com/">Blog</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/careers/">Careers</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/partners/">Partners</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/referral-program/">Referral Program</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/press/">Press</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/legal/">Legal &amp; Security</a>
+                    </li>
+                </ul>
+              </div>
+              <div class="vlist">
+                <span class="heading">Products</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/">Products Overview</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/pricing/">Pricing</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/droplets/">Droplets</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/kubernetes/">Kubernetes</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/managed-databases/">Managed Databases</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/spaces/">Spaces</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/marketplace/">Marketplace</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/load-balancer/">Load Balancers</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/block-storage/">Block Storage</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/tools-and-integrations/">Tools &amp; Integrations</a>
+                    </li>
+                    <li>
+                      <a href="https://developers.digitalocean.com/documentation/">API</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/docs">Documentation</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/docs/release-notes/">Release Notes</a>
+                    </li>
+                </ul>
+              </div>
+              <div class="vlist">
+                <span class="heading">Community</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/tutorials">Tutorials</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/questions">Q&amp;A</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/tools">Tools and Integrations</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/tags">Tags</a>
+                    </li>
+                    <li>
+                      <a href="https://ideas.digitalocean.com/">Product Ideas</a>
+                    </li>
+                    <li>
+                      <a href="https://www.meetup.com/pro/digitalocean/?utm_source=do_www">Meetups</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/write-for-donations/">Write for DOnations</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/droplets-for-demos/">Droplets for Demos</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/hatch/">Hatch Startup Program</a>
+                    </li>
+                    <li>
+                      <a href="http://store.digitalocean.com/">Shop Swag</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/research/">Research Program</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/currents/">Currents Research</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/open-source/">Open Source</a>
+                    </li>
+                </ul>
+              </div>
+              <div class="vlist">
+                <span class="heading">Contact</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/support/">Support</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/company/contact/sales/">Sales</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/company/contact/#abuse">Report Abuse</a>
+                    </li>
+                    <li>
+                      <a href="https://status.digitalocean.com/">System Status</a>
+                    </li>
+                </ul>
+              </div>
+        </section>
+      </footer>
+
+
+      <div id='sign-in-modal' class='modal fade mini-modal' style="display: none;">
+  <div class='modal-dialog'>
+    <div class='modal-content'>
+      <div class='modal-header'>
+        <h1>Almost there!</h1>
+        <a class='close-button' data-dismiss='modal' aria-label="close"  href=''><span class='icon icon-close-light'></span></a>
+      </div>
+      <div class='modal-body'>
+        <div class='sign-in-message'>Sign into your account, or create a new one, to start interacting.</div>
+
+        <div class='sign-in-modal-actions'>
+          <a class="sign-in-link button blue-button" data-default-url="/community/auth/digitalocean" href="/community/auth/digitalocean">Log In</a>
+          <a class="sign-up-link button blue-button" data-default-url="/community/auth/digitalocean?display=sessionless+register" href="/community/auth/digitalocean?display=sessionless+register">Sign Up</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+      <script>
+    $(function() {
+      window.initHelpfulnessActions(2316);
+    });
+  </script>
+  <script>
+    $(function() {
+      var p, h5, panel, remainingSpace;
+      var lineHeight = 31, clamp = 1;
+
+      var panels = document.querySelectorAll('li .panel-data');
+
+      for (var i = 0, len = panels.length; i < len; i++) {
+        panel = panels[i];
+
+        p = panel.querySelector('p');
+        h5 = panel.querySelector('h5');
+        remainingSpace = panel.offsetHeight - h5.offsetHeight;
+
+        // Clamp text only when the remaining space isn't enought for p content.
+        if (remainingSpace < p.scrollHeight) {
+          clamp = parseInt(p.offsetHeight / lineHeight);
+
+          p.style.cssText = "-webkit-line-clamp:" + clamp +
+            "; display: -webkit-box; -webkit-box-orient: vertical;";
+        }
+      }
+    });
+  </script>
+
+  <script>
+    $(function() {
+      if (!!window.init_sharing) {
+        window.init_sharing();
+      }
+      new window.NewsletterSignup();
+      new window.GrowableMarkdown({ target: '[data-growable-markdown]' });
+    });
+  </script>
+  <script type="application/ld+json">
+    {"@context":"http://schema.org","@type":"Article","name":"How To Configure MySQL Backups with Percona XtraBackup on Ubuntu 16.04","headline":"How To Configure MySQL Backups with Percona XtraBackup on Ubuntu 16.04","alternativeHeadline":"How To Configure MySQL Backups with Percona XtraBackup on Ubuntu 16.04","description":"Databases are often some of the most important systems in your infrastructure due to the value of the information they store. Because of this, it is important to have reliable backups to guard against data loss in the event of an accident or hardware failure. The Percona...","keywords":"Backups,MySQL","url":"https://www.digitalocean.com/community/tutorials/how-to-configure-mysql-backups-with-percona-xtrabackup-on-ubuntu-16-04","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.digitalocean.com/community/tutorials/how-to-configure-mysql-backups-with-percona-xtrabackup-on-ubuntu-16-04"},"dateModified":"2018-04-12T17:29:31Z","inLanguage":"en","accessMode":"textual","accessModeSufficient":"textual","isAccessibleForFree":true,"license":"https://creativecommons.org/licenses/by-nc-sa/4.0/","publishingPrinciples":"https://www.digitalocean.com/community/tutorials/technical-recommendations-and-best-practices-for-digitalocean-s-tutorials","author":[{"@type":"Person","name":"Justin Ellingwood","@id":"https://www.digitalocean.com/community/users/jellingwood"}],"datePublished":"2017-04-24T20:39:01Z","image":{"@type":"ImageObject","url":"https://www.digitalocean.com/assets/community/illustrations/DigitalOcean_Community-02cc36407e7a978ed4fc9ed98f3ed87c.jpg","height":375,"width":750},"interactionStatistic":[{"@type":"InteractionCounter","interactionType":"http://schema.org/LikeAction","userInteractionCount":"23"},{"@type":"InteractionCounter","interactionType":"http://schema.org/CommentAction","userInteractionCount":"22"}],"sourceOrganization":{"@type":"Organization","name":"DigitalOcean Community","url":"https://www.digitalocean.com/community"},"publisher":{"@type":"Organization","name":"DigitalOcean","url":"https://www.digitalocean.com","logo":{"@type":"ImageObject","url":"https://assets.digitalocean.com/logos/DO_Logo_horizontal_blue.png","width":351,"height":60}}}
+  </script>
+
+
+    
+  </body>
+</html>

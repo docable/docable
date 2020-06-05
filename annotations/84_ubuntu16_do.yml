@@ -4,7 +4,7 @@ setup:
     host: vagrant@127.0.0.1:2003
     privateKey: id_rsa
 
-../tutorials/84_ubuntu16_do.html:
+../tutorials/docable/84_ubuntu16_do.html:
   steps:
     - run: "Start by logging in as your non-root user and making sure your repositories are up-to-date"
     - run: "This will ensure that your package repository includes the latest version of the"

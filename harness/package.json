@@ -1,0 +1,31 @@
+{
+  "name": "naive",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "dependencies": {
+    "algoliasearch": "^3.33.0",
+    "chalk": "^2.4.2",
+    "cheerio": "^1.0.0-rc.3",
+    "csv-parse": "^4.4.5",
+    "delay": "^4.3.0",
+    "docable": "file:../docable",
+    "download": "^7.1.0",
+    "fs-extra": "^8.1.0",
+    "gfm-code-blocks": "^1.0.0",
+    "got": "^9.6.0",
+    "infra.connectors": "github:ottomatica/infra.connectors",
+    "js-yaml": "^3.13.1",
+    "md5": "^2.2.1",
+    "mustache": "^3.0.3",
+    "node-virtualbox": "github:ottomatica/node-virtualbox#sshForward",
+    "progress": "^2.0.3",
+    "query-string": "^6.8.2",
+    "tar": "^4.4.10",
+    "yargs": "^14.0.0"
+  }
+}

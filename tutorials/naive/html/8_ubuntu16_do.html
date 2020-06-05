@@ -1,0 +1,1971 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>How To Install OpenFaaS with Docker Swarm on Ubuntu 16.04 | DigitalOcean</title>
+
+<meta name="description" content="OpenFaaS is a free and open-source framework for building and hosting serverless functions. With official support for both Docker Swarm and Kubernetes, it lets you deploy your applications without having to manage the underlying infrastructure by usin">
+<meta name="keywords" content="Microservices Let&#39;s Encrypt Docker">
+
+<meta name="og:title" content="How To Install OpenFaaS with Docker Swarm on Ubuntu 16.04 | DigitalOcean">
+<meta name="og:description" content="OpenFaaS is a free and open-source framework for building and hosting serverless functions. With official support for both Docker Swarm and Kubernetes, it lets you deploy your applications without having to manage the underlying infrastructure by usin">
+<meta name="og:site_name" content="DigitalOcean">
+<meta name="og:type" content="article">
+<meta name="og:image" content="https://www.digitalocean.com/assets/community/illustrations/DigitalOcean_Community-02cc36407e7a978ed4fc9ed98f3ed87c.jpg">
+
+<meta name="twitter:site" content="DigitalOcean">
+<meta name="twitter:title" content="How To Install OpenFaaS with Docker Swarm on Ubuntu 16.04 | DigitalOcean">
+<meta name="twitter:description" content="OpenFaaS is a free and open-source framework for building and hosting serverless functions. With official support for both Docker Swarm and Kubernetes, it lets you deploy your applications without having to manage the underlying infrastructure by usin">
+<meta name="twitter:creator" content="DigitalOcean">
+<meta name="twitter:card" content="photo" />
+<meta name="twitter:url" content="https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04"/>
+<meta name="twitter:image" content="https://www.digitalocean.com/assets/community/illustrations/DigitalOcean_Community-02cc36407e7a978ed4fc9ed98f3ed87c.jpg">
+
+  <link rel='canonical' href='https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04'>
+
+<link rel="preconnect" href="https://digitalocean.cdn.prismic.io">
+<link rel="preconnect" href="https://hello.myfonts.net">
+
+
+    <link rel="stylesheet" media="all" href="/assets/community/application-b828e623bec3c41208f9f701850222a0.css" />
+
+    
+    <meta name="csrf-param" content="authenticity_token" />
+<meta name="csrf-token" content="sZlY/Tqe07kxXIaX5pJCFRzx/vPxUGH7KDy+Na7+gr7G/lLiulnVsMNKb5UlQge5cjF3hEEJhMU/CBm5oDN0Ww==" />
+    <script src="/assets/community/prerequisites-9a51dfaadf0d3629cc636286133a958d.js"></script>
+    <script>
+//<![CDATA[
+
+  window.cookieDomain = '.digitalocean.com';
+
+//]]>
+</script><script src="https://assets.digitalocean.com/cookieConsent/cookieConsent.js"></script>
+<link rel="stylesheet" href="https://assets.digitalocean.com/cookieConsent/cookieConsent.css">
+
+    <script type="text/javascript">
+  if(window.analytics=window.analytics||[],window.analytics.included)window.console&&console.error&&console.error("analytics.js included twice");else{window.analytics.included=!0,window.analytics.methods=["identify","group","track","page","pageview","alias","ready","on","once","off","trackLink","trackForm","trackClick","trackSubmit"],window.analytics.factory=function(a){return function(){var n=Array.prototype.slice.call(arguments);return n.unshift(a),window.analytics.push(n),window.analytics}};for(var i=0;i<window.analytics.methods.length;i++){var key=window.analytics.methods[i];window.analytics[key]=window.analytics.factory(key)}window.analytics.load=function(a){var n=document.createElement("script");n.type="text/javascript",n.async=!0,n.src=("https:"===document.location.protocol?"https://":"http://")+"cdn.segment.com/analytics.js/v1/"+a+"/analytics.min.js";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(n,t)},window.analytics.SNIPPET_VERSION="2.0.9",window.analytics.load("puo3uv968t")}
+  window.analytics.page();
+</script>
+
+<!-- Google Tag Manager -->
+<script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-KHWBBT');
+</script>
+<!-- End Google Tag Manager -->
+
+<script src="/assets/community/internalCookies-d2a3579f6b37d00c8045b16853b90462.js"></script>
+
+      <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="/community/tutorials/feed">
+    <script>
+      window.comApp = {
+        prefix: '/community',
+        svgIconPath: 'https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg',
+        railsEnv: 'production',
+        rootUrl: 'https://www.digitalocean.com/community',
+        algolia_application_id: '6ZHEUVKJ88',
+        algolia_api_key: 'c5470567eae7fa1177d43222e18ba086'
+      };
+    </script>
+      <script src="https://go.digitalocean.com/js/forms2/js/forms2.min.js"></script>
+
+    <script src="/assets/community/application-dd2f12c7d68945c016e67a784d8785fc.js"></script>
+  </head>
+  <body class="feature-filter-bar feature-upvotes tutorials-controller tutorial-single" data-env="production" data-prefix="/community" data-user-id="" data-facebook-app-id="694818843983011"   data-completed-tutorial-id="" data-tutorial-id="2819" data-js="tutorial"
+  data-upvote="null"
+  data-flagged=""
+>
+    
+
+    <div class='outside_viewport'>
+        <div id="contents-modal" class="modal fade mini-modal" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1>Contents</h1>
+          <button class="close-button icon icon-close-light" data-dismiss="modal" aria-label="close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="table-of-contents-modal"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="share-modal" class="modal fade mini-modal" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1>Share</h1>
+        <button type="button" class="close-button icon icon-close-light" aria-label="close" data-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="social-sharing social-sharing-container">
+          <ul class="top ">
+            <li class="shareBtn" id="sbTwitter">
+              <a href="http://twitter.com/share?text=How To Install and Secure OpenFaaS Using Docker Swarm on Ubuntu 16.04&amp;url=https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04?utm_content=how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=twshare" class="share-icon share-popup" title="Share on Twitter" target="_blank">
+                <span class="sIcon icon-bird"></span>
+              </a>
+              <a href="http://twitter.com/share?text=How To Install and Secure OpenFaaS Using Docker Swarm on Ubuntu 16.04&amp;url=https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04?utm_content=how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=twshare" class="share-link share-popup" title="Share on Twitter" target="_blank">
+                Twitter
+              </a>
+            </li>
+            <li class="shareBtn" id="sbFacebook">
+              <a class="share-icon share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04?utm_content=how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+                <span class="sIcon icon-facebook-B"></span>
+              </a>
+
+              <a class="share-link share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04?utm_content=how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+                Facebook
+              </a>
+            </li>
+            <li class="shareBtn" id="sbYC">
+              <a href="https://news.ycombinator.com/submitlink?t=How To Install and Secure OpenFaaS Using Docker Swarm on Ubuntu 16.04&amp;u=https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04?utm_content=how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=hnshare" class="share-icon share-popup" target="_blank" title="Submit to Hacker News">
+                <span class="sIcon icon-hacker-news"></span>
+              </a>
+              <a href="https://news.ycombinator.com/submitlink?t=How To Install and Secure OpenFaaS Using Docker Swarm on Ubuntu 16.04&amp;u=https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04?utm_content=how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=hnshare" class="share-link share-popup" target="_blank" title="Submit to Hacker News">
+                Hacker News
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <div class="table-of-contents">
+    <div data-js="tableOfContentsDesktop"></div>
+  </div>
+  
+  
+  
+  <div id="share-modal" class="modal fade mini-modal" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1>Share</h1>
+        <button type="button" class="close-button icon icon-close-light" aria-label="close" data-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="social-sharing social-sharing-container">
+          <ul class="bottom ">
+            <li class="shareBtn" id="sbTwitter">
+              <a href="http://twitter.com/share?text=How To Install and Secure OpenFaaS Using Docker Swarm on Ubuntu 16.04&amp;url=https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04?utm_content=how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=twshare" class="share-icon share-popup" title="Share on Twitter" target="_blank">
+                <span class="sIcon icon-bird"></span>
+              </a>
+              <a href="http://twitter.com/share?text=How To Install and Secure OpenFaaS Using Docker Swarm on Ubuntu 16.04&amp;url=https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04?utm_content=how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=twshare" class="share-link share-popup" title="Share on Twitter" target="_blank">
+                Twitter
+              </a>
+            </li>
+            <li class="shareBtn" id="sbFacebook">
+              <a class="share-icon share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04?utm_content=how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+                <span class="sIcon icon-facebook-B"></span>
+              </a>
+
+              <a class="share-link share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04?utm_content=how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+                Facebook
+              </a>
+            </li>
+            <li class="shareBtn" id="sbYC">
+              <a href="https://news.ycombinator.com/submitlink?t=How To Install and Secure OpenFaaS Using Docker Swarm on Ubuntu 16.04&amp;u=https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04?utm_content=how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=hnshare" class="share-icon share-popup" target="_blank" title="Submit to Hacker News">
+                <span class="sIcon icon-hacker-news"></span>
+              </a>
+              <a href="https://news.ycombinator.com/submitlink?t=How To Install and Secure OpenFaaS Using Docker Swarm on Ubuntu 16.04&amp;u=https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04?utm_content=how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=hnshare" class="share-link share-popup" target="_blank" title="Submit to Hacker News">
+                Hacker News
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div id="newsletter-signup-dialog" class="newsletter-signups-dialog" data-newsletter-signup-dialog data-article-target=".content-body">
+  <div class="form-message">
+  <div class="pull-right">
+    <a href="javascript:;" class="newsletter-signups-dialog-dismiss" data-newsletter-signup-dismiss>&times;</a>
+
+  </div>
+  <h4 class="newsletter-signups-dialog-title">
+    Sign up for our newsletter.
+  </h4>
+  <p class="newsletter-signups-dialog-description">
+    Get the latest tutorials on SysAdmin and open source topics.
+  </p>
+  <form class="newsletter-signup" id="new_newsletter_signup" data-newsletter-signup="true" action="/community/newsletter" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="&#x2713;" />
+
+  <input data-newsletter-signup-field="url" type="hidden" name="newsletter_signup[url]" id="newsletter_signup_url" />
+  <input data-newsletter-signup-field="title" type="hidden" name="newsletter_signup[title]" id="newsletter_signup_title" />
+
+  <div class="newsletter-signup-ajax-error" data-newsletter-signup-ajax-error></div>
+
+
+  <div class="form-group">
+    <input placeholder="Enter your email address" required="required" class="field" type="email" name="newsletter_signup[email]" id="newsletter_signup_email" />
+  </div>
+
+  <button data-disable-with="Sign Up" class="button blue-button">
+    Sign Up
+  </button>
+
+</form>
+
+</div>
+
+<div class="thanks-message hidden" data-newsletter-signup-successful> 
+  <div class='pull-right'> 
+    <a href='javascript:;' class='newsletter-signups-dialog-dismiss icon icon-close-light' data-newsletter-signup-dismiss></a> 
+  </div> 
+
+  <span class='newsletter-signups-dialog-success'> 
+    Thanks for signing up! 
+  </span> 
+</div>
+
+</div>
+
+
+      
+    </div>
+
+      
+      
+<div style="display: none;">
+  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <symbol id="do_nav-logo" xmlns="http://www.w3.org/2000/svg"> <title>DigitalOcean home</title> <g fill="currentColor" fill-rule="evenodd"> <path d="M14.4942 29v-5.5674c5.9572 0 10.5633-5.8478 8.2892-12.059-.8425-2.3006-2.693-4.1355-5.0126-4.9706-6.262-2.2534-12.1564 2.3135-12.1573 8.2207 0 0-.0006.0014-.0014.0014H0C0 5.2123 9.1687-2.1167 19.1138.9624c4.3459 1.3457 7.7993 4.7708 9.1561 9.081C31.3742 19.9068 23.985 29 14.4942 29"></path> <path d="M14.507 23.4468H8.9103v-5.549s.0005-.0011.0011-.0011h5.5949c.0006 0 .0009.0006.0009.0006v5.5495M8.9093 27.7118H4.6105l-.0012-.0012v-4.2638h4.3009v4.2638l-.0009.0012M4.6125 23.4468H1.0088c-.0015 0-.0026-.0012-.0026-.0012v-3.5724s.0011-.0025.0026-.0025h3.601c.0015 0 .0027.0011.0027.0011v3.575M43.2806 9.6357h1.649c1.8346 0 3.345.358 4.49 1.0647 1.2714.7603 1.9164 2.2069 1.9164 4.2991 0 2.1554-.6465 3.6671-1.9207 4.4942h-.0008c-1.0971.7196-2.5981 1.0846-4.462 1.0846h-1.6719V9.6357zm8.324-1.0736c-1.6598-1.142-3.7252-1.721-6.1387-1.721h-5.2537V23.373h5.2537c2.4074 0 4.4737-.6113 6.1407-1.8157.907-.6382 1.6197-1.5304 2.1185-2.651.4962-1.1144.7479-2.4288.7479-3.9067 0-1.4605-.2517-2.758-.7482-3.857-.4988-1.104-1.212-1.972-2.1202-2.5804zM58.1303 6.6376c-.5051 0-.9403.1777-1.2906.5254-.3546.335-.5346.7597-.5346 1.2618 0 .501.1791.9322.532 1.2825.3529.35.788.528 1.2932.528.5042 0 .9394-.178 1.2928-.528.3535-.3508.5324-.7821.5324-1.2825 0-.5015-.18-.926-.5324-1.2592-.3534-.3503-.7886-.528-1.2928-.528M56.6247 23.3729h2.9538V11.7294h-2.9538zM69.5321 19.5787c-.5162.5814-1.1793.8635-2.0264.8635-.8471 0-1.5064-.282-2.015-.863-.5065-.5777-.7637-1.3439-.7637-2.2773 0-.9479.2572-1.7238.764-2.3058.502-.576 1.1796-.8683 2.0147-.8683.8465 0 1.5096.284 2.0262.8695.5142.582.7751 1.3573.7751 2.3046 0 .9328-.2609 1.6988-.7749 2.2768zm.775-6.8767c-.8908-.7858-1.8858-1.2444-2.9614-1.2444-1.6305 0-2.9859.5598-4.0276 1.662-1.0555 1.0932-1.5907 2.5006-1.5907 4.1823 0 1.644.5269 3.0464 1.568 4.1709 1.0498 1.088 2.4123 1.6396 4.0503 1.6396 1.139 0 2.1182-.3144 2.9157-.9356v.268c0 .9662-.2608 1.7176-.7751 2.234-.5137.5154-1.226.7764-2.1173.7764-1.3637 0-2.2183-.5314-3.2589-1.9262l-2.0115 1.917.0542.0754c.4346.605 1.1 1.197 1.9785 1.7594.8787.5603 1.9832.8447 3.2832.8447 1.7536 0 3.1726-.5363 4.2172-1.5933 1.0506-1.0628 1.5835-2.486 1.5835-4.2286V11.7294H70.307v.9726zM75.7434 23.3729h2.9541V11.7294h-2.9541zM77.249 6.6376c-.5052 0-.94.1777-1.2906.5254-.3547.335-.5344.7597-.5344 1.2618 0 .501.1789.9322.532 1.2825.353.35.7878.528 1.293.528.5045 0 .9396-.178 1.2928-.528.3535-.3508.5323-.7821.5323-1.2825 0-.5015-.1797-.926-.5323-1.2592-.3532-.3503-.7883-.528-1.2929-.528M85.1724 8.5831h-2.9082v3.1463h-1.6888v2.6702h1.6888v4.8365c0 1.5134.3047 2.5964.9064 3.2181.6031.6247 1.6741.9414 3.1831.9414.48 0 .963-.0156 1.4354-.0463l.133-.0088v-2.6683l-1.013.0526c-.7033 0-1.1728-.1226-1.3961-.3637-.226-.245-.3406-.7636-.3406-1.5404v-4.421h2.7497v-2.6703h-2.7497V8.583M101.7735 23.3729h2.9544V6.8412h-2.9544zM134.5728 19.2094c-.5286.5874-1.0693 1.0966-1.4855 1.3613v.0005c-.4085.2599-.924.3918-1.532.3918-.8703 0-1.5703-.3144-2.1405-.9621-.567-.644-.8545-1.4716-.8545-2.4613s.2838-1.8162.8436-2.4556c.5625-.6434 1.2588-.9562 2.1285-.9562.9515 0 1.9548.5869 2.8145 1.5947l1.9525-1.8568c-1.273-1.6433-2.897-2.4081-4.8352-2.4081-1.622 0-3.028.5862-4.1788 1.7411-1.1446 1.147-1.7251 2.6074-1.7251 4.3409 0 1.7335.58 3.1977 1.7234 4.352 1.1447 1.1557 2.5514 1.7417 4.1805 1.7417 2.139 0 3.8651-.9158 5.029-2.5935l-1.9204-1.8304M140.2405 16.0973c.1422-.5567.401-1.0207.7714-1.381.4005-.3906.9214-.5885 1.5489-.5885.716 0 1.2702.2019 1.6474.6014.3495.3696.5467.8296.588 1.368h-4.5557zm6.4569-2.7414c-.4191-.5788-.9896-1.0448-1.6965-1.3854-.7047-.3404-1.526-.513-2.441-.513-1.6489 0-2.9982.6037-4.0113 1.7946-.9836 1.182-1.4818 2.651-1.4818 4.3665 0 1.7648.547 3.2253 1.6254 4.341 1.0727 1.1105 2.5083 1.6737 4.267 1.6737 1.992 0 3.627-.799 4.8587-2.3752l.0666-.0847-1.9273-1.837c-.1789.2139-.4317.4561-.6628.6722-.2918.273-.5659.4842-.8588.6289-.4415.218-.9369.3255-1.4907.3255-.8187 0-1.4964-.2388-2.0147-.71-.4847-.4403-.768-1.0345-.843-1.7683h7.8265l.0264-1.0693c0-.7569-.1038-1.4862-.3088-2.1677a6.312 6.312 0 0 0-.934-1.8918zM152.797 18.9234c.3352-.2318.8085-.3483 1.4073-.3483.7112 0 1.4654.1413 2.2426.421v1.1421c-.6421.592-1.4996.8922-2.5499.8922-.5114 0-.909-.1126-1.1822-.3355-.2683-.218-.3985-.4955-.3985-.847 0-.3994.1571-.7022.4808-.9245zm5.2452-6.3229h-.0003c-.8952-.758-2.1328-1.143-3.678-1.143-.9829 0-1.902.2144-2.7336.6324-.7691.387-1.5245 1.0275-2.0043 1.8662l.0298.0358 1.8917 1.796c.7791-1.2322 1.6454-1.66 2.7941-1.66.6172 0 1.1298.1643 1.5234.4881.3916.3216.5819.7304.5819 1.249v.5652c-.7324-.221-1.4629-.333-2.1738-.333-1.47 0-2.6663.3432-3.555 1.0193-.9.6852-1.3562 1.665-1.3562 2.9125 0 1.094.3847 1.9829 1.1461 2.6433.7677.6372 1.7275.961 2.8524.961 1.1246 0 2.177-.4495 3.132-1.2191v.9587h2.9089v-7.4852c0-1.4173-.4572-2.523-1.3591-3.2872zM170.7656 12.8285c-.8227-.9092-1.9791-1.371-3.4371-1.371-1.172 0-2.1236.3338-2.8357.9926v-.7207h-2.897v11.6435h2.954v-6.4215c0-.8823.2119-1.5828.6293-2.0826.4162-.4987.989-.741 1.75-.741.6691 0 1.1765.2167 1.5506.662.3759.4474.5662 1.0638.5662 1.8335v6.7496H172v-6.7496c0-1.6127-.415-2.889-1.2344-3.7948M92.8158 18.9234c.3351-.2318.8087-.3483 1.4075-.3483.7112 0 1.4652.1413 2.2426.421v1.1421c-.6421.592-1.4998.8922-2.5502.8922-.5114 0-.9087-.1126-1.1819-.3355-.2683-.218-.3988-.4955-.3988-.847 0-.3994.1574-.7022.4808-.9245zm5.2451-6.3229h-.0003c-.8952-.758-2.1328-1.143-3.6776-1.143-.983 0-1.902.2144-2.7337.6324-.7694.387-1.5247 1.0275-2.0043 1.8662l.0295.0358 1.8917 1.796c.7792-1.2322 1.6458-1.66 2.7941-1.66.6172 0 1.1298.1643 1.5234.4881.3916.3216.5822.7304.5822 1.249v.5652c-.7327-.221-1.4631-.333-2.174-.333-1.47 0-2.6664.3432-3.555 1.0193-.8999.6852-1.3562 1.665-1.3562 2.9125 0 1.094.3847 1.9829 1.1463 2.6433.7677.6372 1.7272.961 2.8524.961 1.1246 0 2.1766-.4495 3.1318-1.2191v.9587H99.42v-7.4852c0-1.4173-.457-2.523-1.359-3.2872zM115.4464 9.5808c-3.0682 0-5.5645 2.4755-5.5645 5.5188s2.4963 5.5188 5.5645 5.5188c3.0682 0 5.5645-2.4755 5.5645-5.5188s-2.4963-5.5188-5.5645-5.5188zm0 14.0408c-4.7383 0-8.5928-3.8228-8.5928-8.522 0-4.6994 3.8545-8.5223 8.5928-8.5223 4.738 0 8.5925 3.8229 8.5925 8.5223 0 4.6992-3.8545 8.522-8.5925 8.522z"></path> </g> </symbol>
+    <symbol id="do_nav-community_logo" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 532.2 99.8" fill="currentColor"> <path class="st0" d="M98.5,23c15.5,0,27.7,12.1,27.7,28.2c0,16.1-12.3,28.1-27.7,28.1c-15.6,0-27.7-11.9-27.7-28.1 C70.8,35.1,82.9,23,98.5,23z M98.5,67.9c8.7,0,14.9-7,14.9-16.8c0-9.8-6.2-16.8-14.9-16.8c-8.8,0-15,7-15,16.8 C83.5,60.9,89.7,67.9,98.5,67.9z"/> <path class="st0" d="M166.8,45.9c0-7-3.5-11.6-9.9-11.6c-7.2,0-11.1,5.3-11.1,13.1V78h-12.5V24.3h12.3V29c2.4-2.8,7-6,13.9-6 c7.3,0,12.2,3.1,15,7c4.4-4.9,10-7,16.8-7c14.4,0,21.4,8.5,21.4,23.8V78h-12.5V45.9c0-7-3.5-11.6-9.9-11.6 c-7.2,0-11.2,5.3-11.2,13.1V78h-12.4V45.9z"/> <path class="st0" d="M255.5,45.9c0-7-3.5-11.6-9.9-11.6c-7.2,0-11.1,5.3-11.1,13.1V78h-12.5V24.3h12.3V29c2.4-2.8,7-6,13.9-6 c7.3,0,12.2,3.1,15,7c4.4-4.9,10-7,16.8-7c14.4,0,21.4,8.5,21.4,23.8V78h-12.5V45.9c0-7-3.5-11.6-9.9-11.6 c-7.2,0-11.2,5.3-11.2,13.1V78h-12.4V45.9z"/> <path class="st0" d="M322.5,56.4c0,7,3.6,11.6,10.1,11.6c7.2,0,11.2-5.6,11.2-13.5V24.3h12.5V78h-12.3v-4.4 c-3.4,3.7-8.1,5.6-13.9,5.6c-11.9,0-20.1-8.4-20.1-23.7V24.3h12.5V56.4z"/> <path class="st0" d="M378.2,78h-12.5V24.3h12.3v4.4c2.7-3.1,7.7-5.7,13.9-5.7c13.1,0,21.3,8.5,21.3,23.8V78h-12.5V46.8 c0-7.5-3.7-12.5-10.6-12.5c-7.8,0-11.8,5.6-11.8,14V78z"/> <path class="st0" d="M427.8,0.2c4.4,0,7.9,3.4,7.9,7.8s-3.5,7.9-7.9,7.9c-4.4,0-7.9-3.5-7.9-7.9S423.4,0.2,427.8,0.2z M421.4,24.3 h12.5V78h-12.5V24.3z"/> <path class="st0" d="M446.7,59.1V35.5h-6.5V24.3h6.5v-15H459v15h12.2v11.2H459v21.7c0,7.8,1.8,9.8,8.8,9.8c1.2,0,4.1-0.2,4.1-0.2 v11.2c0,0-2.4,0.2-6.7,0.2C451.2,78.1,446.7,72.7,446.7,59.1z"/> <path class="st0" d="M497.3,78.7l-21.3-54.4h14.2l14,38.8l14.2-38.8h13.6l-24.1,60.2c-3.7,9.4-7.2,15.3-21.3,15.3 c-2.5,0-4.8-0.1-4.8-0.1V88c0,0,1.5,0.1,2.8,0.1c7.6,0,9.8-2.3,11.8-7.8L497.3,78.7z"/> <path class="st0" d="M62.4,55.9c-5.3,7-12.2,11.4-22.1,11.4c-15.6,0-27-11.7-27-27.5c0-16.1,11.4-27.8,26.5-27.8 c10,0,16.8,4.8,21.3,11.3l8.4-8.8C63.1,5.7,53.3,0,39.7,0C17.1,0,0,15.9,0,39.8c0,23.4,17.1,39.4,40.1,39.4c13.1,0,22-4.9,28.6-12.2 L62.4,55.9z"/> </symbol>
+    <symbol id="do_nav-control_panel_icon" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M19.6875 23.4862C19.6885 23.9722 19.4965 24.4388 19.1537 24.7833C18.8109 25.1279 18.3454 25.3222 17.8594 25.3237H3.23438C2.99366 25.3232 2.75539 25.2753 2.53321 25.1827C2.31102 25.09 2.10927 24.9545 1.93949 24.7839C1.7697 24.6132 1.63522 24.4108 1.54373 24.1881C1.45223 23.9655 1.40552 23.727 1.40626 23.4862V3.25498C1.40577 3.01417 1.45271 2.77562 1.54441 2.55295C1.63611 2.33028 1.77077 2.12785 1.9407 1.95722C2.11063 1.7866 2.31251 1.65111 2.5348 1.5585C2.75709 1.46589 2.99545 1.41797 3.23626 1.41748L17.8613 1.44186C18.347 1.44384 18.812 1.63843 19.1544 1.98292C19.4968 2.32741 19.6885 2.79366 19.6875 3.27936V23.4862Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M43.5863 12.27C43.5828 12.7516 43.3883 13.212 43.0456 13.5503C42.7028 13.8885 42.2397 14.0768 41.7582 14.0738H27.1332C26.8947 14.0755 26.6582 14.0302 26.4372 13.9405C26.2162 13.8507 26.015 13.7183 25.8453 13.5508C25.6755 13.3833 25.5404 13.1839 25.4477 12.9642C25.355 12.7444 25.3065 12.5085 25.3051 12.27V3.24565C25.308 2.76461 25.5019 2.30442 25.8439 1.96621C26.186 1.62799 26.6484 1.43941 27.1294 1.4419L41.7544 1.41753C42.2365 1.41403 42.7002 1.60205 43.0437 1.94027C43.3872 2.27849 43.5823 2.73924 43.5863 3.22128V12.27Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M19.6875 41.7956C19.686 42.0347 19.6375 42.2712 19.5446 42.4915C19.4518 42.7118 19.3164 42.9117 19.1463 43.0797C18.9762 43.2477 18.7747 43.3806 18.5532 43.4707C18.3318 43.5609 18.0947 43.6065 17.8556 43.605L3.23063 43.5806C2.74908 43.5826 2.28644 43.3934 1.94436 43.0545C1.60228 42.7155 1.40873 42.2547 1.40625 41.7731V32.7563C1.40748 32.5175 1.45575 32.2813 1.54831 32.0612C1.64087 31.8412 1.7759 31.6415 1.94569 31.4736C2.11547 31.3057 2.31667 31.173 2.53779 31.0829C2.75892 30.9929 2.99562 30.9473 3.23438 30.9488H17.8594C18.3414 30.9463 18.8047 31.1352 19.1475 31.4742C19.4903 31.8131 19.6845 32.2742 19.6875 32.7563V41.7956Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M27.1349 43.605C26.894 43.6045 26.6555 43.5565 26.433 43.4638C26.2106 43.3711 26.0087 43.2354 25.8387 43.0646C25.6688 42.8937 25.5341 42.6911 25.4426 42.4682C25.351 42.2453 25.3042 42.0066 25.3049 41.7656V21.5381C25.3042 21.2973 25.3509 21.0587 25.4424 20.8359C25.5338 20.6132 25.6683 20.4106 25.8381 20.2398C26.0078 20.069 26.2095 19.9333 26.4317 19.8405C26.6539 19.7476 26.8923 19.6995 27.1331 19.6987H41.7581C41.9989 19.6995 42.2372 19.7476 42.4594 19.8405C42.6816 19.9333 42.8833 20.069 43.0531 20.2398C43.2228 20.4106 43.3573 20.6132 43.4488 20.8359C43.5402 21.0587 43.5869 21.2973 43.5862 21.5381V41.7412C43.5872 42.2271 43.3955 42.6935 43.0532 43.0383C42.7109 43.3831 42.2458 43.5781 41.7599 43.5806L27.1349 43.605Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+    <symbol id="do_nav-community_icon" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#clip0)"> <path d="M12.6562 10.5469C12.6562 9.85155 12.8624 9.17184 13.2487 8.5937C13.635 8.01556 14.1841 7.56495 14.8265 7.29886C15.4689 7.03277 16.1758 6.96315 16.8577 7.0988C17.5397 7.23445 18.1661 7.56929 18.6578 8.06095C19.1495 8.55262 19.4843 9.17905 19.6199 9.86101C19.7556 10.543 19.686 11.2499 19.4199 11.8922C19.1538 12.5346 18.7032 13.0837 18.1251 13.47C17.5469 13.8563 16.8672 14.0625 16.1719 14.0625" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M16.1719 18.2812C16.0328 18.2812 15.8969 18.3225 15.7812 18.3997C15.6656 18.477 15.5755 18.5868 15.5223 18.7153C15.4691 18.8438 15.4551 18.9852 15.4823 19.1215C15.5094 19.2579 15.5764 19.3832 15.6747 19.4816C15.773 19.5799 15.8983 19.6469 16.0347 19.674C16.1711 19.7011 16.3125 19.6872 16.4409 19.634C16.5694 19.5808 16.6792 19.4906 16.7565 19.375C16.8338 19.2594 16.875 19.1234 16.875 18.9844C16.875 18.7979 16.8009 18.6191 16.6691 18.4872C16.5372 18.3553 16.3584 18.2812 16.1719 18.2812Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M32.3438 4.21875V12.6562" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M29.5312 1.40625C30.2772 1.40625 30.9925 1.70257 31.52 2.23001C32.0474 2.75746 32.3438 3.47283 32.3438 4.21875" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M4.21875 1.40625H29.5312" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M1.40625 4.21875C1.40625 3.47283 1.70257 2.75746 2.23001 2.23001C2.75746 1.70257 3.47283 1.40625 4.21875 1.40625" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M1.40625 23.9062V4.21875" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M4.21875 26.7188C3.47283 26.7187 2.75746 26.4224 2.23001 25.895C1.70257 25.3675 1.40625 24.6522 1.40625 23.9062" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M9.84375 26.7188H4.21875" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M9.84375 35.1562V26.7188" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M15.4688 30.9375L9.84375 35.1562" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M43.5938 35.1562H37.9688V43.5938L29.5312 35.1562H21.0938V18.2812H43.5938V35.1562Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M32.3438 23.9062V29.5312" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </g> <defs> <clipPath id="clip0"> <rect width="45" height="45" fill="white"/> </clipPath> </defs> </symbol>
+    <symbol id="do_nav-search" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M15.7 13.3l-3.81-3.83A5.93 5.93 0 0 0 13 6c0-3.31-2.69-6-6-6S1 2.69 1 6s2.69 6 6 6c1.3 0 2.48-.41 3.47-1.11l3.83 3.81c.19.2.45.3.7.3.25 0 .52-.09.7-.3a.996.996 0 0 0 0-1.41v.01zM7 10.7c-2.59 0-4.7-2.11-4.7-4.7 0-2.59 2.11-4.7 4.7-4.7 2.59 0 4.7 2.11 4.7 4.7 0 2.59-2.11 4.7-4.7 4.7z"></path></symbol>
+    <symbol id="do_nav-logomark" x="0px" y="0px" viewBox="65.2 173.5 180 180" fill="currentColor"><path d="M155.2,351.7v-34.2c36.2,0,64.3-35.9,50.4-74c-5.1-14.1-16.4-25.4-30.5-30.5c-38.1-13.8-74,14.2-74,50.4l0,0H67c0-57.7,55.8-102.7,116.3-83.8c26.4,8.3,47.5,29.3,55.7,55.7C257.9,295.9,213,351.7,155.2,351.7z"/> <polygon points="155.3,317.6 121.3,317.6 121.3,283.6 121.3,283.6 155.3,283.6 155.3,283.6"/> <polygon points="121.3,343.8 95.1,343.8 95.1,343.8 95.1,317.6 121.3,317.6"/> <path d="M95.1,317.6H73.2l0,0v-21.9l0,0h21.9l0,0V317.6z"/></symbol>
+    <symbol id="do_nav-write4do" viewBox="0 0 30 30" fill="none" stroke="currentColor"> <path d="M16.3063 17.67L11.6663 18.3338L12.3288 13.6925L24.2613 1.76002C24.7887 1.23257 25.5041 0.936249 26.25 0.936249C26.6194 0.936249 26.9851 1.009 27.3263 1.15034C27.6675 1.29168 27.9776 1.49885 28.2388 1.76002C28.4999 2.02118 28.7071 2.33123 28.8484 2.67246C28.9898 3.01369 29.0625 3.37942 29.0625 3.74877C29.0625 4.11811 28.9898 4.48384 28.8484 4.82507C28.7071 5.1663 28.4999 5.47635 28.2388 5.73752L16.3063 17.67Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M22.935 3.08624L26.9125 7.06374"  stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M23.4375 17.8125V27.1875C23.4375 27.6848 23.24 28.1617 22.8883 28.5133C22.5367 28.865 22.0598 29.0625 21.5625 29.0625H2.8125C2.31522 29.0625 1.83831 28.865 1.48667 28.5133C1.13504 28.1617 0.9375 27.6848 0.9375 27.1875V8.4375C0.9375 7.94022 1.13504 7.46331 1.48667 7.11167C1.83831 6.76004 2.31522 6.5625 2.8125 6.5625H12.1875" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+    <symbol id="do_nav-meetups" viewBox="0 0 30 30" fill="none" stroke="currentColor"> <path d="M27.1901 4.6875H2.81506C1.77953 4.6875 0.940063 5.52697 0.940063 6.5625V27.1875C0.940063 28.223 1.77953 29.0625 2.81506 29.0625H27.1901C28.2256 29.0625 29.0651 28.223 29.0651 27.1875V6.5625C29.0651 5.52697 28.2256 4.6875 27.1901 4.6875Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M0.940063 12.1875H29.0651" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M8.44006 7.5V0.9375" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M21.5651 7.5V0.9375" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+    <symbol id="do_nav-hacktoberfest" viewBox="0 0 30 30" fill="none" stroke="currentColor"> <path d="M19.2063 24.9918L16.5714 22.3569V14.4854L13.986 17.0708V23.5755L12.5615 25L11.1371 23.5591V8.44175L10.7419 8.04652L8.93042 9.8662L8 8.94401L11.9358 5.00823L11.944 5.01647L12.1005 5.16468L13.9778 7.04199V13.8431L16.5632 11.2577V8.42528L15.2705 7.12433L17.3948 5L19.4286 7.03376V20.9572L20.4249 21.9535L21.6352 20.7431L22.5492 21.6571L19.2063 24.9918Z" fill="currentcolor"/> <rect x="0.75" y="0.75" width="28.5" height="28.5" rx="2.25" stroke-width="1.5" stroke="currentColor"/> </symbol>
+    <symbol id="do_nav-build" viewBox="0 0 16 16" fill="none" stroke="currentColor"> <path d="M1.5 14.5C1.23478 14.5 0.98043 14.3946 0.792893 14.2071C0.605357 14.0196 0.5 13.7652 0.5 13.5V2.57667C0.500879 2.29139 0.614596 2.01804 0.81632 1.81632C1.01804 1.6146 1.29139 1.50088 1.57667 1.5H14.4287C14.7125 1.50088 14.9845 1.61403 15.1852 1.81476C15.386 2.01548 15.4991 2.28747 15.5 2.57133V13.4233C15.4991 13.7086 15.3854 13.982 15.1837 14.1837C14.982 14.3854 14.7086 14.4991 14.4233 14.5H1.5Z" stroke-linecap="round" stroke-linejoin="round"/> <path d="M15.5 4.5H0.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M11 7.5L13 9.5L11 11.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M5 7.5L3 9.5L5 11.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M9 7.5L7 11.5" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+  </svg>
+</div>
+
+<nav class="do_nav" role="navigation" aria-label="Navigation">
+  <ul role="menubar" class="utility">
+    <li role="banner" data-flex="grow" data-show="always">
+    </li>
+    <li role="menuitem">
+      <a href="/products/">Products</a>
+    </li>
+    <li role="menuitem">
+      <a href="/pricing/">Pricing</a>
+    </li>
+    <li role="menuitem" aria-haspopup="true" tabindex="0">
+      <span class="expander">Docs</span>
+      <div class="mini" aria-expanded="false">
+        <ul role="menu">
+          <li role="menuitem">
+            <a href="/docs/">Product Docs</a>
+          </li>
+          <li role="menuitem">
+            <a href="https://developers.digitalocean.com/documentation/">API Docs</a>
+          </li>
+        </ul>
+      </div>
+    </li>
+      <li role="menuitem" aria-haspopup="true" tabindex="0">
+      <span class="expander">Log in</span>
+        <div class="mini" aria-expanded="false">
+          <header>Log in to</header>
+          <ul role="menu">
+            <li role="menuitem">
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <use xlink:href="#do_nav-community_icon"></use>
+              </svg>
+              <a id="log-in" href="/community/auth/digitalocean">Community</a>
+            </li>
+            <li role="menuitem">
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <use xlink:href="#do_nav-control_panel_icon"></use>
+              </svg>
+              <a href="https://cloud.digitalocean.com/registrations/new">Control Panel</a>
+            </li>
+          </ul>
+        </div>
+      </li>
+  </ul>
+
+  <ul role="menubar" class="primary">
+    <li role="menuitem" data-show="always">
+      <a href="https://www.digitalocean.com/">
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" shape-rendering="auto">
+          <use xlink:href="#do_nav-logomark"></use>
+        </svg>
+      </a>
+    </li>
+    <li role="menuitem" data-show="always">
+      <a role="home" title="DigitalOcean Community Home" href="/community">
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="120px" height="24px"
+             shape-rendering="auto">
+          <use xlink:href="#do_nav-community_logo"></use>
+        </svg>
+</a>    </li>
+    <li role="menuitem">
+      <a data-activatable="true" href="/community/tutorials">Tutorials</a>
+    </li>
+    <li role="menuitem">
+      <a data-activatable="true" href="/community/questions">Questions</a>
+    </li>
+    <li role="menuitem" aria-haspopup="true" class="mega_parent" tabindex="0">
+      <span class="expander">Get Involved</span>
+      <div class="mega" aria-expanded="false">
+        <div class="section column">
+          <header>Participate</header>
+          <ul role="menu">
+            <li role="menuitem">
+              <a href="https://www.digitalocean.com/write-for-donations/" class="with_image">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <use xlink:href="#do_nav-write4do"></use>
+                </svg>
+                <p>
+                  <strong>Write for DigitalOcean</strong>
+                  You get paid, we donate to tech non-profits.
+                </p>
+              </a>
+            </li>
+            <li role="menuitem">
+              <a href="https://www.meetup.com/pro/digitalocean" class="with_image">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <use xlink:href="#do_nav-meetups"></use>
+                </svg>
+                <p>
+                  <strong>DigitalOcean Meetups</strong>
+                  Find and meet other developers in your city.
+                </p>
+              </a>
+            </li>
+            <li role="menuitem">
+              <a href="https://hacktoberfest.digitalocean.com" class="with_image">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <use xlink:href="#do_nav-hacktoberfest"></use>
+                </svg>
+                <p>
+                  <strong>Hacktoberfest</strong>
+                  Contribute to Open Source
+                </p>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="section column">
+          <header>
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+              <use xlink:href="#do_nav-build"></use>
+            </svg>
+            Build with DigitalOcean
+          </header>
+          <ul role="menu" class="indent">
+            <li role="menuitem">
+              <a title="Community-built tools and integrations that use the DigitalOcean API" href="/community/tools">Community Tools and Integrations</a>
+            </li>
+            <li role="menuitem"><a href="https://www.digitalocean.com/hatch/" title="Build your startup on DigitalOcean.">Hatch Startup Program</a></li>
+            <li role="menuitem"><a href="https://marketplace.digitalocean.com/vendors/" title="List your open source One-Click Application in the DigitalOcean Marketplace">Marketplace Partner Program</a></li>
+            <li role="menuitem"><a href="https://www.digitalocean.com/droplets-for-demos/" title="DigitalOcean credits to fund research for conference and meetup presentations">Presentation Grants</a></li>
+            <li role="menuitem"><a href="https://github.com/digitalocean">DigitalOcean on GitHub</a></li>
+          </ul>
+        </div>
+      </div>
+    </li>
+    <li role="menuitem" data-show="mobile" data-flex="grow" class="right">
+      <a href="javascript:void(0);" data-js="modal_toggle">
+        <span class="icon-menu-thin"></span>
+      </a>
+    </li>
+    <li role="menuitem" aria-haspopup="true" data-flex="grow">
+      <form name="do_nav-search" method="GET" action="https://www.digitalocean.com/community/search">
+        <label for="q">
+          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" shape-rendering="auto"
+               width="14px" height="14px">
+            <use xlink:href="#do_nav-search"></use>
+          </svg>
+        </label>
+        <input type="text" name="q" id="q" title="Search" placeholder="Search DigitalOcean" autocomplete="off" spellcheck="false" class="search" />
+        </form>
+        <div class="mini search-results-dropdown" aria-expanded="false">
+            <div class="header-search-results-list"></div>
+            <div id="btn-wrap">
+              <a class="more-search-results" data-search-path="/community/search" href="/community/search">
+                View All Results
+              </a>
+            </div>
+        </div>
+        <script type='text/template' id='autocomplete-hits-template'>
+          <div class="inner-search">
+            <ul>
+              <li class="section">
+                <p>{{section}}</p>
+              </li>
+
+              {{#hits}}
+                <li>
+                  <span class='icon icon-{{css_name}}'></span>
+                  <a href='{{url}}'>{{title}}</a>
+                </li>
+              {{/hits}}
+            </ul>
+
+            {{#hasMoreResults}}
+              <a href="/community/search?q={{query}}">View All Results</a>
+            {{/hasMoreResults}}
+          </div>
+        </script>
+    </li>
+    <li role="menuitem">
+      <a class="button primary" href="/community/auth/digitalocean?display=sessionless+register">Sign Up</a>
+    </li>
+  </ul>
+
+  <div class="mobile_nav_bg" data-js="modal_toggle"></div>
+  <div class="mobile_nav">
+    <a data-dismiss='modal' aria-label="close" href="javascript:void(0);" data-js="modal_toggle"><span class="icon-close"></span></a>
+    <div class="mobile_nav_content">
+      <header>Community</header>
+      <ul role="menu">
+        <li role="menuitem">
+          <a data-activatable="true" href="/community/tutorials">Tutorials</a>
+        </li>
+        <li role="menuitem">
+          <a data-activatable="true" href="/community/questions">Questions</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.meetup.com/pro/digitalocean">Meetups</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/write-for-donations/">Write for us</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://hacktoberfest.digitalocean.com">Hacktoberfest</a>
+        </li>
+        <li role="menuitem">
+          <a href="/community/tools">Community Projects</a>
+        </li>
+      </ul>
+      <header>Products</header>
+      <ul role="menu">
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/">Homepage</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/pricing">Pricing</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/products">Product Overview</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://marketplace.digitalocean.com/">Marketplace</a>
+        </li>
+      </ul>
+      <header>Customers</header>
+      <ul role="menu">
+        <li role="menuitem">
+          <a href="https://cloud.digitalocean.com/login">Control panel</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/docs/">Documentation</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/company/contact/#support">Contact Support</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/company/contact/sales/">Contact Sales</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<header>
+  <div class="legacy-header ">
+    <div class="flash-container">
+      
+    </div>
+
+    <div class="wrapper">
+      
+    </div>
+  </div>
+</header>
+
+
+
+      
+
+      <div class='wrapper layout-wrapper'>
+
+        
+
+
+
+
+
+
+
+
+
+
+<div class="section-content section-content-growable content Tutorial-content">
+  <div class='postable-info-bar-container'>
+  <div class='postable-info-bar'>
+    <div class="author-byline">
+      
+    </div>
+
+    <div class='right-section'>
+      
+
+
+        <div class='section-item table-of-contents-triggers'><div class="toc-trigger-mobile" data-toggle="modal" data-target="#contents-modal">
+  <a href="javascript:void(0);">
+    <span class="icon icon-contents"></span>
+    <span class="title">Contents</span>
+    <span class="icon icon-arrow-down"></span>
+  </a>
+</div>
+
+</div>
+
+    </div>
+  </div>
+</div>
+
+
+
+  <div class="container tutorial-header">
+    
+
+      <div class="featured-items-right-bar">
+        <h3>Related</h3>
+          <a href="/community/tutorials/how-to-configure-a-continuous-integration-testing-environment-with-docker-and-docker-compose-on-ubuntu-14-04">
+            <div class="featured-item-regular">
+                  How To Configure a Continuous Integration Testing Environment with Docker and Docker Compose on Ubuntu 14.04
+                  <span class="featured-item-category">
+                    <img width="14" height="14" alt="Tutorial" src="/assets/community/tutorials/featured-item-tutorial-icon-2150ccbef202144a53cea261312af267.png" />
+                    Tutorial
+                  </span>
+                </div>
+</a>          <a href="/community/tutorials/how-to-dockerise-and-deploy-multiple-wordpress-applications-on-ubuntu">
+            <div class="featured-item-regular">
+                  How To Dockerise And Deploy Multiple WordPress Applications On Ubuntu
+                  <span class="featured-item-category">
+                    <img width="14" height="14" alt="Tutorial" src="/assets/community/tutorials/featured-item-tutorial-icon-2150ccbef202144a53cea261312af267.png" />
+                    Tutorial
+                  </span>
+                </div>
+</a>      </div>
+
+
+
+    <h1 class="content-title Tutorial-header">How To Install and Secure OpenFaaS Using Docker Swarm on Ubuntu 16.04</h1>
+
+    <span class="meta-section timestamp"><span class="tutorial-date-text">Posted</span><span class="tutorial-date">September 19, 2018</span></span>
+
+    <span class="meta-section pageviews"><span class="icon icon-eye v-mid"></span><span class="views-count v-mid">10.8k</span><span class="sr-only"> views</span></span>
+
+    <span class="meta-section tags">
+      <a class="tag" href="/community/tags/microservices?type=tutorials">Microservices</a> <a class="tag" href="/community/tags/let-s-encrypt?type=tutorials">Let&#39;s Encrypt</a> <a class="tag" href="/community/tags/docker?type=tutorials">Docker</a>
+      <a class="tag" href="/community/tags/ubuntu?type=tutorials">Ubuntu</a> <a class="tag" href="/community/tags/ubuntu-16-04?type=tutorials">Ubuntu 16.04</a>
+    </span>
+  </div>
+
+  <div class="tutorial-authors">
+    <div class="component-collaborators-container">
+  <ul class="component-collaborators-content">
+        <li class="collaborator-byline-avatar">
+          <a href="/community/users/xmudrii">
+            <img class="avatar avatar-large" src="https://community-cdn-digitalocean-com.global.ssl.fastly.net/assets/users/avatars/large/a4404cd829f8d1cac5840bc5a609deb4dc904d55.png?1514932045" alt="A4404cd829f8d1cac5840bc5a609deb4dc904d55" />
+</a>        </li>
+
+    <li class="collaborators-byline-data">
+        <p class="names">By <a href="/community/users/xmudrii">Marko Mudrinić</a></p>
+
+      <p>
+          <a class="advice" href="https://www.digitalocean.com/community/write-for-digitalocean">Become an author</a>
+      </p>
+    </li>
+  </ul>
+</div>
+
+  </div>
+
+
+    <div class="content-body tutorial-content" data-growable-markdown>
+      
+      <p><em>The author selected the <a href="https://www.brightfunds.org/funds/diversity-in-tech">Diversity in Tech Fund</a>  to receive a donation as part of the <a href="https://do.co/w4do-cta">Write for DOnations</a> program.</em></p>
+
+<h3 id="introduction">Introduction</h3>
+
+<p>Serverless architecture hides server instances from the developer and usually exposes an API that allows developers to run their applications in the cloud. This approach helps developers deploy applications quickly, as they can leave provisioning and maintaining instances to the appropriate DevOps teams. It also reduces infrastructure costs, since with the appropriate tooling you can scale your instances per demand. </p>
+
+<p>Applications that run on serverless platforms are called <em>serverless functions</em>. A function is containerized, executable code that&rsquo;s used to perform specific operations. Containerizing applications ensures that you can reproduce a consistent environment on many machines, enabling updating and scaling.</p>
+
+<p><a href="https://www.openfaas.com/">OpenFaaS</a> is a free and open-source framework for building and hosting serverless functions. With official support for both <a href="https://docs.docker.com/engine/swarm/">Docker Swarm</a> and <a href="https://kubernetes.io/">Kubernetes</a>, it lets you deploy your applications using the powerful API, command-line interface, or Web UI. It comes with built-in metrics provided by <a href="https://prometheus.io">Prometheus</a> and supports auto-scaling on demand, as well as scaling from zero.</p>
+
+<p>In this tutorial, you&rsquo;ll set up and use OpenFaaS with Docker Swarm running on Ubuntu 16.04, and secure its Web UI and API by setting up <a href="https://traefik.io/">Traefik</a> with <a href="https://letsencrypt.org/">Let&rsquo;s Encypt</a>. This ensures secure communication between nodes in the cluster, as well as between OpenFaaS and its operators.</p>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<p>To follow this tutorial, you&rsquo;ll need:</p>
+
+<ul>
+<li>Ubuntu 16.04 running on your local machine. You can use other distributions and operating systems, but make sure you use the appropriate OpenFaaS scripts for your operating system and install all of the dependencies listed in these prerequisites. </li>
+<li><code>git</code>, <code>curl</code>, and <code>jq</code> installed on your local machine. You&rsquo;ll use <code>git</code> to clone the OpenFaaS repository, <code>curl</code> to test the API, and <code>jq</code> to transform raw <a href="https://www.digitalocean.com/community/tutorials/an-introduction-to-json">JSON</a> responses from the API to human-readable JSON. To install the required dependencies for this setup, use the following commands: <code>sudo apt-get update &amp;&amp; sudo apt-get install git curl jq</code> </li>
+<li>Docker installed, following Steps 1 and 2 of <a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-16-04">How To Install and Use Docker on Ubuntu 16.04</a>.</li>
+<li>A <a href="https://hub.docker.com">Docker Hub</a> account. To deploy functions to OpenFaaS, they will need to be published on a public container registry. We&rsquo;ll use Docker Hub for this tutorial, since it&rsquo;s both free and widely used. Be sure to authenticate with Docker on your local machine by using the <code>docker login</code> command. </li>
+<li><a href="https://docs.docker.com/machine/">Docker Machine</a> installed, following <a href="https://www.digitalocean.com/community/tutorials/how-to-provision-and-manage-remote-docker-hosts-with-docker-machine-on-ubuntu-16-04">How To Provision and Manage Remote Docker Hosts with Docker Machine on Ubuntu 16.04</a>. </li>
+<li>A DigitalOcean personal access token. To create a token, follow <a href="https://www.digitalocean.com/docs/api/create-personal-access-token/">these instructions</a>.</li>
+<li>A Docker Swarm cluster of 3 nodes, provisioned by following <a href="https://www.digitalocean.com/community/tutorials/how-to-create-a-cluster-of-docker-containers-with-docker-swarm-and-digitalocean-on-ubuntu-16-04">How to Create a Cluster of Docker Containers with Docker Swarm and DigitalOcean on Ubuntu 16.04</a>.</li>
+<li>A fully registered domain name with an A record pointing to one of the instances in the Docker Swarm. Throughout the tutorial, you&rsquo;ll see <strong>example.com</strong> as an example domain. You should replace this with your own domain, which you can either purchase on <a href="https://namecheap.com/">Namecheap</a>, or get for free on <a href="http://www.freenom.com/en/index.html">Freenom</a>. You can also use a different domain registrar of your choice.</li>
+</ul>
+
+<h2 id="step-1-—-downloading-openfaas-and-installing-the-openfaas-cli">Step 1 — Downloading OpenFaaS and Installing the OpenFaaS CLI</h2>
+
+<p>To deploy OpenFaaS to your Docker Swarm, you will need to download the deployment manifests and scripts. The easiest way to obtain them is to clone the official OpenFaas repository and check out the appropriate tag, which represents an OpenFaaS release.</p>
+
+<p>In addition to cloning the repository, you&rsquo;ll also install the FaaS CLI, a powerful command-line utility that you can use to manage and deploy new functions from your terminal. It provides templates for creating your own functions in most major programming languages. In <a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04#step-7-%E2%80%94-creating-functions-with-the-faas-cli">Step 7</a>, you&rsquo;ll use it to create a <a href="https://www.digitalocean.com/community/tags/python">Python</a> function and deploy it on OpenFaaS.</p>
+
+<p>For this tutorial, you&rsquo;ll deploy OpenFaaS v<span class="highlight">0.8.9</span>. While the steps for deploying other versions should be similar, make sure to check out the <a href="https://github.com/openfaas/faas-cli/blob/master/CHANGELOG.md">project changelog</a> to ensure there are no breaking changes.</p>
+
+<p>First, navigate to your home directory and run the following command to clone the repository to the <code>~/faas</code> directory:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">cd ~
+</li><li class="line" prefix="$">git clone https://github.com/openfaas/faas.git
+</li></ul></code></pre>
+<p>Navigate to the newly-created <code>~/faas</code> directory:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">cd ~/faas
+</li></ul></code></pre>
+<p>When you clone the repository, you&rsquo;ll get files from the master branch that contain the latest changes. Because breaking changes can get into the master branch, it&rsquo;s not recommended for use in production. Instead, let&rsquo;s check out the <code><span class="highlight">0.8.9</span></code> tag:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">git checkout <span class="highlight">0.8.9</span>
+</li></ul></code></pre>
+<p>The output contains a message about the successful checkout and a warning about committing changes to this branch: </p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>Note: checking out '<span class="highlight">0.8.9</span>'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b &lt;new-branch-name&gt;
+
+HEAD is now at 8f0d2d1 Expose scale-function endpoint
+</code></pre>
+<p>If you see any errors, make sure to resolve them by following the on-screen instructions before continuing.</p>
+
+<p>With the OpenFaaS repository downloaded, complete with the necessary manifest files, let&rsquo;s proceed to installing the FaaS CLI.</p>
+
+<p>The easiest way to install the FaaS CLI is to use the official script. In your terminal, navigate to your home directory and download the script using the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">cd ~
+</li><li class="line" prefix="$">curl -sSL -o faas-cli.sh https://cli.openfaas.com
+</li></ul></code></pre>
+<p>This will download the <code>faas-cli.sh</code> script to your home directory. Before executing the script, it&rsquo;s a good idea to check the contents:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">less faas-cli.sh
+</li></ul></code></pre>
+<p>You can exit the preview by pressing <code>q</code>. Once you have verified content of the script, you can proceed with the installation by giving executable permissions to the script and executing it. Execute the script as root so it will automatically copy to your <code>PATH</code>:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">chmod +x faas-cli.sh
+</li><li class="line" prefix="$">sudo ./faas-cli.sh
+</li></ul></code></pre>
+<p>The output contains information about the installation progress and the CLI version that you&rsquo;ve installed: </p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>x86_64
+Downloading package https://github.com/openfaas/faas-cli/releases/download/<span class="highlight">0.6.17</span>/faas-cli as /tmp/faas-cli
+Download complete.
+
+Running as root - Attempting to move faas-cli to /usr/local/bin
+New version of faas-cli installed to /usr/local/bin
+Creating alias 'faas' for 'faas-cli'.
+  ___                   _____           ____
+ / _ \ _ __   ___ _ __ |  ___|_ _  __ _/ ___|
+| | | | '_ \ / _ \ '_ \| |_ / _` |/ _` \___ \
+| |_| | |_) |  __/ | | |  _| (_| | (_| |___) |
+ \___/| .__/ \___|_| |_|_|  \__,_|\__,_|____/
+      |_|
+
+CLI:
+ commit:  <span class="highlight">b5597294da6dd98457434fafe39054c993a5f7e7</span>
+ version: <span class="highlight">0.6.17</span>
+</code></pre>
+<p>If you see an error, make sure to resolve it by following the on-screen instructions before continuing with the tutorial.</p>
+
+<p>At this point, you have the FaaS CLI installed. To learn more about commands you can use, execute the CLI without any arguments:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">faas-cli
+</li></ul></code></pre>
+<p>The output shows available commands and flags:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>  ___                   _____           ____
+ / _ \ _ __   ___ _ __ |  ___|_ _  __ _/ ___|
+| | | | '_ \ / _ \ '_ \| |_ / _` |/ _` \___ \
+| |_| | |_) |  __/ | | |  _| (_| | (_| |___) |
+ \___/| .__/ \___|_| |_|_|  \__,_|\__,_|____/
+      |_|
+
+
+Manage your OpenFaaS functions from the command line
+
+Usage:
+  faas-cli [flags]
+  faas-cli [command]
+
+Available Commands:
+  build          Builds OpenFaaS function containers
+  cloud          OpenFaaS Cloud commands
+  deploy         Deploy OpenFaaS functions
+  help           Help about any command
+  invoke         Invoke an OpenFaaS function
+  list           List OpenFaaS functions
+  login          Log in to OpenFaaS gateway
+  logout         Log out from OpenFaaS gateway
+  new            Create a new template in the current folder with the name given as name
+  push           Push OpenFaaS functions to remote registry (Docker Hub)
+  remove         Remove deployed OpenFaaS functions
+  store          OpenFaaS store commands
+  template       Downloads templates from the specified github repo
+  version        Display the clients version information
+
+Flags:
+      --filter string   Wildcard to match with function names in YAML file
+  -h, --help            help for faas-cli
+      --regex string    Regex to match with function names in YAML file
+  -f, --yaml string     Path to YAML file describing function(s)
+
+Use "faas-cli [command] --help" for more information about a command.
+</code></pre>
+<p>You have now successfully obtained the OpenFaaS manifests and installed the FaaS CLI, which you can use to manage your OpenFaaS instance from your terminal.</p>
+
+<p>The <code>~/faas</code> directory contains files from the <code><span class="highlight">0.8.9</span></code> release, which means you can now deploy OpenFaaS to your Docker Swarm. Before doing so, let&rsquo;s modify the deployment manifest file to include Traefik, which will secure your OpenFaaS setup by setting up Let&rsquo;s Encrypt.</p>
+
+<h2 id="step-2-—-configuring-traefik">Step 2 — Configuring Traefik</h2>
+
+<p>Traefik is a Docker-aware reverse proxy that comes with SSL support provided by Let&rsquo;s Encrypt. SSL protocol ensures that you communicate with the Swarm cluster securely by encrypting the data you send and receive between nodes.</p>
+
+<p>To use Traefik with OpenFaaS, you need to modify the OpenFaaS deployment manifest to include Traefik and tell OpenFaaS to use Traefik instead of directly exposing its services to the internet.</p>
+
+<p>Navigate back to the <code>~/faas</code> directory and open the OpenFaaS deployment manifest in a text editor:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">cd ~/faas
+</li><li class="line" prefix="$">nano ~/faas/docker-compose.yml
+</li></ul></code></pre>
+<p><span class='note'><strong>Note:</strong> The Docker Compose manifest file uses <a href="http://www.yaml.org/start.html">YAML formatting</a>, which strictly forbids tabs and requires two spaces for indentation. The manifest will fail to deploy if the file is incorrectly formatted.<br></span></p>
+
+<p>The OpenFaaS deployment is comprised of several services, defined under the <code>services</code> directive, that provide the dependencies needed to run OpenFaaS, the OpenFaaS API and Web UI, and Prometheus and AlertManager (for handling metrics).</p>
+
+<p>At the beginning of the <code>services</code> section, add a new service called <code>traefik</code>, which uses the <code>traefik:v1.6</code> image for the deployment:</p>
+<div class="code-label " title="~/faas/docker-compose.yml">~/faas/docker-compose.yml</div><pre class="code-pre yaml"><code langs="">version: "3.3"
+services:
+    <span class="highlight">traefik:</span>
+        <span class="highlight">image: traefik:v1.6</span>
+    gateway:
+         &hellip;
+</code></pre>
+<p>The Traefik image is coming from the <a href="https://hub.docker.com/_/traefik/">Traefik Docker Hub repository</a>, where you can find a list of all available images.</p>
+
+<p>Next, let&rsquo;s instruct Docker to run Traefik using the <code>command</code> directive. This will run Traefik, configure it to work with Docker Swarm, and provide SSL using Let&rsquo;s Encrypt. The following flags will configure Traefik:</p>
+
+<ul>
+<li><code>--docker.*</code>: These flags tell Traefik to use Docker and specify that it&rsquo;s running in a Docker Swarm cluster.</li>
+<li><code>--web=true</code>: This flag enables Traefik&rsquo;s Web UI.</li>
+<li><code>--defaultEntryPoints</code> and <code>--entryPoints</code>: These flags define entry points and protocols to be used. In our case this includes HTTP on port <code>80</code> and HTTPS on port <code>443</code>.</li>
+<li><code>--acme.*</code>: These flags tell Traefik to use <a href="https://letsencrypt.org/docs/client-options/">ACME</a> to generate Let&rsquo;s Encrypt certificates to secure your OpenFaaS cluster with SSL.</li>
+</ul>
+
+<p>Make sure to replace the <code><span class="highlight">example.com</span></code> domain placeholders in the <code>--acme.domains</code> and <code>--acme.email</code> flags with the domain you&rsquo;re going to use to access OpenFaaS. You can specify multiple domains by separating them with a comma and space. The email address is for SSL notifications and alerts, including certificate expiry alerts. In this case, Traefik will handle renewing certificates automatically, so you can ignore expiry alerts. </p>
+
+<p>Add the following block of code below the <code>image</code> directive, and above <code>gateway</code>:</p>
+<div class="code-label " title="~/faas/docker-compose.yml">~/faas/docker-compose.yml</div><pre class="code-pre yaml"><code langs="">&hellip;
+    traefik:
+        image: traefik:v1.6
+        command: -c --docker=true
+            --docker.swarmmode=true
+            --docker.domain=traefik
+            --docker.watch=true
+            --web=true
+            --defaultEntryPoints='http,https'
+            --entryPoints='Name:https Address::443 TLS'
+            --entryPoints='Name:http Address::80'
+            --acme=true
+            --acme.entrypoint='https'
+            --acme.httpchallenge=true
+            --acme.httpchallenge.entrypoint='http'
+            --acme.domains='<span class="highlight">example.com</span>, <span class="highlight">www.example.com</span>'
+            --acme.email='<span class="highlight">sammy@example.com</span>'
+            --acme.ondemand=true
+            --acme.onhostrule=true
+            --acme.storage=/etc/traefik/acme/acme.json
+&hellip;
+</code></pre>
+<p>With the <code>command</code> directive in place, let&rsquo;s tell Traefik what ports to expose to the internet. Traefik uses port <code>8080</code> for its operations, while OpenFaaS will use port <code>80</code> for non-secure communication and port <code>443</code> for secure communication.</p>
+
+<p>Add the following <code>ports</code> directive below the <code>command</code> directive. The <code><span class="highlight">port-internet</span>:<span class="highlight">port-docker</span></code> notation ensures that the port on the left side is exposed by Traefik to the internet and maps to the container&rsquo;s port on the right side:</p>
+<div class="code-label " title="~/faas/docker-compose.yml">~/faas/docker-compose.yml</div><pre class="code-pre yaml"><code langs="">        &hellip;
+        command:
+            &hellip;
+        <span class="highlight">ports:</span>
+            - <span class="highlight">80:80</span>
+            - <span class="highlight">8080:8080</span>
+            - <span class="highlight">443:443</span>
+        &hellip;
+</code></pre>
+<p>Next, using the <code>volumes</code> directive, mount the Docker socket file from the host running Docker to Traefik. The Docker socket file communicates with the Docker API in order to manage your containers and get details about them, such as number of containers and their IP addresses. You will also mount the volume called <code>acme</code>, which we&rsquo;ll define later in this step.</p>
+
+<p>The <code>networks</code> directive instructs Traefik to use the <code>functions</code> network, which is deployed along with OpenFaaS. This network ensures that functions can communicate with other parts of the system, including the API.</p>
+
+<p>The <code>deploy</code> directive instructs Docker to run Traefik only on the Docker Swarm manager node.</p>
+
+<p>Add the following directives below the <code>ports</code> directive:</p>
+<div class="code-label " title="~/faas/docker-compose.yml">~/faas/docker-compose.yml</div><pre class="code-pre yaml"><code langs="">        &hellip;
+        volumes:
+            - "/var/run/docker.sock:/var/run/docker.sock"
+            - "acme:/etc/traefik/acme"
+        networks:
+            - functions
+        deploy:
+            placement:
+                constraints: [node.role == manager]
+</code></pre>
+<p>At this point, the <code>traefik</code> service block should look like this:</p>
+<div class="code-label " title="~/faas/docker-compose.yml">~/faas/docker-compose.yml</div><pre class="code-pre yaml"><code langs="">version: "3.3"
+services:
+    traefik:
+        image: traefik:v1.6
+        command: -c --docker=true
+            --docker.swarmmode=true
+            --docker.domain=traefik
+            --docker.watch=true
+            --web=true
+            --defaultEntryPoints='http,https'
+            --entryPoints='Name:https Address::443 TLS'
+            --entryPoints='Name:http Address::80'            
+            --acme=true
+            --acme.entrypoint='https'
+            --acme.httpchallenge=true
+            --acme.httpchallenge.entrypoint='http'
+            --acme.domains='<span class="highlight">example.com</span>, <span class="highlight">www.example.com</span>'
+            --acme.email='<span class="highlight">sammy@example.com</span>'
+            --acme.ondemand=true
+            --acme.onhostrule=true
+            --acme.storage=/etc/traefik/acme/acme.json
+        ports:
+            - 80:80
+            - 8080:8080
+            - 443:443
+        volumes:
+            - "/var/run/docker.sock:/var/run/docker.sock"
+            - "acme:/etc/traefik/acme"
+        networks:
+          - functions
+        deploy:
+          placement:
+            constraints: [node.role == manager]
+
+    gateway:
+        &hellip;
+</code></pre>
+<p>While this configuration ensures that Traefik will be deployed with OpenFaaS, you also need to configure OpenFaaS to work with Traefik. By default, the <code>gateway</code> service is configured to run on port <code>8080</code>, which overlaps with Traefik.</p>
+
+<p>The <code>gateway</code> service provides the API gateway you can use to deploy, run, and manage your functions. It handles metrics (via Prometheus) and auto-scaling, and hosts the Web UI.</p>
+
+<p>Our goal is to expose the <code>gateway</code> service using Traefik instead of exposing it directly to the internet.</p>
+
+<p>Locate the <code>gateway</code> service, which should look like this:</p>
+<div class="code-label " title="~/faas/docker-compose.yml">~/faas/docker-compose.yml</div><pre class="code-pre yaml"><code langs="">&hellip;
+    gateway:
+        ports:
+            - 8080:8080
+        image: openfaas/gateway:0.8.7
+        networks:
+            - functions
+        environment:
+            functions_provider_url: "http://faas-swarm:8080/"
+            read_timeout:  "300s"        # Maximum time to read HTTP request
+            write_timeout: "300s"        # Maximum time to write HTTP response
+            upstream_timeout: "300s"     # Maximum duration of upstream function call - should be more than read_timeout and write_timeout
+            dnsrr: "true"               # Temporarily use dnsrr in place of VIP while issue persists on PWD
+            faas_nats_address: "nats"
+            faas_nats_port: 4222
+            direct_functions: "true"    # Functions are invoked directly over the overlay network
+            direct_functions_suffix: ""
+            basic_auth: "${BASIC_AUTH:-true}"
+            secret_mount_path: "/run/secrets/"
+            scale_from_zero: "false"
+        deploy:
+            resources:
+                # limits:   # Enable if you want to limit memory usage
+                #     memory: 200M
+                reservations:
+                    memory: 100M
+            restart_policy:
+                condition: on-failure
+                delay: 5s
+                max_attempts: 20
+                window: 380s
+            placement:
+                constraints:
+                    - 'node.platform.os == linux'
+        secrets:
+            - basic-auth-user
+            - basic-auth-password
+&hellip;
+</code></pre>
+<p>Remove the <code>ports</code> directive from the service to avoid exposing the <code>gateway</code> service directly.</p>
+
+<p>Next, add the following <code>lables</code> directive to the <code>deploy</code> section of the <code>gateway</code> service. This directive exposes the <code>/ui</code>, <code>/system</code>, and <code>/function</code> endpoints on port <code>8080</code> over Traefik:</p>
+<div class="code-label " title="~/faas/docker-compose.yml">~/faas/docker-compose.yml</div><pre class="code-pre yaml"><code langs="">        &hellip;
+        deploy:
+            <span class="highlight">labels:</span>
+                - <span class="highlight">traefik.port=8080</span>
+                - <span class="highlight">traefik.frontend.rule=PathPrefix:/ui,/system,/function</span>
+            resources:
+            &hellip;            
+</code></pre>
+<p>The <code>/ui</code> endpoint exposes the OpenFaaS Web UI, which is covered in the <a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04#step-6-%E2%80%94-using-the-openfaas-web-ui">Step 6</a> of this tutorial. The <code>/system</code> endpoint is the API endpoint used to manage OpenFaaS, while the <code>/function</code> endpoint exposes the API endpoints for managing and running functions. <a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04#step-5-%E2%80%94-using-the-openfaas-api">Step 5</a> of this tutorial covers the OpenFaaS API in detail.</p>
+
+<p>After modifications, your <code>gateway</code> service should look like this:</p>
+<div class="code-label " title="~/faas/docker-compose.yml">~/faas/docker-compose.yml</div><pre class="code-pre yaml"><code langs="">&hellip;
+    gateway:       
+        image: openfaas/gateway:0.8.7
+        networks:
+            - functions
+        environment:
+            functions_provider_url: "http://faas-swarm:8080/"
+            read_timeout:  "300s"        # Maximum time to read HTTP request
+            write_timeout: "300s"        # Maximum time to write HTTP response
+            upstream_timeout: "300s"     # Maximum duration of upstream function call - should be more than read_timeout and write_timeout
+            dnsrr: "true"               # Temporarily use dnsrr in place of VIP while issue persists on PWD
+            faas_nats_address: "nats"
+            faas_nats_port: 4222
+            direct_functions: "true"    # Functions are invoked directly over the overlay network
+            direct_functions_suffix: ""
+            basic_auth: "${BASIC_AUTH:-true}"
+            secret_mount_path: "/run/secrets/"
+            scale_from_zero: "false"
+        deploy:
+            labels:
+                - traefik.port=8080
+                - traefik.frontend.rule=PathPrefix:/ui,/system,/function
+            resources:
+                # limits:   # Enable if you want to limit memory usage
+                #     memory: 200M
+                reservations:
+                    memory: 100M
+            restart_policy:
+                condition: on-failure
+                delay: 5s
+                max_attempts: 20
+                window: 380s
+            placement:
+                constraints:
+                    - 'node.platform.os == linux'
+        secrets:
+            - basic-auth-user
+            - basic-auth-password
+&hellip;
+</code></pre>
+<p>Finally, let&rsquo;s define the <code>acme</code> volume used for storing Let&rsquo;s Encrypt certificates. We can define an empty volume, meaning data will not persist if you destroy the container. If you destroy the container, the certificates will be regenerated the next time you start Traefik. </p>
+
+<p>Add the following <code>volumes</code> directive on the last line of the file:</p>
+<div class="code-label " title="~/faas/docker-compose.yml">~/faas/docker-compose.yml</div><pre class="code-pre yaml"><code langs="">&hellip;
+volumes:
+    acme:
+</code></pre>
+<p>Once you&rsquo;re done, save the file and close your text editor. At this point, you&rsquo;ve configured Traefik to protect your OpenFaaS deployment and Docker Swarm. Now you&rsquo;re ready to deploy it along with OpenFaaS on your Swarm cluster.</p>
+
+<h2 id="step-3-—-deploying-openfaas">Step 3 — Deploying OpenFaaS</h2>
+
+<p>Now that you have prepared the OpenFaaS deployment manifest, you&rsquo;re ready to deploy it and start using OpenFaaS. To deploy, you&rsquo;ll use the <code>deploy_stack.sh</code> script. This script is meant to be used on Linux and macOS operating systems, but in the OpenFaaS directory you can also find appropriate scripts for <a href="https://github.com/openfaas/faas/blob/master/deploy_stack.ps1">Windows</a> and <a href="https://github.com/openfaas/faas/blob/master/deploy_stack.ps1">ARM systems</a>.</p>
+
+<p>Before deploying OpenFaaS, you will need to instruct <code>docker-machine</code> to execute Docker commands from the script on one of the machines in the Swarm. For this tutorial, let&rsquo;s use the <a href="https://www.digitalocean.com/community/tutorials/how-to-create-a-cluster-of-docker-containers-with-docker-swarm-and-digitalocean-on-ubuntu-16-04#step-3-%E2%80%94-initializing-the-cluster-manager">Swarm manager</a>.</p>
+
+<p>If you have the <code>docker-machine use</code> command configured, you can use it:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">docker-machine use <span class="highlight">node-1</span>
+</li></ul></code></pre>
+<p>If not, use the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">eval $(docker-machine env <span class="highlight">node-1</span>)
+</li></ul></code></pre>
+<p>The <code>deploy_stack.sh</code> script deploys all of the resources required for OpenFaaS to work as expected, including configuration files, network settings, services, and credentials for authorization with the OpenFaaS server.</p>
+
+<p>Let&rsquo;s execute the script, which will take several minutes to finish deploying:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">~/faas/deploy_stack.sh
+</li></ul></code></pre>
+<p>The output shows a list of resources that are created in the deployment process, as well as the credentials you will use to access the OpenFaaS server and the FaaS CLI command. </p>
+
+<p>Write down these credentials, as you will need them throughout the tutorial to access the Web UI and the API:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>Attempting to create credentials for gateway..
+roozmk0y1jkn17372a8v9y63g
+q1odtpij3pbqrmmf8msy3ampl
+[Credentials]
+ username: <span class="highlight">admin</span>
+ password: <span class="highlight">your_openfaas_password</span>
+ echo -n <span class="highlight">your_openfaas_password</span> | faas-cli login --username=<span class="highlight">admin</span> --password-stdin
+
+Enabling basic authentication for gateway..
+
+Deploying OpenFaaS core services
+Creating network func_functions
+Creating config func_alertmanager_config
+Creating config func_prometheus_config
+Creating config func_prometheus_rules
+Creating service func_alertmanager
+Creating service func_traefik
+Creating service func_gateway
+Creating service func_faas-swarm
+Creating service func_nats
+Creating service func_queue-worker
+Creating service func_prometheus
+</code></pre>
+<p>If you see any errors, follow the on-screen instructions to resolve them before continuing the tutorial.</p>
+
+<p>Before continuing, let&rsquo;s authenticate the FaaS CLI with the OpenFaaS server using the command provided by the deployment script.</p>
+
+<p>The script outputted the flags you need to provide to the command, but you will need to add an additional flag, <code>--gateway</code>, with the address of your OpenFaaS server, as the FaaS CLI assumes the gateway server is running on <code>localhost</code>:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">echo -n <span class="highlight">your_openfaas_password</span> | faas-cli login --username=<span class="highlight">admin</span> --password-stdin --gateway <span class="highlight">https://example.com</span>
+</li></ul></code></pre>
+<p>The output contains a message about successful authorization:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>Calling the OpenFaaS server to validate the credentials&hellip;
+credentials saved for admin https://example.com
+</code></pre>
+<p>At this point, you have a fully-functional OpenFaaS server deployed on your Docker Swarm cluster, as well as the FaaS CLI configured to use your newly deployed server. Before testing how to use OpenFaaS, let&rsquo;s deploy some sample functions to get started.</p>
+
+<h2 id="step-4-—-deploying-openfaas-sample-functions">Step 4 — Deploying OpenFaaS Sample Functions</h2>
+
+<p>Initially, OpenFaaS comes without any functions deployed. To start testing and using it, you will need some functions.</p>
+
+<p>The OpenFaaS project hosts some sample functions, and you can find a list of <a href="https://github.com/openfaas/faas/tree/master/sample-functions">available functions along with their deployment manifests in the OpenFaaS repository</a>. Some of the sample functions include <code>nodeinfo</code>, for showing information about the node where a function is running, <code>wordcount</code>, for counting the number of words in a passed request, and <code>markdown</code>, for converting passed markdown input to HTML output. </p>
+
+<p>The <code>stack.yml</code> manifest in the <code>~/faas</code> directory deploys several sample functions along with the functions mentioned above. You can deploy it using the FaaS CLI.</p>
+
+<p>Run the following <code>faas-cli</code> command, which takes the path to the stack manifest and the address of your OpenFaaS server:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">faas-cli deploy -f ~/faas/stack.yml --gateway https://<span class="highlight">example.com</span>
+</li></ul></code></pre>
+<p>The output contains status codes and messages indicating whether or not the deployment was successful:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>Deploying: wordcount.
+
+Deployed. 200 OK.
+URL: https://<span class="highlight">example.com</span>/function/wordcount
+
+Deploying: base64.
+
+Deployed. 200 OK.
+URL: https://<span class="highlight">example.com</span>/function/base64
+
+Deploying: markdown.
+
+Deployed. 200 OK.
+URL: https://<span class="highlight">example.com</span>/function/markdown
+
+Deploying: hubstats.
+
+Deployed. 200 OK.
+URL: https://<span class="highlight">example.com</span>/function/hubstats
+
+Deploying: nodeinfo.
+
+Deployed. 200 OK.
+URL: https://<span class="highlight">example.com</span>/function/nodeinfo
+
+Deploying: echoit.
+
+Deployed. 200 OK.
+URL: https://<span class="highlight">example.com</span>/function/echoit
+</code></pre>
+<p>If you see any errors, make sure to resolve them by following the on-screen instructions.</p>
+
+<p>Once the stack deployment is done, list all of the functions to make sure they&rsquo;re deployed and ready to be used:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">faas-cli list --gateway https://<span class="highlight">example.com</span>
+</li></ul></code></pre>
+<p>The output contains a list of functions, along with their replica numbers and an invocations count:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>Function                        Invocations     Replicas
+markdown                        0               1
+wordcount                       0               1
+base64                          0               1
+nodeinfo                        0               1
+hubstats                        0               1
+echoit                          0               1
+</code></pre>
+<p>If you don&rsquo;t see your functions here, make sure the <code>faas-cli deploy</code> command executed successfully.</p>
+
+<p>You can now use the sample OpenFaaS functions to test and demonstrate how to use the API, Web UI, and CLI. In the next step, you&rsquo;ll start by using the OpenFaaS API to list and run functions.</p>
+
+<h2 id="step-5-—-using-the-openfaas-api">Step 5 — Using the OpenFaaS API</h2>
+
+<p>OpenFaaS comes with a powerful API that you can use to manage and execute your serverless functions. Let&rsquo;s use <a href="https://swagger.io/">Swagger</a>, a tool for architecting, testing, and documenting APIs, to browse the API documentation, and then use the API to list and run functions. </p>
+
+<p>With Swagger, you can inspect the API documentation to find out what endpoints are available and how you can use them. In the OpenFaaS repository, you can find the <a href="https://github.com/openfaas/faas/blob/master/api-docs/swagger.yml">Swagger API specification</a>, which can be used with the Swagger editor to convert the specification to human-readable form.</p>
+
+<p>Navigate your web browser to <code>http://editor.swagger.io/</code>. You should be welcomed with the following screen:</p>
+
+<p><img src="https://assets.digitalocean.com/articles/openfaas_ubuntu_1604/swagger_welcome.png" alt="Swagger Editor Welcome page"></p>
+
+<p>Here you&rsquo;ll find a text editor containing the source code for the sample Swagger specification, and the human-readable API documentation on the right.</p>
+
+<p>Let&rsquo;s import the OpenFaaS Swagger specification. In the top menu, click on the <strong>File</strong> button, and then on <strong>Import URL</strong>:</p>
+
+<p><img src="https://assets.digitalocean.com/articles/openfaas_ubuntu_1604/swagger_editor.png" alt="Swagger Editor Import URL"></p>
+
+<p>You&rsquo;ll see a pop-up, where you need to enter the address of the Swagger API specification. If you don&rsquo;t see the pop-up, make sure pop-ups are enabled for your web browser.</p>
+
+<p>In the field, enter the link to the Swagger OpenFaaS API specification: <code>https://raw.githubusercontent.com/openfaas/faas/master/api-docs/swagger.yml</code></p>
+
+<p><img src="https://assets.digitalocean.com/articles/openfaas_ubuntu_1604/swagger_editor_url.png" alt="Swagger Editor Input URL"></p>
+
+<p>After clicking on the <strong>OK</strong> button, the Swagger editor will show you the API reference for OpenFaaS, which should look like this:</p>
+
+<p><img src="https://assets.digitalocean.com/articles/openfaas_ubuntu_1604/swagger_openfaas.png" alt="Swagger Editor OpenFaaS API specification"></p>
+
+<p>On the left side you can see the source of the API reference file, while on the right side you can see a list of endpoints, along with short descriptions. Clicking on an endpoint shows you more details about it, including what parameters it takes, what method it uses, and possible responses:</p>
+
+<p><img src="https://assets.digitalocean.com/articles/openfaas_ubuntu_1604/swagger_endpoint_details.png" alt="Swagger Editor Endpoint details"></p>
+
+<p>Once you know what endpoints are available and what parameters they expect, you can use them to manage your functions.</p>
+
+<p>Next, you&rsquo;ll use a <code>curl</code> command to communicate with the API, so navigate back to your terminal. With the <code>-u</code> flag, you will be able to pass the <code><span class="highlight">admin:your_openfaas_password</span></code> pair that you got in Step 3, while the <code>-X</code> flag will define the request method. You will also pass your endpoint URL, <code>https://<span class="highlight">example.com</span>/system/functions</code>:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">curl -u <span class="highlight">admin</span>:<span class="highlight">your_openfaas_password</span> -X <span class="highlight">GET</span> https://<span class="highlight">example.com</span>/system/functions
+</li></ul></code></pre>
+<p>You can see the required method for each endpoint in the API docs.</p>
+
+<p>In Step 4, you deployed several sample functions, which should appear in the output:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>[{"name":"base64","image":"functions/alpine:latest","invocationCount":0,"replicas":1,"envProcess":"base64","availableReplicas":0,"labels":{"com.openfaas.function":"base64","function":"true"}},{"name":"nodeinfo","image":"functions/nodeinfo:latest","invocationCount":0,"replicas":1,"envProcess":"","availableReplicas":0,"labels":{"com.openfaas.function":"nodeinfo","function":"true"}},{"name":"hubstats","image":"functions/hubstats:latest","invocationCount":0,"replicas":1,"envProcess":"","availableReplicas":0,"labels":{"com.openfaas.function":"hubstats","function":"true"}},{"name":"markdown","image":"functions/markdown-render:latest","invocationCount":0,"replicas":1,"envProcess":"","availableReplicas":0,"labels":{"com.openfaas.function":"markdown","function":"true"}},{"name":"echoit","image":"functions/alpine:latest","invocationCount":0,"replicas":1,"envProcess":"cat","availableReplicas":0,"labels":{"com.openfaas.function":"echoit","function":"true"}},{"name":"wordcount","image":"functions/alpine:latest","invocationCount":0,"replicas":1,"envProcess":"wc","availableReplicas":0,"labels":{"com.openfaas.function":"wordcount","function":"true"}}]
+</code></pre>
+<p>If you don&rsquo;t see output that looks like this, or if you see an error, follow the on-screen instructions to resolve the problem before continuing with the tutorial. Make sure you&rsquo;re sending the request to the correct endpoint using the recommended method and the right credentials. You can also check the logs for the <code>gateway</code> service using the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">docker service logs func_gateway
+</li></ul></code></pre>
+<p>By default, the API response to the <code>curl</code> call returns raw JSON without new lines, which is not human-readable. To parse it, pipe <code>curl</code>&rsquo;s response to the <code>jq</code> utility, which will convert the JSON to human-readable form:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">curl -u <span class="highlight">admin</span>:<span class="highlight">your_openfaas_password</span> -X <span class="highlight">GET</span> https://<span class="highlight">example.com</span>/system/functions | jq
+</li></ul></code></pre>
+<p>The output is now in human-readable form. You can see the function name, which you can use to manage and invoke functions with the API, the number of invocations, as well as information such as labels and number of replicas, relevant to Docker:</p>
+<pre class="code-pre "><code class="code-highlight language-json"><div class="secondary-code-label " title="Output">Output</div>[
+  {
+    "name": "base64",
+    "image": "functions/alpine:latest",
+    "invocationCount": 0,
+    "replicas": 1,
+    "envProcess": "base64",
+    "availableReplicas": 0,
+    "labels": {
+      "com.openfaas.function": "base64",
+      "function": "true"
+    }
+  },
+  {
+    "name": "nodeinfo",
+    "image": "functions/nodeinfo:latest",
+    "invocationCount": 0,
+    "replicas": 1,
+    "envProcess": "",
+    "availableReplicas": 0,
+    "labels": {
+      "com.openfaas.function": "nodeinfo",
+      "function": "true"
+    }
+  },
+  {
+    "name": "hubstats",
+    "image": "functions/hubstats:latest",
+    "invocationCount": 0,
+    "replicas": 1,
+    "envProcess": "",
+    "availableReplicas": 0,
+    "labels": {
+      "com.openfaas.function": "hubstats",
+      "function": "true"
+    }
+  },
+  {
+    "name": "markdown",
+    "image": "functions/markdown-render:latest",
+    "invocationCount": 0,
+    "replicas": 1,
+    "envProcess": "",
+    "availableReplicas": 0,
+    "labels": {
+      "com.openfaas.function": "markdown",
+      "function": "true"
+    }
+  },
+  {
+    "name": "echoit",
+    "image": "functions/alpine:latest",
+    "invocationCount": 0,
+    "replicas": 1,
+    "envProcess": "cat",
+    "availableReplicas": 0,
+    "labels": {
+      "com.openfaas.function": "echoit",
+      "function": "true"
+    }
+  },
+  {
+    "name": "wordcount",
+    "image": "functions/alpine:latest",
+    "invocationCount": 0,
+    "replicas": 1,
+    "envProcess": "wc",
+    "availableReplicas": 0,
+    "labels": {
+      "com.openfaas.function": "wordcount",
+      "function": "true"
+    }
+  }
+]
+</code></pre>
+<p>Let&rsquo;s take one of these functions and execute it, using the API <code>/function/<span class="highlight">function-name</span></code> endpoint. This endpoint is available over the POST method, where the <code>-d</code> flag allows you to send data to the function. </p>
+
+<p>For example, let&rsquo;s run the following <code>curl</code> command to execute the <code>echoit</code> function, which comes with OpenFaaS out of the box and outputs the string you&rsquo;ve sent it as a request. You can use the string <code>"Sammy The Shark"</code> to demonstrate:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">curl -u <span class="highlight">admin</span>:<span class="highlight">your_openfaas_password</span> -X <span class="highlight">POST</span> https://<span class="highlight">example.com</span>/function/<span class="highlight">func_echoit</span> -d "<span class="highlight">Sammy The Shark</span>"
+</li></ul></code></pre>
+<p>The output will show you <code>Sammy The Shark</code>:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>Sammy The Shark
+</code></pre>
+<p>If you see an error, follow the on-screen logs to resolve the problem before continuing with the tutorial. You can also check the <code>gateway</code> service&rsquo;s logs.</p>
+
+<p>At this point, you&rsquo;ve used the OpenFaaS API to manage and execute your functions. Let&rsquo;s now take a look at the OpenFaaS Web UI.</p>
+
+<h2 id="step-6-—-using-the-openfaas-web-ui">Step 6 — Using the OpenFaaS Web UI</h2>
+
+<p>OpenFaaS comes with a Web UI that you can use to add new and execute installed functions. In this step, you will install a function for generating QR Codes from the FaaS Store and generate a sample code.</p>
+
+<p>To begin, point your web browser to <code>https://<span class="highlight">example.com</span>/ui/</code>. Note that the trailing slash is required to avoid a &ldquo;not found&rdquo; error. </p>
+
+<p>In the HTTP authentication dialogue box, enter the username and password you got when deploying OpenFaaS in Step 3.</p>
+
+<p>Once logged in, you will see available functions on the left side of the screen, along with the <strong>Deploy New Functions</strong> button used to install new functions.</p>
+
+<p>Click on <strong>Deploy New Functions</strong> to deploy a new function. You will see the FaaS Store window, which provides community-tested functions that you can install with a single click:</p>
+
+<p><img src="https://assets.digitalocean.com/articles/openfaas_ubuntu_1604/openfaas_func_store.png" alt="OpenFaaS Functions store"></p>
+
+<p>In addition to these functions, you can also deploy functions manually from a Docker image.</p>
+
+<p>For this tutorial, you will deploy the <strong>QR Code Generator</strong> function from the FaaS Store. Locate the <strong>QR Code Generator - Go</strong> item in the list, click on it, and then click the <strong>Deploy</strong> button at the bottom of the window:</p>
+
+<p><img src="https://assets.digitalocean.com/articles/openfaas_ubuntu_1604/openfaas_qr.png" alt="OpenFaaS QR Code Generator function"></p>
+
+<p>After clicking <strong>Deploy</strong>, the <strong>Deploy A New Function</strong> window will close and the function will be deployed. In the list at the left side of the window you will see a listing for the <strong><code>qrcode-go</code></strong> function. Click on this entry to select it. The main function window will show the function name, number of replicas, invocation count, and image, along with the option to invoke the function:</p>
+
+<p><img src="https://assets.digitalocean.com/articles/openfaas_ubuntu_1604/openfaas_qr_code.png" alt="OpenFaaS QR Code Function"></p>
+
+<p>Let&rsquo;s generate a QR code containing the URL with your domain. In the <strong>Request body</strong> field, type the content of the QR code you&rsquo;d like to generate; in our case, this will be <strong>&ldquo;example.com&rdquo;</strong>. Once you&rsquo;re done, click the <strong>Invoke</strong> button. </p>
+
+<p>When you select either the <strong>Text</strong> or <strong>JSON</strong> output option, the function will output the file&rsquo;s content, which is not usable or human-readable:</p>
+
+<p><img src="https://assets.digitalocean.com/articles/openfaas_ubuntu_1604/qr_generated_code.png" alt="OpenFaaS generated QR code"></p>
+
+<p>You can download a response. which in our case will be a PNG file with the QR code. To do this, select the <strong>Download</strong> option, and then click <strong>Invoke</strong> once again. Shortly after, you should have the QR code downloaded, which you can open with the image viewer of your choice:</p>
+
+<p><img src="https://assets.digitalocean.com/articles/openfaas_ubuntu_1604/qr_image_two.png" alt="Generated QR code"></p>
+
+<p>In addition to deploying functions from the FaaS store or from Docker images, you can also create your own functions. In the next step, you will create a Python function using the FaaS command-line interface.</p>
+
+<h2 id="step-7-—-creating-functions-with-the-faas-cli">Step 7 — Creating Functions With the FaaS CLI</h2>
+
+<p>In the previous steps, you configured the FaaS CLI to work with your OpenFaaS server. The FaaS CLI is a command-line interface that you can use to manage OpenFaaS and install and run functions, just like you would over the API or using the Web UI.</p>
+
+<p>Compared to the Web UI or the API, the FaaS CLI has templates for many programming languages that you can use to create your own functions. It can also build container images based on your function code and push images to an image registry, such as Docker Hub.</p>
+
+<p>In this step, you will create a function, publish it to Docker Hub, and then run it on your OpenFaaS server. This function will be similar to the default <code>echoit</code> function, which returns input passed as a request.</p>
+
+<p>We will use Python to write our function. If you want to learn more about Python, you can check out our <a href="https://www.digitalocean.com/community/tutorial_series/how-to-code-in-python-3">How To Code in Python 3 tutorial series</a> and our <a href="https://www.digitalocean.com/community/tutorials/digitalocean-ebook-how-to-code-in-python">How To Code in Python eBook</a>.</p>
+
+<p>Before creating the new function, let&rsquo;s create a directory to store FaaS functions and navigate to it:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">mkdir ~/faas-functions
+</li><li class="line" prefix="$">cd ~/faas-functions
+</li></ul></code></pre>
+<p>Execute the following command to create a new Python function called <code>echo-input</code>. Make sure to replace <code><span class="highlight">your-docker-hub-username</span></code> with your Docker Hub username, as you&rsquo;ll push the function to Docker Hub later:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">faas-cli new <span class="highlight">echo-input</span> --lang <span class="highlight">python</span> --prefix <span class="highlight">your-docker-hub-username</span> --gateway <span class="highlight">https://example.com</span>
+</li></ul></code></pre>
+<p>The output contains confirmation about the successful function creation. If you don&rsquo;t have templates downloaded, the CLI will download templates in your current directory: </p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>2018/05/13 12:13:06 No templates found in current directory.
+2018/05/13 12:13:06 Attempting to expand templates from https://github.com/openfaas/templates.git
+2018/05/13 12:13:11 Fetched 12 template(s) : [csharp dockerfile go go-armhf node node-arm64 node-armhf python python-armhf python3 python3-armhf ruby] from https://github.com/openfaas/templates.git
+Folder: <span class="highlight">echo-input</span> created.
+  ___                   _____           ____
+ / _ \ _ __   ___ _ __ |  ___|_ _  __ _/ ___|
+| | | | '_ \ / _ \ '_ \| |_ / _` |/ _` \___ \
+| |_| | |_) |  __/ | | |  _| (_| | (_| |___) |
+ \___/| .__/ \___|_| |_|_|  \__,_|\__,_|____/
+      |_|
+
+
+Function created in folder: <span class="highlight">echo-input</span>
+Stack file written: <span class="highlight">echo-input</span>.yml
+</code></pre>
+<p>The result of the <code>faas-cli new</code> command is a newly-created <code>~/faas-fucntions/echo-input</code> directory containing the function&rsquo;s code and the <code>echo-input.yml</code> file. This file includes information about your function: what language it&rsquo;s in, its name, and the server you will deploy it on. </p>
+
+<p>Navigate to the <code>~/faas-fucntions/echo-input</code> directory:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">cd ~/faas-fucntions/echo-input
+</li></ul></code></pre>
+<p>To see content of the directory, execute:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">ls
+</li></ul></code></pre>
+<p>The directory contains two files: <code>handler.py</code>, which contains the code for your function, and <code>requirements.txt</code>, which contains the Python modules required by the function.</p>
+
+<p>Since we don&rsquo;t currently require any non-default Python modules, the <code>requirements.txt</code> file is empty. You can check that by using the <code>cat</code> command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">cat requirements.txt
+</li></ul></code></pre>
+<p>Next, let&rsquo;s write a function that will return a request as a string. </p>
+
+<p>The <code>handler.py</code> file already has the sample handler code, which returns a received response as a string. Let&rsquo;s take a look at the code:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">nano handler.py
+</li></ul></code></pre>
+<p>The default function is called <code>handle</code> and takes a single parameter, <code>req</code>, that contains a request that&rsquo;s passed to the function when it&rsquo;s invoked. The function does only one thing, returning the passed request back as the response:</p>
+<pre class="code-pre "><code class="code-highlight language-python">def handle(req):
+    """handle a request to the function
+    Args:
+        req (str): request body
+    """
+
+    return req
+</code></pre>
+<p>Let&rsquo;s modify it to include additional text, replacing the string in the <code>return</code> directive as follows:</p>
+<pre class="code-pre "><code class="code-highlight language-python">    return "Received message: " + req
+</code></pre>
+<p>Once you&rsquo;re done, save the file and close your text editor.</p>
+
+<p>Next, let&rsquo;s build a Docker image from the function&rsquo;s source code. Navigate to the <code>faas-functions</code> directory where the <code>echo-input.yml</code> file is located:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">cd ~/faas-functions
+</li></ul></code></pre>
+<p>The following command builds the Docker image for your function:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">faas-cli build -f <span class="highlight">echo-input.yml</span>
+</li></ul></code></pre>
+<p>The output contains information about the build progress:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>[0] &gt; Building echo-input.
+Clearing temporary build folder: ./build/echo-input/
+Preparing ./echo-input/ ./build/echo-input/function
+Building: sammy/echo-input with python template. Please wait..
+Sending build context to Docker daemon  7.168kB
+Step 1/16 : FROM python:2.7-alpine
+ ---&gt; 5fdd069daf25
+Step 2/16 : RUN apk --no-cache add curl     &amp;&amp; echo "Pulling watchdog binary from Github."     &amp;&amp; curl -sSL https://github.com/openfaas/faas/releases/download/0.8.0/fwatchdog &gt; /usr/bin/fwatchdog     &amp;&amp; chmod +x /usr/bin/fwatchdog     &amp;&amp; apk del curl --no-cache
+ ---&gt; Using cache
+ ---&gt; 247d4772623a
+Step 3/16 : WORKDIR /root/
+ ---&gt; Using cache
+ ---&gt; 532cc683d67b
+Step 4/16 : COPY index.py           .
+ ---&gt; Using cache
+ ---&gt; b4b512152257
+Step 5/16 : COPY requirements.txt   .
+ ---&gt; Using cache
+ ---&gt; 3f9cbb311ab4
+Step 6/16 : RUN pip install -r requirements.txt
+ ---&gt; Using cache
+ ---&gt; dd7415c792b1
+Step 7/16 : RUN mkdir -p function
+ ---&gt; Using cache
+ ---&gt; 96c25051cefc
+Step 8/16 : RUN touch ./function/__init__.py
+ ---&gt; Using cache
+ ---&gt; 77a9db274e32
+Step 9/16 : WORKDIR /root/function/
+ ---&gt; Using cache
+ ---&gt; 88a876eca9e3
+Step 10/16 : COPY function/requirements.txt .
+ ---&gt; Using cache
+ ---&gt; f9ba5effdc5a
+Step 11/16 : RUN pip install -r requirements.txt
+ ---&gt; Using cache
+ ---&gt; 394a1dd9e4d7
+Step 12/16 : WORKDIR /root/
+ ---&gt; Using cache
+ ---&gt; 5a5893c25b65
+Step 13/16 : COPY function           function
+ ---&gt; eeddfa67018d
+Step 14/16 : ENV fprocess="python index.py"
+ ---&gt; Running in 8e53df4583f2
+Removing intermediate container 8e53df4583f2
+ ---&gt; fb5086bc7f6c
+Step 15/16 : HEALTHCHECK --interval=1s CMD [ -e /tmp/.lock ] || exit 1
+ ---&gt; Running in b38681a71378
+Removing intermediate container b38681a71378
+ ---&gt; b04c045b0994
+Step 16/16 : CMD ["fwatchdog"]
+ ---&gt; Running in c5a11078df3d
+Removing intermediate container c5a11078df3d
+ ---&gt; bc5f08157c5a
+Successfully built bc5f08157c5a
+Successfully tagged sammy/echo-input:latest
+Image: <span class="highlight">your-docker-hub-username</span>/echo-input built.
+[0] &lt; Building echo-input done.
+[0] worker done.
+</code></pre>
+<p>If you get an error, make sure to resolve it by following the on-screen instructions before deploying the function.</p>
+
+<p>You will need to containerize your OpenFaaS function in order to deploy it. Containerizing applications ensures that the environment needed to run your application can be easily reproduced, and your application can be easily deployed, scaled, and updated.</p>
+
+<p>For this tutorial, we&rsquo;ll use Docker Hub, as it&rsquo;s a free solution, but you can use any container registry, including your own private registry. </p>
+
+<p>Run the following command to push the image you built to your specified repository on Docker Hub:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">faas-cli push -f <span class="highlight">echo-input.yml</span>
+</li></ul></code></pre>
+<p>Pushing will take several minutes, depending on your internet connection speed. The output contains the image&rsquo;s upload progress:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>[0] &gt; Pushing echo-input.
+The push refers to repository [docker.io/sammy/echo-input]
+320ea573b385: Pushed 
+9d87e56f5d0c: Pushed 
+6f79b75e7434: Pushed 
+23aac2d8ecf2: Pushed 
+2bec17d09b7e: Pushed 
+e5a0e5ab3be6: Pushed 
+e9c8ca932f1b: Pushed 
+beae1d55b4ce: Pushed 
+2fcae03ed1f7: Pushed 
+62103d5daa03: Mounted from library/python 
+f6ac6def937b: Mounted from library/python 
+55c108c7613c: Mounted from library/python 
+e53f74215d12: Mounted from library/python 
+latest: digest: sha256:794fa942c2f593286370bbab2b6c6b75b9c4dcde84f62f522e59fb0f52ba05c1 size: 3033
+[0] &lt; Pushing echo-input done.
+[0] worker done.
+</code></pre>
+<p>Finally, with your image pushed to Docker Hub, you can use it to deploy a function to your OpenFaaS server.</p>
+
+<p>To deploy your function, run the <code>deploy</code> command, which takes the path to the manifest that describes your function, as well as the address of your OpenFaaS server:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">faas-cli deploy -f <span class="highlight">echo-input.yml</span> --gateway <span class="highlight">https://example.com</span>
+</li></ul></code></pre>
+<p>The output shows the status of the deployment, along with the name of the function you&rsquo;re deploying and the deployment status code:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>Deploying: <span class="highlight">echo-input</span>.
+
+Deployed. 200 OK.
+URL: <span class="highlight">https://example.com/function/echo-input</span>
+</code></pre>
+<p>If the deployment is successful, you will see a <code>200</code> status code. In the case of errors, follow the provided instructions to fix the problem before continuing.</p>
+
+<p>At this point your function is deployed and ready to be used. You can test that it is working as expected by invoking it.</p>
+
+<p>To invoke a function with the FaaS CLI, use the <code>invoke</code> command by passing the function name and OpenFaaS address to it. After executing the command, you&rsquo;ll be asked to enter the request you want to send to the function.</p>
+
+<p>Execute the following command to invoke the <code>echo-input</code> function:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">faas-cli invoke echo-input --gateway <span class="highlight">https://example.com</span>
+</li></ul></code></pre>
+<p>You&rsquo;ll be asked to enter the request you want to send to the function:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>Reading from STDIN - hit (Control + D) to stop.
+</code></pre>
+<p>Enter the text you want to send to the function, such as:</p>
+<pre class="code-pre "><code langs="">Sammy The Shark!
+</code></pre>
+<p>Once you&rsquo;re done, press <code>ENTER</code> and then <code>CTRL + D</code> to finish the request. The <code>CTRL + D</code> shortcut in the terminal is used to register an End-of-File (EOF). The OpenFaaS CLI stops reading from the terminal once EOF is received.</p>
+
+<p>After several seconds, the command will output the function&rsquo;s response:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>Reading from STDIN - hit (Control + D) to stop.
+Sammy The Shark!
+Received message: Sammy The Shark!
+</code></pre>
+<p>If you don&rsquo;t see the output or you get an error, retrace the preceding steps to make sure you&rsquo;ve deployed the function as explained and follow the on-screen instructions to resolve the problem.</p>
+
+<p>At this point, you&rsquo;ve interacted with your function using three methods: the Web UI, the API, and the CLI. Being able to execute your functions with any of these methods offers you the flexibility of deciding how you would like to integrate functions into your existing workflows.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>In this tutorial, you&rsquo;ve used serverless architecture and OpenFaaS to deploy and manage your applications using the OpenFaaS API, Web UI, and CLI. You also secured your infrastructure by leveraging Traefik to provide SSL using Let&rsquo;s Encrypt.</p>
+
+<p>If you want to learn more about the OpenFaaS project, you can check out their <a href="https://www.openfaas.com/">website</a> and the <a href="https://docs.openfaas.com/">project&rsquo;s official documentation</a>. </p>
+
+    </div>
+</div>
+
+<div class="tutorial-footer">
+  
+<div class='tutorial-footer-details'>
+
+  <div class='postable-info-bar-container'>
+  <div class='postable-info-bar'>
+
+    <div class="author-byline">
+      <div class="component-collaborators-container">
+  <ul class="component-collaborators-content">
+        <li class="collaborator-byline-avatar">
+          <a href="/community/users/xmudrii">
+            <img class="avatar avatar-large" src="https://community-cdn-digitalocean-com.global.ssl.fastly.net/assets/users/avatars/large/a4404cd829f8d1cac5840bc5a609deb4dc904d55.png?1514932045" alt="A4404cd829f8d1cac5840bc5a609deb4dc904d55" />
+</a>        </li>
+
+    <li class="collaborators-byline-data">
+        <p class="names">By <a href="/community/users/xmudrii">Marko Mudrinić</a></p>
+
+      <p>
+      </p>
+    </li>
+  </ul>
+</div>
+
+    </div>
+  </div>
+</div>
+
+
+  <div class='section-content tutorial-contributors two'>
+    <div class="component-collaborators-container">
+      <ul class="component-collaborators-content">
+
+          <li class="collaborator-byline-avatar">
+            <a href="/community/users/katjuell">
+                <div class="mod-avatar mod-avatar-large"><img class="avatar avatar-large" src="https://community-cdn-digitalocean-com.global.ssl.fastly.net/assets/users/avatars/large/748ce760fc8ab2840a415f65ee0d674c24845854.jpg?1509387359" alt="748ce760fc8ab2840a415f65ee0d674c24845854" /><span class="mod-star" title="MOD" data-toggle="tooltip" data-container="body"><span class="mod-star-icon" /></span></div>
+</a>          </li>
+
+
+        <li class="collaborators-byline-data">
+            <p class="names">Editor: <a href="/community/users/katjuell">Kathleen Juell</a></p>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+    
+<div class="hsb--content">
+  <div class="hsb--undo hsb--hide">
+    <span class="icon icon-helpfulness-upvoted"></span>
+    <span class="hsb--question">You rated this helpful.</span>
+    <button name="button" type="submit" class="hsb--button-down hsb--vote-down-js" data-upvotable-type="Tutorial">Undo</button>
+  </div>
+
+  <div class="hsb--flagging-undo hsb--hide">
+    <span class="icon icon-helpfulness-flag"></span>
+    <span class="hsb--question">You reported this tutorial.</span>
+    <button name="button" type="submit" class="hsb--button-down hsb--unflagging-js">Undo</button>
+  </div>
+
+  <div class="hsb--do">
+    <span class="hsb--question">Was this helpful?</span>
+    <button name="button" type="submit" class="hsb--button hsb--vote-up-js" data-upvotable-id="2819" data-upvotable-type="Tutorial">Yes</button>
+    <button name="button" type="submit" class="hsb--button hsb--flagging-js" data-url="/community/tutorials/how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04/flag" data-flaggable-id="2819">No</button>
+  </div>
+
+  <div class="hsb--social-and-comments">
+    <div class="hsb--social-sharing">
+      <a target="_blank" class="share-popup" href="http://twitter.com/share?text=How To Install and Secure OpenFaaS Using Docker Swarm on Ubuntu 16.04&amp;url=https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04?utm_content=how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=twshare">
+        <span class="icon icon-helpfulness-twitter"></span>
+</a>
+      <a target="_blank" class="share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04?utm_content=how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=fbshare">
+        <span class="icon icon-helpfulness-facebook"></span>
+</a>
+      <a target="_blank" class="share-popup" href="https://news.ycombinator.com/submitlink?t=How To Install and Secure OpenFaaS Using Docker Swarm on Ubuntu 16.04&amp;u=https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04?utm_content=how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=hnshare">
+        <span class="icon icon-helpfulness-hacker-news"></span>
+</a>    </div>
+
+    <div class="hsb--comment">
+      <span class="icon icon-helpfulness-comment"></span>
+      <strong class="amount">0</strong>
+    </div>
+  </div>
+</div>
+
+
+</div>
+
+
+  
+    <div class='related-tutorials'>
+    <div class='section-content'>
+      <h2>Related</h2>
+
+      <ul>
+        <li title="How To Configure a Continuous Integration Testing Environment with Docker and Docker Compose on Ubuntu 14.04">
+  <a class="panel" href="/community/tutorials/how-to-configure-a-continuous-integration-testing-environment-with-docker-and-docker-compose-on-ubuntu-14-04">
+    <h6>Tutorial</h6>
+    <div class="panel-data">
+      <h5>How To Configure a Continuous Integration Testing Environment with Docker and Docker Compose on Ubuntu 14.04</h5>
+      <p>This tutorial uses Docker Compose to demonstrate the automation of continuous integration workflows.
+
+We will create a Dockerized Python application and a Bash test script.
+
+Then, the test script will be Dockerized in its own container and the whole testing environment moved to a docker-compose.test.yml file so we can make sure we are running every test execution on a fresh and uniform application environment.</p>
+    </div>
+  </a>
+</li>
+<li title="How To Dockerise And Deploy Multiple WordPress Applications On Ubuntu">
+  <a class="panel" href="/community/tutorials/how-to-dockerise-and-deploy-multiple-wordpress-applications-on-ubuntu">
+    <h6>Tutorial</h6>
+    <div class="panel-data">
+      <h5>How To Dockerise And Deploy Multiple WordPress Applications On Ubuntu</h5>
+      <p>In this DigitalOcean article, using the Docker Linux Container Engine, we learn how to package and contain WordPress applications on Ubuntu cloud servers and discover the most simple and secure way of deploying multiple WordPress sites on a single host.
+</p>
+    </div>
+  </a>
+</li>
+<li title="Docker Explained: How To Containerize Python Web Applications">
+  <a class="panel" href="/community/tutorials/docker-explained-how-to-containerize-python-web-applications">
+    <h6>Tutorial</h6>
+    <div class="panel-data">
+      <h5>Docker Explained: How To Containerize Python Web Applications</h5>
+      <p>In this DigitalOcean article, we&#39;ll talk about &quot;containerizing&quot; Python web applications in order to have them in very secure sandboxes, absolutely kept within their own environments (unless you explicitly &quot;link&quot; them to another). In order to achieve this, we&#39;ll see about creating a docker container to host a Python web application step-by-step, finally bootstrapping our build processes with a Dockerfile to fully automate it.</p>
+    </div>
+  </a>
+</li>
+<li title="Docker Explained: How To Create Docker Containers Running Memcached">
+  <a class="panel" href="/community/tutorials/docker-explained-how-to-create-docker-containers-running-memcached">
+    <h6>Tutorial</h6>
+    <div class="panel-data">
+      <h5>Docker Explained: How To Create Docker Containers Running Memcached</h5>
+      <p>In this DigitalOcean article, especially keeping in mind those who host multiple web applications (e.g. multiple WordPress instances, Python Applications, etc.), we are going to create docker images to quickly start running (on-demand) Memcached containers which can be operated individually. These containers, kept and secured within their own environments, will work with the application being hosted to help them get better and faster.
+</p>
+    </div>
+  </a>
+</li>
+
+      </ul>
+    </div>
+  </div>
+
+
+  <div class='looking-for-an-answer'>
+  <div class='section-content'>
+    <h4>Still looking for an answer?</h4>
+
+    <div class="lfa--actions">
+      <a href="/community/questions/new?tags=Microservices%2CLet%27s+Encrypt%2CDocker" class="lfa--action-box">
+        <span class="icon icon-look-for-answer-question"></span>
+        Ask a question
+      </a>
+      <a href="#q" class="lfa--action-box">
+        <span class="icon icon-look-for-answer-search-thin"></span>
+        Search for more help
+      </a>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="content-comments">
+  <div class="section-content">
+    <div class="tutorial commentable" id="tutorial_2819">
+
+  <div class="comments-header">
+    <h4 class="comments-count">
+        <span>0 Comments</span>
+    </h4>
+  </div>
+
+    <div class="response response-form no-avatar no-comments">
+  <div class="js-display-on-error flash error hidden"></div>
+
+
+  <form class="content-form disabled-form" id="new_comment" action="/community/tutorials/how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04/comments" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="&#x2713;" />
+
+    <textarea name="comment[content]" id="comment_content" placeholder="Leave a comment..." class="js-comment-content tutorial-comment-field" data-markdown="true">
+</textarea>
+
+      <div class="log-in-notice "><a href="/community/auth/digitalocean">Log In to Comment</a></div>
+
+    <div class='clearfix'></div>
+</form>
+</div>
+
+
+  <div class="comments">
+    <ul class="response-list">
+    </ul>
+
+  </div>
+
+  <div class='load-more-container'></div>
+</div>
+
+
+  </div>
+</div>
+
+<div class="creative-commons">
+  <a class="creative-commons-image" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><img rel="license" alt="Creative Commons License" src="/assets/community/creativecommons-08b32a9279fcd47fcd78ac6a26331389.png" /></a>
+    <div class="license-text">This work is licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.</div>
+</div>
+
+
+
+
+
+
+        <div class="clearfix"></div>
+      </div>
+
+            <footer>
+        <section>
+            <a href="https://www.digitalocean.com/write-for-donations/" class="panel">
+            <div class="photo_wrap">
+              <img class="photo" src="https://digitalocean.cdn.prismic.io/digitalocean/70910e9fdeb57be46aaa209ce8d9b4dc8e117fab_w4do2.jpg" alt="">
+            </div>
+            <span class="heading">Become a contributor</span>
+            <p>
+                You get paid; we donate to tech nonprofits.
+            </p>
+          </a>
+            <a href="https://www.meetup.com/pro/digitalocean" class="panel">
+            <div class="photo_wrap">
+              <img class="photo" src="https://digitalocean.cdn.prismic.io/digitalocean/2491485f96735e5982e330914d8a617f85395fab_meetups.jpg" alt="">
+            </div>
+            <span class="heading">Connect with other developers</span>
+            <p>
+                Find a DigitalOcean Meetup near you.
+            </p>
+          </a>
+            <a href="https://www.digitalocean.com/community/newsletter" class="panel">
+            <div class="photo_wrap">
+              <img class="photo" src="https://digitalocean.cdn.prismic.io/digitalocean/ca12c951cc76f33037f3384bba9942545d160d82_iaan_illo.jpg" alt="">
+            </div>
+            <span class="heading">Get our biweekly newsletter</span>
+            <p>
+                Sign up for Infrastructure as a Newsletter.
+            </p>
+          </a>
+      </section>
+      <section class="slim ">
+        <span class="heading">Featured on Community</span>
+            <a href="https://www.digitalocean.com/community/tutorials/an-introduction-to-kubernetes">Intro to Kubernetes</a>
+            <a href="https://www.digitalocean.com/community/tutorial_series/how-to-code-in-python-3">Learn Python 3</a>
+            <a href="https://www.digitalocean.com/community/tutorials/machine-learning-projects-python-a-digitalocean-ebook">Machine Learning in Python</a>
+            <a href="https://www.digitalocean.com/community/tutorials/how-to-write-your-first-program-in-go">Getting started with Go</a>
+            <a href="https://www.digitalocean.com/community/tutorial_series/from-containers-to-kubernetes-with-node-js">Migrate Node.js to Kubernetes</a>
+        <hr>
+        <span class="heading">DigitalOcean Products</span>
+            <a href="https://www.digitalocean.com/products/droplets/">Droplets</a>
+            <a href="https://www.digitalocean.com/products/managed-databases/">Managed Databases</a>
+            <a href="https://www.digitalocean.com/products/kubernetes/">Managed Kubernetes</a>
+            <a href="https://www.digitalocean.com/products/spaces/">Spaces Object Storage</a>
+            <a href="https://marketplace.digitalocean.com/">Marketplace</a>
+      </section>
+        <section class="product">
+          <a class="copy" href="/products">
+            <h3>Welcome to the developer cloud</h3>
+            <p>DigitalOcean makes it simple to launch in the cloud and scale up as you grow – whether you’re running one virtual machine or ten thousand.</p>
+            <span class="link_text">Learn More</a>
+          </div>
+          <div class="feature">
+            <a class="img_wrap" href="/products">
+              <img class="photo" src="https://digitalocean.cdn.prismic.io/digitalocean/95c1215227aa7f39f2bd23076de28feb969741c7_cloud.digitalocean.com_projects_63f9252f-652b-4645-9c0c-bee96f2bc503_resources_ic0ce81-2.png" alt="DigitalOcean Cloud Control Panel">
+            </a>
+          </div>
+        </section>
+        <section class="dark">
+          <div class="vlist grow">
+            <a href="https://www.digitalocean.com">
+              <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+                <title>DigitalOcean Homepage</title>
+                <g fill="#0080FF" fill-rule="evenodd">
+                  <path
+                    d="M24.9153 50v-9.661c10.226 0 18.1638-10.1413 14.2372-20.904-1.4406-3.983-4.6327-7.1751-8.6158-8.6158C19.774 6.921 9.6327 14.8305 9.6327 25.0565H0C0 8.7571 15.7627-3.9548 32.8531 1.3842c7.4576 2.3446 13.418 8.2768 15.7345 15.7344C53.9266 34.2373 41.2429 50 24.9153 50">
+                  </path>
+                  <path
+                    d="M15.339 40.3672h9.6045v-9.6045H15.339zM7.9379 47.7684h7.401v-7.4012H7.938zM1.7514 40.3672H7.938v-6.1864H1.7514z">
+                  </path>
+                </g>
+              </svg>
+            </a>
+            <br><br>
+            © <script type="text/javascript">
+              document.write(new Date().getFullYear());
+
+            </script> DigitalOcean, LLC. All rights reserved.
+          </div>
+
+              <div class="vlist">
+                <span class="heading">Company</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/about/">About</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/about/leadership/">Leadership</a>
+                    </li>
+                    <li>
+                      <a href="https://blog.digitalocean.com/">Blog</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/careers/">Careers</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/partners/">Partners</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/referral-program/">Referral Program</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/press/">Press</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/legal/">Legal &amp; Security</a>
+                    </li>
+                </ul>
+              </div>
+              <div class="vlist">
+                <span class="heading">Products</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/">Products Overview</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/pricing/">Pricing</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/droplets/">Droplets</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/kubernetes/">Kubernetes</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/managed-databases/">Managed Databases</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/spaces/">Spaces</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/marketplace/">Marketplace</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/load-balancer/">Load Balancers</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/block-storage/">Block Storage</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/tools-and-integrations/">Tools &amp; Integrations</a>
+                    </li>
+                    <li>
+                      <a href="https://developers.digitalocean.com/documentation/">API</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/docs">Documentation</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/docs/release-notes/">Release Notes</a>
+                    </li>
+                </ul>
+              </div>
+              <div class="vlist">
+                <span class="heading">Community</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/tutorials">Tutorials</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/questions">Q&amp;A</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/tools">Tools and Integrations</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/tags">Tags</a>
+                    </li>
+                    <li>
+                      <a href="https://ideas.digitalocean.com/">Product Ideas</a>
+                    </li>
+                    <li>
+                      <a href="https://www.meetup.com/pro/digitalocean/?utm_source=do_www">Meetups</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/write-for-donations/">Write for DOnations</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/droplets-for-demos/">Droplets for Demos</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/hatch/">Hatch Startup Program</a>
+                    </li>
+                    <li>
+                      <a href="http://store.digitalocean.com/">Shop Swag</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/research/">Research Program</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/currents/">Currents Research</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/open-source/">Open Source</a>
+                    </li>
+                </ul>
+              </div>
+              <div class="vlist">
+                <span class="heading">Contact</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/support/">Support</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/company/contact/sales/">Sales</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/company/contact/#abuse">Report Abuse</a>
+                    </li>
+                    <li>
+                      <a href="https://status.digitalocean.com/">System Status</a>
+                    </li>
+                </ul>
+              </div>
+        </section>
+      </footer>
+
+
+      <div id='sign-in-modal' class='modal fade mini-modal' style="display: none;">
+  <div class='modal-dialog'>
+    <div class='modal-content'>
+      <div class='modal-header'>
+        <h1>Almost there!</h1>
+        <a class='close-button' data-dismiss='modal' aria-label="close"  href=''><span class='icon icon-close-light'></span></a>
+      </div>
+      <div class='modal-body'>
+        <div class='sign-in-message'>Sign into your account, or create a new one, to start interacting.</div>
+
+        <div class='sign-in-modal-actions'>
+          <a class="sign-in-link button blue-button" data-default-url="/community/auth/digitalocean" href="/community/auth/digitalocean">Log In</a>
+          <a class="sign-up-link button blue-button" data-default-url="/community/auth/digitalocean?display=sessionless+register" href="/community/auth/digitalocean?display=sessionless+register">Sign Up</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+      <script>
+    $(function() {
+      window.initHelpfulnessActions(2819);
+    });
+  </script>
+  <script>
+    $(function() {
+      var p, h5, panel, remainingSpace;
+      var lineHeight = 31, clamp = 1;
+
+      var panels = document.querySelectorAll('li .panel-data');
+
+      for (var i = 0, len = panels.length; i < len; i++) {
+        panel = panels[i];
+
+        p = panel.querySelector('p');
+        h5 = panel.querySelector('h5');
+        remainingSpace = panel.offsetHeight - h5.offsetHeight;
+
+        // Clamp text only when the remaining space isn't enought for p content.
+        if (remainingSpace < p.scrollHeight) {
+          clamp = parseInt(p.offsetHeight / lineHeight);
+
+          p.style.cssText = "-webkit-line-clamp:" + clamp +
+            "; display: -webkit-box; -webkit-box-orient: vertical;";
+        }
+      }
+    });
+  </script>
+
+  <script>
+    $(function() {
+      if (!!window.init_sharing) {
+        window.init_sharing();
+      }
+      new window.NewsletterSignup();
+      new window.GrowableMarkdown({ target: '[data-growable-markdown]' });
+    });
+  </script>
+  <script type="application/ld+json">
+    {"@context":"http://schema.org","@type":"Article","name":"How To Install and Secure OpenFaaS Using Docker Swarm on Ubuntu 16.04","headline":"How To Install and Secure OpenFaaS Using Docker Swarm on Ubuntu 16.04","alternativeHeadline":"How To Install OpenFaaS with Docker Swarm on Ubuntu 16.04","description":"OpenFaaS is a free and open-source framework for building and hosting serverless functions. With official support for both Docker Swarm and Kubernetes, it lets you deploy your applications without having to manage the underlying infrastructure by using the powerful API, command-line interface, or Web UI.\r\n\r\nIn this tutorial, you'll set up and use OpenFaaS with Docker Swarm running on Ubuntu 16.04, and secure its Web UI and API by setting up Traefik with Let's Encypt.","keywords":"Microservices,Let's Encrypt,September 2018,Docker","url":"https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-openfaas-using-docker-swarm-on-ubuntu-16-04"},"dateModified":"2018-09-20T19:10:15Z","inLanguage":"en","accessMode":"textual","accessModeSufficient":"textual","isAccessibleForFree":true,"license":"https://creativecommons.org/licenses/by-nc-sa/4.0/","publishingPrinciples":"https://www.digitalocean.com/community/tutorials/technical-recommendations-and-best-practices-for-digitalocean-s-tutorials","author":[{"@type":"Person","name":"Marko Mudrinić","@id":"https://www.digitalocean.com/community/users/xmudrii"}],"datePublished":"2018-09-19T21:05:13Z","editor":{"@type":"Person","name":"Kathleen Juell","@id":"katjuell"},"image":{"@type":"ImageObject","url":"https://www.digitalocean.com/assets/community/illustrations/DigitalOcean_Community-02cc36407e7a978ed4fc9ed98f3ed87c.jpg","height":375,"width":750},"interactionStatistic":[{"@type":"InteractionCounter","interactionType":"http://schema.org/LikeAction","userInteractionCount":"4"},{"@type":"InteractionCounter","interactionType":"http://schema.org/CommentAction","userInteractionCount":"0"}],"sourceOrganization":{"@type":"Organization","name":"DigitalOcean Community","url":"https://www.digitalocean.com/community"},"publisher":{"@type":"Organization","name":"DigitalOcean","url":"https://www.digitalocean.com","logo":{"@type":"ImageObject","url":"https://assets.digitalocean.com/logos/DO_Logo_horizontal_blue.png","width":351,"height":60}}}
+  </script>
+
+
+    
+  </body>
+</html>

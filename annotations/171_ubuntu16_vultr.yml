@@ -4,7 +4,7 @@ setup:
     host: vagrant@127.0.0.1:2003
     privateKey: id_rsa
 
-../tutorials/171_ubuntu16_vultr.html:
+../tutorials/docable/171_ubuntu16_vultr.html:
   steps:
     - run: "You can do this with the following command:"
 

@@ -4,7 +4,7 @@ setup:
     host: vagrant@127.0.0.1:2003
     privateKey: id_rsa
 
-../tutorials/31_ubuntu16_do.html:
+../tutorials/docable/31_ubuntu16_do.html:
   steps:
 
     - run: "On your local machine, add the create-react-app node module to your global repository and make the create-react-app command available in your shell environment:"

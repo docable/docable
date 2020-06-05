@@ -4,7 +4,7 @@ setup:
     host: vagrant@127.0.0.1:2003
     privateKey: id_rsa
 
-../tutorials/182_ubuntu16_do.html:
+../tutorials/docable/182_ubuntu16_do.html:
   steps:
     - run: 
         select: "will print both the line with the root directive and the filename in its output"

@@ -1,0 +1,1704 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>How To Monitor Your System Security with osquery on Ubuntu 16.04 | DigitalOcean</title>
+
+<meta name="description" content="osquery is an open-source security tool that takes an operating system and turns it into one giant database, with tables that you can query using SQL-like statements. With these queries, you can monitor file integrity, check on the status...">
+<meta name="keywords" content="Security Monitoring Logging System Tools">
+
+<meta name="og:title" content="How To Monitor Your System Security with osquery on Ubuntu 16.04 | DigitalOcean">
+<meta name="og:description" content="osquery is an open-source security tool that takes an operating system and turns it into one giant database, with tables that you can query using SQL-like statements. With these queries, you can monitor file integrity, check on the status...">
+<meta name="og:site_name" content="DigitalOcean">
+<meta name="og:type" content="article">
+<meta name="og:image" content="https://www.digitalocean.com/assets/community/illustrations/DigitalOcean_Community-02cc36407e7a978ed4fc9ed98f3ed87c.jpg">
+
+<meta name="twitter:site" content="DigitalOcean">
+<meta name="twitter:title" content="How To Monitor Your System Security with osquery on Ubuntu 16.04 | DigitalOcean">
+<meta name="twitter:description" content="osquery is an open-source security tool that takes an operating system and turns it into one giant database, with tables that you can query using SQL-like statements. With these queries, you can monitor file integrity, check on the status...">
+<meta name="twitter:creator" content="DigitalOcean">
+<meta name="twitter:card" content="photo" />
+<meta name="twitter:url" content="https://www.digitalocean.com/community/tutorials/how-to-monitor-your-system-security-with-osquery-on-ubuntu-16-04"/>
+<meta name="twitter:image" content="https://www.digitalocean.com/assets/community/illustrations/DigitalOcean_Community-02cc36407e7a978ed4fc9ed98f3ed87c.jpg">
+
+  <link rel='canonical' href='https://www.digitalocean.com/community/tutorials/how-to-monitor-your-system-security-with-osquery-on-ubuntu-16-04'>
+
+<link rel="preconnect" href="https://digitalocean.cdn.prismic.io">
+<link rel="preconnect" href="https://hello.myfonts.net">
+
+
+    <link rel="stylesheet" media="all" href="/assets/community/application-b828e623bec3c41208f9f701850222a0.css" />
+
+    
+    <meta name="csrf-param" content="authenticity_token" />
+<meta name="csrf-token" content="zEivMj3M+vSGOQNbvmN7jDcAW61AA98HIB1at6elz3lUIM5KMMa7z7K9OPUaRL+TtdBMiL2P37aZv70gWuiTSA==" />
+    <script src="/assets/community/prerequisites-9a51dfaadf0d3629cc636286133a958d.js"></script>
+    <script>
+//<![CDATA[
+
+  window.cookieDomain = '.digitalocean.com';
+
+//]]>
+</script><script src="https://assets.digitalocean.com/cookieConsent/cookieConsent.js"></script>
+<link rel="stylesheet" href="https://assets.digitalocean.com/cookieConsent/cookieConsent.css">
+
+    <script type="text/javascript">
+  if(window.analytics=window.analytics||[],window.analytics.included)window.console&&console.error&&console.error("analytics.js included twice");else{window.analytics.included=!0,window.analytics.methods=["identify","group","track","page","pageview","alias","ready","on","once","off","trackLink","trackForm","trackClick","trackSubmit"],window.analytics.factory=function(a){return function(){var n=Array.prototype.slice.call(arguments);return n.unshift(a),window.analytics.push(n),window.analytics}};for(var i=0;i<window.analytics.methods.length;i++){var key=window.analytics.methods[i];window.analytics[key]=window.analytics.factory(key)}window.analytics.load=function(a){var n=document.createElement("script");n.type="text/javascript",n.async=!0,n.src=("https:"===document.location.protocol?"https://":"http://")+"cdn.segment.com/analytics.js/v1/"+a+"/analytics.min.js";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(n,t)},window.analytics.SNIPPET_VERSION="2.0.9",window.analytics.load("puo3uv968t")}
+  window.analytics.page();
+</script>
+
+<!-- Google Tag Manager -->
+<script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-KHWBBT');
+</script>
+<!-- End Google Tag Manager -->
+
+<script src="/assets/community/internalCookies-d2a3579f6b37d00c8045b16853b90462.js"></script>
+
+      <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="/community/tutorials/feed">
+    <script>
+      window.comApp = {
+        prefix: '/community',
+        svgIconPath: 'https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg',
+        railsEnv: 'production',
+        rootUrl: 'https://www.digitalocean.com/community',
+        algolia_application_id: '6ZHEUVKJ88',
+        algolia_api_key: 'c5470567eae7fa1177d43222e18ba086'
+      };
+    </script>
+      <script src="https://go.digitalocean.com/js/forms2/js/forms2.min.js"></script>
+
+    <script src="/assets/community/application-dd2f12c7d68945c016e67a784d8785fc.js"></script>
+  </head>
+  <body class="feature-filter-bar feature-upvotes tutorials-controller tutorial-single" data-env="production" data-prefix="/community" data-user-id="" data-facebook-app-id="694818843983011"   data-completed-tutorial-id="" data-tutorial-id="2259" data-js="tutorial"
+  data-upvote="null"
+  data-flagged=""
+>
+    
+
+    <div class='outside_viewport'>
+        <div id="contents-modal" class="modal fade mini-modal" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1>Contents</h1>
+          <button class="close-button icon icon-close-light" data-dismiss="modal" aria-label="close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="table-of-contents-modal"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="share-modal" class="modal fade mini-modal" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1>Share</h1>
+        <button type="button" class="close-button icon icon-close-light" aria-label="close" data-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="social-sharing social-sharing-container">
+          <ul class="top ">
+            <li class="shareBtn" id="sbTwitter">
+              <a href="http://twitter.com/share?text=How To Monitor Your System Security with osquery on Ubuntu 16.04&amp;url=https://www.digitalocean.com/community/tutorials/how-to-monitor-your-system-security-with-osquery-on-ubuntu-16-04?utm_content=how-to-monitor-your-system-security-with-osquery-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=twshare" class="share-icon share-popup" title="Share on Twitter" target="_blank">
+                <span class="sIcon icon-bird"></span>
+              </a>
+              <a href="http://twitter.com/share?text=How To Monitor Your System Security with osquery on Ubuntu 16.04&amp;url=https://www.digitalocean.com/community/tutorials/how-to-monitor-your-system-security-with-osquery-on-ubuntu-16-04?utm_content=how-to-monitor-your-system-security-with-osquery-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=twshare" class="share-link share-popup" title="Share on Twitter" target="_blank">
+                Twitter
+              </a>
+            </li>
+            <li class="shareBtn" id="sbFacebook">
+              <a class="share-icon share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/how-to-monitor-your-system-security-with-osquery-on-ubuntu-16-04?utm_content=how-to-monitor-your-system-security-with-osquery-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+                <span class="sIcon icon-facebook-B"></span>
+              </a>
+
+              <a class="share-link share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/how-to-monitor-your-system-security-with-osquery-on-ubuntu-16-04?utm_content=how-to-monitor-your-system-security-with-osquery-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+                Facebook
+              </a>
+            </li>
+            <li class="shareBtn" id="sbYC">
+              <a href="https://news.ycombinator.com/submitlink?t=How To Monitor Your System Security with osquery on Ubuntu 16.04&amp;u=https://www.digitalocean.com/community/tutorials/how-to-monitor-your-system-security-with-osquery-on-ubuntu-16-04?utm_content=how-to-monitor-your-system-security-with-osquery-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=hnshare" class="share-icon share-popup" target="_blank" title="Submit to Hacker News">
+                <span class="sIcon icon-hacker-news"></span>
+              </a>
+              <a href="https://news.ycombinator.com/submitlink?t=How To Monitor Your System Security with osquery on Ubuntu 16.04&amp;u=https://www.digitalocean.com/community/tutorials/how-to-monitor-your-system-security-with-osquery-on-ubuntu-16-04?utm_content=how-to-monitor-your-system-security-with-osquery-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=hnshare" class="share-link share-popup" target="_blank" title="Submit to Hacker News">
+                Hacker News
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <div class="table-of-contents">
+    <div data-js="tableOfContentsDesktop"></div>
+  </div>
+  
+  
+  
+  <div id="share-modal" class="modal fade mini-modal" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1>Share</h1>
+        <button type="button" class="close-button icon icon-close-light" aria-label="close" data-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="social-sharing social-sharing-container">
+          <ul class="bottom ">
+            <li class="shareBtn" id="sbTwitter">
+              <a href="http://twitter.com/share?text=How To Monitor Your System Security with osquery on Ubuntu 16.04&amp;url=https://www.digitalocean.com/community/tutorials/how-to-monitor-your-system-security-with-osquery-on-ubuntu-16-04?utm_content=how-to-monitor-your-system-security-with-osquery-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=twshare" class="share-icon share-popup" title="Share on Twitter" target="_blank">
+                <span class="sIcon icon-bird"></span>
+              </a>
+              <a href="http://twitter.com/share?text=How To Monitor Your System Security with osquery on Ubuntu 16.04&amp;url=https://www.digitalocean.com/community/tutorials/how-to-monitor-your-system-security-with-osquery-on-ubuntu-16-04?utm_content=how-to-monitor-your-system-security-with-osquery-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=twshare" class="share-link share-popup" title="Share on Twitter" target="_blank">
+                Twitter
+              </a>
+            </li>
+            <li class="shareBtn" id="sbFacebook">
+              <a class="share-icon share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/how-to-monitor-your-system-security-with-osquery-on-ubuntu-16-04?utm_content=how-to-monitor-your-system-security-with-osquery-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+                <span class="sIcon icon-facebook-B"></span>
+              </a>
+
+              <a class="share-link share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/how-to-monitor-your-system-security-with-osquery-on-ubuntu-16-04?utm_content=how-to-monitor-your-system-security-with-osquery-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+                Facebook
+              </a>
+            </li>
+            <li class="shareBtn" id="sbYC">
+              <a href="https://news.ycombinator.com/submitlink?t=How To Monitor Your System Security with osquery on Ubuntu 16.04&amp;u=https://www.digitalocean.com/community/tutorials/how-to-monitor-your-system-security-with-osquery-on-ubuntu-16-04?utm_content=how-to-monitor-your-system-security-with-osquery-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=hnshare" class="share-icon share-popup" target="_blank" title="Submit to Hacker News">
+                <span class="sIcon icon-hacker-news"></span>
+              </a>
+              <a href="https://news.ycombinator.com/submitlink?t=How To Monitor Your System Security with osquery on Ubuntu 16.04&amp;u=https://www.digitalocean.com/community/tutorials/how-to-monitor-your-system-security-with-osquery-on-ubuntu-16-04?utm_content=how-to-monitor-your-system-security-with-osquery-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=hnshare" class="share-link share-popup" target="_blank" title="Submit to Hacker News">
+                Hacker News
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div id="newsletter-signup-dialog" class="newsletter-signups-dialog" data-newsletter-signup-dialog data-article-target=".content-body">
+  <div class="form-message">
+  <div class="pull-right">
+    <a href="javascript:;" class="newsletter-signups-dialog-dismiss" data-newsletter-signup-dismiss>&times;</a>
+
+  </div>
+  <h4 class="newsletter-signups-dialog-title">
+    Sign up for our newsletter.
+  </h4>
+  <p class="newsletter-signups-dialog-description">
+    Get the latest tutorials on SysAdmin and open source topics.
+  </p>
+  <form class="newsletter-signup" id="new_newsletter_signup" data-newsletter-signup="true" action="/community/newsletter" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="&#x2713;" />
+
+  <input data-newsletter-signup-field="url" type="hidden" name="newsletter_signup[url]" id="newsletter_signup_url" />
+  <input data-newsletter-signup-field="title" type="hidden" name="newsletter_signup[title]" id="newsletter_signup_title" />
+
+  <div class="newsletter-signup-ajax-error" data-newsletter-signup-ajax-error></div>
+
+
+  <div class="form-group">
+    <input placeholder="Enter your email address" required="required" class="field" type="email" name="newsletter_signup[email]" id="newsletter_signup_email" />
+  </div>
+
+  <button data-disable-with="Sign Up" class="button blue-button">
+    Sign Up
+  </button>
+
+</form>
+
+</div>
+
+<div class="thanks-message hidden" data-newsletter-signup-successful> 
+  <div class='pull-right'> 
+    <a href='javascript:;' class='newsletter-signups-dialog-dismiss icon icon-close-light' data-newsletter-signup-dismiss></a> 
+  </div> 
+
+  <span class='newsletter-signups-dialog-success'> 
+    Thanks for signing up! 
+  </span> 
+</div>
+
+</div>
+
+
+      
+    </div>
+
+      
+      
+<div style="display: none;">
+  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <symbol id="do_nav-logo" xmlns="http://www.w3.org/2000/svg"> <title>DigitalOcean home</title> <g fill="currentColor" fill-rule="evenodd"> <path d="M14.4942 29v-5.5674c5.9572 0 10.5633-5.8478 8.2892-12.059-.8425-2.3006-2.693-4.1355-5.0126-4.9706-6.262-2.2534-12.1564 2.3135-12.1573 8.2207 0 0-.0006.0014-.0014.0014H0C0 5.2123 9.1687-2.1167 19.1138.9624c4.3459 1.3457 7.7993 4.7708 9.1561 9.081C31.3742 19.9068 23.985 29 14.4942 29"></path> <path d="M14.507 23.4468H8.9103v-5.549s.0005-.0011.0011-.0011h5.5949c.0006 0 .0009.0006.0009.0006v5.5495M8.9093 27.7118H4.6105l-.0012-.0012v-4.2638h4.3009v4.2638l-.0009.0012M4.6125 23.4468H1.0088c-.0015 0-.0026-.0012-.0026-.0012v-3.5724s.0011-.0025.0026-.0025h3.601c.0015 0 .0027.0011.0027.0011v3.575M43.2806 9.6357h1.649c1.8346 0 3.345.358 4.49 1.0647 1.2714.7603 1.9164 2.2069 1.9164 4.2991 0 2.1554-.6465 3.6671-1.9207 4.4942h-.0008c-1.0971.7196-2.5981 1.0846-4.462 1.0846h-1.6719V9.6357zm8.324-1.0736c-1.6598-1.142-3.7252-1.721-6.1387-1.721h-5.2537V23.373h5.2537c2.4074 0 4.4737-.6113 6.1407-1.8157.907-.6382 1.6197-1.5304 2.1185-2.651.4962-1.1144.7479-2.4288.7479-3.9067 0-1.4605-.2517-2.758-.7482-3.857-.4988-1.104-1.212-1.972-2.1202-2.5804zM58.1303 6.6376c-.5051 0-.9403.1777-1.2906.5254-.3546.335-.5346.7597-.5346 1.2618 0 .501.1791.9322.532 1.2825.3529.35.788.528 1.2932.528.5042 0 .9394-.178 1.2928-.528.3535-.3508.5324-.7821.5324-1.2825 0-.5015-.18-.926-.5324-1.2592-.3534-.3503-.7886-.528-1.2928-.528M56.6247 23.3729h2.9538V11.7294h-2.9538zM69.5321 19.5787c-.5162.5814-1.1793.8635-2.0264.8635-.8471 0-1.5064-.282-2.015-.863-.5065-.5777-.7637-1.3439-.7637-2.2773 0-.9479.2572-1.7238.764-2.3058.502-.576 1.1796-.8683 2.0147-.8683.8465 0 1.5096.284 2.0262.8695.5142.582.7751 1.3573.7751 2.3046 0 .9328-.2609 1.6988-.7749 2.2768zm.775-6.8767c-.8908-.7858-1.8858-1.2444-2.9614-1.2444-1.6305 0-2.9859.5598-4.0276 1.662-1.0555 1.0932-1.5907 2.5006-1.5907 4.1823 0 1.644.5269 3.0464 1.568 4.1709 1.0498 1.088 2.4123 1.6396 4.0503 1.6396 1.139 0 2.1182-.3144 2.9157-.9356v.268c0 .9662-.2608 1.7176-.7751 2.234-.5137.5154-1.226.7764-2.1173.7764-1.3637 0-2.2183-.5314-3.2589-1.9262l-2.0115 1.917.0542.0754c.4346.605 1.1 1.197 1.9785 1.7594.8787.5603 1.9832.8447 3.2832.8447 1.7536 0 3.1726-.5363 4.2172-1.5933 1.0506-1.0628 1.5835-2.486 1.5835-4.2286V11.7294H70.307v.9726zM75.7434 23.3729h2.9541V11.7294h-2.9541zM77.249 6.6376c-.5052 0-.94.1777-1.2906.5254-.3547.335-.5344.7597-.5344 1.2618 0 .501.1789.9322.532 1.2825.353.35.7878.528 1.293.528.5045 0 .9396-.178 1.2928-.528.3535-.3508.5323-.7821.5323-1.2825 0-.5015-.1797-.926-.5323-1.2592-.3532-.3503-.7883-.528-1.2929-.528M85.1724 8.5831h-2.9082v3.1463h-1.6888v2.6702h1.6888v4.8365c0 1.5134.3047 2.5964.9064 3.2181.6031.6247 1.6741.9414 3.1831.9414.48 0 .963-.0156 1.4354-.0463l.133-.0088v-2.6683l-1.013.0526c-.7033 0-1.1728-.1226-1.3961-.3637-.226-.245-.3406-.7636-.3406-1.5404v-4.421h2.7497v-2.6703h-2.7497V8.583M101.7735 23.3729h2.9544V6.8412h-2.9544zM134.5728 19.2094c-.5286.5874-1.0693 1.0966-1.4855 1.3613v.0005c-.4085.2599-.924.3918-1.532.3918-.8703 0-1.5703-.3144-2.1405-.9621-.567-.644-.8545-1.4716-.8545-2.4613s.2838-1.8162.8436-2.4556c.5625-.6434 1.2588-.9562 2.1285-.9562.9515 0 1.9548.5869 2.8145 1.5947l1.9525-1.8568c-1.273-1.6433-2.897-2.4081-4.8352-2.4081-1.622 0-3.028.5862-4.1788 1.7411-1.1446 1.147-1.7251 2.6074-1.7251 4.3409 0 1.7335.58 3.1977 1.7234 4.352 1.1447 1.1557 2.5514 1.7417 4.1805 1.7417 2.139 0 3.8651-.9158 5.029-2.5935l-1.9204-1.8304M140.2405 16.0973c.1422-.5567.401-1.0207.7714-1.381.4005-.3906.9214-.5885 1.5489-.5885.716 0 1.2702.2019 1.6474.6014.3495.3696.5467.8296.588 1.368h-4.5557zm6.4569-2.7414c-.4191-.5788-.9896-1.0448-1.6965-1.3854-.7047-.3404-1.526-.513-2.441-.513-1.6489 0-2.9982.6037-4.0113 1.7946-.9836 1.182-1.4818 2.651-1.4818 4.3665 0 1.7648.547 3.2253 1.6254 4.341 1.0727 1.1105 2.5083 1.6737 4.267 1.6737 1.992 0 3.627-.799 4.8587-2.3752l.0666-.0847-1.9273-1.837c-.1789.2139-.4317.4561-.6628.6722-.2918.273-.5659.4842-.8588.6289-.4415.218-.9369.3255-1.4907.3255-.8187 0-1.4964-.2388-2.0147-.71-.4847-.4403-.768-1.0345-.843-1.7683h7.8265l.0264-1.0693c0-.7569-.1038-1.4862-.3088-2.1677a6.312 6.312 0 0 0-.934-1.8918zM152.797 18.9234c.3352-.2318.8085-.3483 1.4073-.3483.7112 0 1.4654.1413 2.2426.421v1.1421c-.6421.592-1.4996.8922-2.5499.8922-.5114 0-.909-.1126-1.1822-.3355-.2683-.218-.3985-.4955-.3985-.847 0-.3994.1571-.7022.4808-.9245zm5.2452-6.3229h-.0003c-.8952-.758-2.1328-1.143-3.678-1.143-.9829 0-1.902.2144-2.7336.6324-.7691.387-1.5245 1.0275-2.0043 1.8662l.0298.0358 1.8917 1.796c.7791-1.2322 1.6454-1.66 2.7941-1.66.6172 0 1.1298.1643 1.5234.4881.3916.3216.5819.7304.5819 1.249v.5652c-.7324-.221-1.4629-.333-2.1738-.333-1.47 0-2.6663.3432-3.555 1.0193-.9.6852-1.3562 1.665-1.3562 2.9125 0 1.094.3847 1.9829 1.1461 2.6433.7677.6372 1.7275.961 2.8524.961 1.1246 0 2.177-.4495 3.132-1.2191v.9587h2.9089v-7.4852c0-1.4173-.4572-2.523-1.3591-3.2872zM170.7656 12.8285c-.8227-.9092-1.9791-1.371-3.4371-1.371-1.172 0-2.1236.3338-2.8357.9926v-.7207h-2.897v11.6435h2.954v-6.4215c0-.8823.2119-1.5828.6293-2.0826.4162-.4987.989-.741 1.75-.741.6691 0 1.1765.2167 1.5506.662.3759.4474.5662 1.0638.5662 1.8335v6.7496H172v-6.7496c0-1.6127-.415-2.889-1.2344-3.7948M92.8158 18.9234c.3351-.2318.8087-.3483 1.4075-.3483.7112 0 1.4652.1413 2.2426.421v1.1421c-.6421.592-1.4998.8922-2.5502.8922-.5114 0-.9087-.1126-1.1819-.3355-.2683-.218-.3988-.4955-.3988-.847 0-.3994.1574-.7022.4808-.9245zm5.2451-6.3229h-.0003c-.8952-.758-2.1328-1.143-3.6776-1.143-.983 0-1.902.2144-2.7337.6324-.7694.387-1.5247 1.0275-2.0043 1.8662l.0295.0358 1.8917 1.796c.7792-1.2322 1.6458-1.66 2.7941-1.66.6172 0 1.1298.1643 1.5234.4881.3916.3216.5822.7304.5822 1.249v.5652c-.7327-.221-1.4631-.333-2.174-.333-1.47 0-2.6664.3432-3.555 1.0193-.8999.6852-1.3562 1.665-1.3562 2.9125 0 1.094.3847 1.9829 1.1463 2.6433.7677.6372 1.7272.961 2.8524.961 1.1246 0 2.1766-.4495 3.1318-1.2191v.9587H99.42v-7.4852c0-1.4173-.457-2.523-1.359-3.2872zM115.4464 9.5808c-3.0682 0-5.5645 2.4755-5.5645 5.5188s2.4963 5.5188 5.5645 5.5188c3.0682 0 5.5645-2.4755 5.5645-5.5188s-2.4963-5.5188-5.5645-5.5188zm0 14.0408c-4.7383 0-8.5928-3.8228-8.5928-8.522 0-4.6994 3.8545-8.5223 8.5928-8.5223 4.738 0 8.5925 3.8229 8.5925 8.5223 0 4.6992-3.8545 8.522-8.5925 8.522z"></path> </g> </symbol>
+    <symbol id="do_nav-community_logo" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 532.2 99.8" fill="currentColor"> <path class="st0" d="M98.5,23c15.5,0,27.7,12.1,27.7,28.2c0,16.1-12.3,28.1-27.7,28.1c-15.6,0-27.7-11.9-27.7-28.1 C70.8,35.1,82.9,23,98.5,23z M98.5,67.9c8.7,0,14.9-7,14.9-16.8c0-9.8-6.2-16.8-14.9-16.8c-8.8,0-15,7-15,16.8 C83.5,60.9,89.7,67.9,98.5,67.9z"/> <path class="st0" d="M166.8,45.9c0-7-3.5-11.6-9.9-11.6c-7.2,0-11.1,5.3-11.1,13.1V78h-12.5V24.3h12.3V29c2.4-2.8,7-6,13.9-6 c7.3,0,12.2,3.1,15,7c4.4-4.9,10-7,16.8-7c14.4,0,21.4,8.5,21.4,23.8V78h-12.5V45.9c0-7-3.5-11.6-9.9-11.6 c-7.2,0-11.2,5.3-11.2,13.1V78h-12.4V45.9z"/> <path class="st0" d="M255.5,45.9c0-7-3.5-11.6-9.9-11.6c-7.2,0-11.1,5.3-11.1,13.1V78h-12.5V24.3h12.3V29c2.4-2.8,7-6,13.9-6 c7.3,0,12.2,3.1,15,7c4.4-4.9,10-7,16.8-7c14.4,0,21.4,8.5,21.4,23.8V78h-12.5V45.9c0-7-3.5-11.6-9.9-11.6 c-7.2,0-11.2,5.3-11.2,13.1V78h-12.4V45.9z"/> <path class="st0" d="M322.5,56.4c0,7,3.6,11.6,10.1,11.6c7.2,0,11.2-5.6,11.2-13.5V24.3h12.5V78h-12.3v-4.4 c-3.4,3.7-8.1,5.6-13.9,5.6c-11.9,0-20.1-8.4-20.1-23.7V24.3h12.5V56.4z"/> <path class="st0" d="M378.2,78h-12.5V24.3h12.3v4.4c2.7-3.1,7.7-5.7,13.9-5.7c13.1,0,21.3,8.5,21.3,23.8V78h-12.5V46.8 c0-7.5-3.7-12.5-10.6-12.5c-7.8,0-11.8,5.6-11.8,14V78z"/> <path class="st0" d="M427.8,0.2c4.4,0,7.9,3.4,7.9,7.8s-3.5,7.9-7.9,7.9c-4.4,0-7.9-3.5-7.9-7.9S423.4,0.2,427.8,0.2z M421.4,24.3 h12.5V78h-12.5V24.3z"/> <path class="st0" d="M446.7,59.1V35.5h-6.5V24.3h6.5v-15H459v15h12.2v11.2H459v21.7c0,7.8,1.8,9.8,8.8,9.8c1.2,0,4.1-0.2,4.1-0.2 v11.2c0,0-2.4,0.2-6.7,0.2C451.2,78.1,446.7,72.7,446.7,59.1z"/> <path class="st0" d="M497.3,78.7l-21.3-54.4h14.2l14,38.8l14.2-38.8h13.6l-24.1,60.2c-3.7,9.4-7.2,15.3-21.3,15.3 c-2.5,0-4.8-0.1-4.8-0.1V88c0,0,1.5,0.1,2.8,0.1c7.6,0,9.8-2.3,11.8-7.8L497.3,78.7z"/> <path class="st0" d="M62.4,55.9c-5.3,7-12.2,11.4-22.1,11.4c-15.6,0-27-11.7-27-27.5c0-16.1,11.4-27.8,26.5-27.8 c10,0,16.8,4.8,21.3,11.3l8.4-8.8C63.1,5.7,53.3,0,39.7,0C17.1,0,0,15.9,0,39.8c0,23.4,17.1,39.4,40.1,39.4c13.1,0,22-4.9,28.6-12.2 L62.4,55.9z"/> </symbol>
+    <symbol id="do_nav-control_panel_icon" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M19.6875 23.4862C19.6885 23.9722 19.4965 24.4388 19.1537 24.7833C18.8109 25.1279 18.3454 25.3222 17.8594 25.3237H3.23438C2.99366 25.3232 2.75539 25.2753 2.53321 25.1827C2.31102 25.09 2.10927 24.9545 1.93949 24.7839C1.7697 24.6132 1.63522 24.4108 1.54373 24.1881C1.45223 23.9655 1.40552 23.727 1.40626 23.4862V3.25498C1.40577 3.01417 1.45271 2.77562 1.54441 2.55295C1.63611 2.33028 1.77077 2.12785 1.9407 1.95722C2.11063 1.7866 2.31251 1.65111 2.5348 1.5585C2.75709 1.46589 2.99545 1.41797 3.23626 1.41748L17.8613 1.44186C18.347 1.44384 18.812 1.63843 19.1544 1.98292C19.4968 2.32741 19.6885 2.79366 19.6875 3.27936V23.4862Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M43.5863 12.27C43.5828 12.7516 43.3883 13.212 43.0456 13.5503C42.7028 13.8885 42.2397 14.0768 41.7582 14.0738H27.1332C26.8947 14.0755 26.6582 14.0302 26.4372 13.9405C26.2162 13.8507 26.015 13.7183 25.8453 13.5508C25.6755 13.3833 25.5404 13.1839 25.4477 12.9642C25.355 12.7444 25.3065 12.5085 25.3051 12.27V3.24565C25.308 2.76461 25.5019 2.30442 25.8439 1.96621C26.186 1.62799 26.6484 1.43941 27.1294 1.4419L41.7544 1.41753C42.2365 1.41403 42.7002 1.60205 43.0437 1.94027C43.3872 2.27849 43.5823 2.73924 43.5863 3.22128V12.27Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M19.6875 41.7956C19.686 42.0347 19.6375 42.2712 19.5446 42.4915C19.4518 42.7118 19.3164 42.9117 19.1463 43.0797C18.9762 43.2477 18.7747 43.3806 18.5532 43.4707C18.3318 43.5609 18.0947 43.6065 17.8556 43.605L3.23063 43.5806C2.74908 43.5826 2.28644 43.3934 1.94436 43.0545C1.60228 42.7155 1.40873 42.2547 1.40625 41.7731V32.7563C1.40748 32.5175 1.45575 32.2813 1.54831 32.0612C1.64087 31.8412 1.7759 31.6415 1.94569 31.4736C2.11547 31.3057 2.31667 31.173 2.53779 31.0829C2.75892 30.9929 2.99562 30.9473 3.23438 30.9488H17.8594C18.3414 30.9463 18.8047 31.1352 19.1475 31.4742C19.4903 31.8131 19.6845 32.2742 19.6875 32.7563V41.7956Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M27.1349 43.605C26.894 43.6045 26.6555 43.5565 26.433 43.4638C26.2106 43.3711 26.0087 43.2354 25.8387 43.0646C25.6688 42.8937 25.5341 42.6911 25.4426 42.4682C25.351 42.2453 25.3042 42.0066 25.3049 41.7656V21.5381C25.3042 21.2973 25.3509 21.0587 25.4424 20.8359C25.5338 20.6132 25.6683 20.4106 25.8381 20.2398C26.0078 20.069 26.2095 19.9333 26.4317 19.8405C26.6539 19.7476 26.8923 19.6995 27.1331 19.6987H41.7581C41.9989 19.6995 42.2372 19.7476 42.4594 19.8405C42.6816 19.9333 42.8833 20.069 43.0531 20.2398C43.2228 20.4106 43.3573 20.6132 43.4488 20.8359C43.5402 21.0587 43.5869 21.2973 43.5862 21.5381V41.7412C43.5872 42.2271 43.3955 42.6935 43.0532 43.0383C42.7109 43.3831 42.2458 43.5781 41.7599 43.5806L27.1349 43.605Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+    <symbol id="do_nav-community_icon" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#clip0)"> <path d="M12.6562 10.5469C12.6562 9.85155 12.8624 9.17184 13.2487 8.5937C13.635 8.01556 14.1841 7.56495 14.8265 7.29886C15.4689 7.03277 16.1758 6.96315 16.8577 7.0988C17.5397 7.23445 18.1661 7.56929 18.6578 8.06095C19.1495 8.55262 19.4843 9.17905 19.6199 9.86101C19.7556 10.543 19.686 11.2499 19.4199 11.8922C19.1538 12.5346 18.7032 13.0837 18.1251 13.47C17.5469 13.8563 16.8672 14.0625 16.1719 14.0625" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M16.1719 18.2812C16.0328 18.2812 15.8969 18.3225 15.7812 18.3997C15.6656 18.477 15.5755 18.5868 15.5223 18.7153C15.4691 18.8438 15.4551 18.9852 15.4823 19.1215C15.5094 19.2579 15.5764 19.3832 15.6747 19.4816C15.773 19.5799 15.8983 19.6469 16.0347 19.674C16.1711 19.7011 16.3125 19.6872 16.4409 19.634C16.5694 19.5808 16.6792 19.4906 16.7565 19.375C16.8338 19.2594 16.875 19.1234 16.875 18.9844C16.875 18.7979 16.8009 18.6191 16.6691 18.4872C16.5372 18.3553 16.3584 18.2812 16.1719 18.2812Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M32.3438 4.21875V12.6562" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M29.5312 1.40625C30.2772 1.40625 30.9925 1.70257 31.52 2.23001C32.0474 2.75746 32.3438 3.47283 32.3438 4.21875" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M4.21875 1.40625H29.5312" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M1.40625 4.21875C1.40625 3.47283 1.70257 2.75746 2.23001 2.23001C2.75746 1.70257 3.47283 1.40625 4.21875 1.40625" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M1.40625 23.9062V4.21875" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M4.21875 26.7188C3.47283 26.7187 2.75746 26.4224 2.23001 25.895C1.70257 25.3675 1.40625 24.6522 1.40625 23.9062" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M9.84375 26.7188H4.21875" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M9.84375 35.1562V26.7188" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M15.4688 30.9375L9.84375 35.1562" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M43.5938 35.1562H37.9688V43.5938L29.5312 35.1562H21.0938V18.2812H43.5938V35.1562Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M32.3438 23.9062V29.5312" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </g> <defs> <clipPath id="clip0"> <rect width="45" height="45" fill="white"/> </clipPath> </defs> </symbol>
+    <symbol id="do_nav-search" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M15.7 13.3l-3.81-3.83A5.93 5.93 0 0 0 13 6c0-3.31-2.69-6-6-6S1 2.69 1 6s2.69 6 6 6c1.3 0 2.48-.41 3.47-1.11l3.83 3.81c.19.2.45.3.7.3.25 0 .52-.09.7-.3a.996.996 0 0 0 0-1.41v.01zM7 10.7c-2.59 0-4.7-2.11-4.7-4.7 0-2.59 2.11-4.7 4.7-4.7 2.59 0 4.7 2.11 4.7 4.7 0 2.59-2.11 4.7-4.7 4.7z"></path></symbol>
+    <symbol id="do_nav-logomark" x="0px" y="0px" viewBox="65.2 173.5 180 180" fill="currentColor"><path d="M155.2,351.7v-34.2c36.2,0,64.3-35.9,50.4-74c-5.1-14.1-16.4-25.4-30.5-30.5c-38.1-13.8-74,14.2-74,50.4l0,0H67c0-57.7,55.8-102.7,116.3-83.8c26.4,8.3,47.5,29.3,55.7,55.7C257.9,295.9,213,351.7,155.2,351.7z"/> <polygon points="155.3,317.6 121.3,317.6 121.3,283.6 121.3,283.6 155.3,283.6 155.3,283.6"/> <polygon points="121.3,343.8 95.1,343.8 95.1,343.8 95.1,317.6 121.3,317.6"/> <path d="M95.1,317.6H73.2l0,0v-21.9l0,0h21.9l0,0V317.6z"/></symbol>
+    <symbol id="do_nav-write4do" viewBox="0 0 30 30" fill="none" stroke="currentColor"> <path d="M16.3063 17.67L11.6663 18.3338L12.3288 13.6925L24.2613 1.76002C24.7887 1.23257 25.5041 0.936249 26.25 0.936249C26.6194 0.936249 26.9851 1.009 27.3263 1.15034C27.6675 1.29168 27.9776 1.49885 28.2388 1.76002C28.4999 2.02118 28.7071 2.33123 28.8484 2.67246C28.9898 3.01369 29.0625 3.37942 29.0625 3.74877C29.0625 4.11811 28.9898 4.48384 28.8484 4.82507C28.7071 5.1663 28.4999 5.47635 28.2388 5.73752L16.3063 17.67Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M22.935 3.08624L26.9125 7.06374"  stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M23.4375 17.8125V27.1875C23.4375 27.6848 23.24 28.1617 22.8883 28.5133C22.5367 28.865 22.0598 29.0625 21.5625 29.0625H2.8125C2.31522 29.0625 1.83831 28.865 1.48667 28.5133C1.13504 28.1617 0.9375 27.6848 0.9375 27.1875V8.4375C0.9375 7.94022 1.13504 7.46331 1.48667 7.11167C1.83831 6.76004 2.31522 6.5625 2.8125 6.5625H12.1875" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+    <symbol id="do_nav-meetups" viewBox="0 0 30 30" fill="none" stroke="currentColor"> <path d="M27.1901 4.6875H2.81506C1.77953 4.6875 0.940063 5.52697 0.940063 6.5625V27.1875C0.940063 28.223 1.77953 29.0625 2.81506 29.0625H27.1901C28.2256 29.0625 29.0651 28.223 29.0651 27.1875V6.5625C29.0651 5.52697 28.2256 4.6875 27.1901 4.6875Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M0.940063 12.1875H29.0651" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M8.44006 7.5V0.9375" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M21.5651 7.5V0.9375" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+    <symbol id="do_nav-hacktoberfest" viewBox="0 0 30 30" fill="none" stroke="currentColor"> <path d="M19.2063 24.9918L16.5714 22.3569V14.4854L13.986 17.0708V23.5755L12.5615 25L11.1371 23.5591V8.44175L10.7419 8.04652L8.93042 9.8662L8 8.94401L11.9358 5.00823L11.944 5.01647L12.1005 5.16468L13.9778 7.04199V13.8431L16.5632 11.2577V8.42528L15.2705 7.12433L17.3948 5L19.4286 7.03376V20.9572L20.4249 21.9535L21.6352 20.7431L22.5492 21.6571L19.2063 24.9918Z" fill="currentcolor"/> <rect x="0.75" y="0.75" width="28.5" height="28.5" rx="2.25" stroke-width="1.5" stroke="currentColor"/> </symbol>
+    <symbol id="do_nav-build" viewBox="0 0 16 16" fill="none" stroke="currentColor"> <path d="M1.5 14.5C1.23478 14.5 0.98043 14.3946 0.792893 14.2071C0.605357 14.0196 0.5 13.7652 0.5 13.5V2.57667C0.500879 2.29139 0.614596 2.01804 0.81632 1.81632C1.01804 1.6146 1.29139 1.50088 1.57667 1.5H14.4287C14.7125 1.50088 14.9845 1.61403 15.1852 1.81476C15.386 2.01548 15.4991 2.28747 15.5 2.57133V13.4233C15.4991 13.7086 15.3854 13.982 15.1837 14.1837C14.982 14.3854 14.7086 14.4991 14.4233 14.5H1.5Z" stroke-linecap="round" stroke-linejoin="round"/> <path d="M15.5 4.5H0.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M11 7.5L13 9.5L11 11.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M5 7.5L3 9.5L5 11.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M9 7.5L7 11.5" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+  </svg>
+</div>
+
+<nav class="do_nav" role="navigation" aria-label="Navigation">
+  <ul role="menubar" class="utility">
+    <li role="banner" data-flex="grow" data-show="always">
+    </li>
+    <li role="menuitem">
+      <a href="/products/">Products</a>
+    </li>
+    <li role="menuitem">
+      <a href="/pricing/">Pricing</a>
+    </li>
+    <li role="menuitem" aria-haspopup="true" tabindex="0">
+      <span class="expander">Docs</span>
+      <div class="mini" aria-expanded="false">
+        <ul role="menu">
+          <li role="menuitem">
+            <a href="/docs/">Product Docs</a>
+          </li>
+          <li role="menuitem">
+            <a href="https://developers.digitalocean.com/documentation/">API Docs</a>
+          </li>
+        </ul>
+      </div>
+    </li>
+      <li role="menuitem" aria-haspopup="true" tabindex="0">
+      <span class="expander">Log in</span>
+        <div class="mini" aria-expanded="false">
+          <header>Log in to</header>
+          <ul role="menu">
+            <li role="menuitem">
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <use xlink:href="#do_nav-community_icon"></use>
+              </svg>
+              <a id="log-in" href="/community/auth/digitalocean">Community</a>
+            </li>
+            <li role="menuitem">
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <use xlink:href="#do_nav-control_panel_icon"></use>
+              </svg>
+              <a href="https://cloud.digitalocean.com/registrations/new">Control Panel</a>
+            </li>
+          </ul>
+        </div>
+      </li>
+  </ul>
+
+  <ul role="menubar" class="primary">
+    <li role="menuitem" data-show="always">
+      <a href="https://www.digitalocean.com/">
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" shape-rendering="auto">
+          <use xlink:href="#do_nav-logomark"></use>
+        </svg>
+      </a>
+    </li>
+    <li role="menuitem" data-show="always">
+      <a role="home" title="DigitalOcean Community Home" href="/community">
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="120px" height="24px"
+             shape-rendering="auto">
+          <use xlink:href="#do_nav-community_logo"></use>
+        </svg>
+</a>    </li>
+    <li role="menuitem">
+      <a data-activatable="true" href="/community/tutorials">Tutorials</a>
+    </li>
+    <li role="menuitem">
+      <a data-activatable="true" href="/community/questions">Questions</a>
+    </li>
+    <li role="menuitem" aria-haspopup="true" class="mega_parent" tabindex="0">
+      <span class="expander">Get Involved</span>
+      <div class="mega" aria-expanded="false">
+        <div class="section column">
+          <header>Participate</header>
+          <ul role="menu">
+            <li role="menuitem">
+              <a href="https://www.digitalocean.com/write-for-donations/" class="with_image">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <use xlink:href="#do_nav-write4do"></use>
+                </svg>
+                <p>
+                  <strong>Write for DigitalOcean</strong>
+                  You get paid, we donate to tech non-profits.
+                </p>
+              </a>
+            </li>
+            <li role="menuitem">
+              <a href="https://www.meetup.com/pro/digitalocean" class="with_image">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <use xlink:href="#do_nav-meetups"></use>
+                </svg>
+                <p>
+                  <strong>DigitalOcean Meetups</strong>
+                  Find and meet other developers in your city.
+                </p>
+              </a>
+            </li>
+            <li role="menuitem">
+              <a href="https://hacktoberfest.digitalocean.com" class="with_image">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <use xlink:href="#do_nav-hacktoberfest"></use>
+                </svg>
+                <p>
+                  <strong>Hacktoberfest</strong>
+                  Contribute to Open Source
+                </p>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="section column">
+          <header>
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+              <use xlink:href="#do_nav-build"></use>
+            </svg>
+            Build with DigitalOcean
+          </header>
+          <ul role="menu" class="indent">
+            <li role="menuitem">
+              <a title="Community-built tools and integrations that use the DigitalOcean API" href="/community/tools">Community Tools and Integrations</a>
+            </li>
+            <li role="menuitem"><a href="https://www.digitalocean.com/hatch/" title="Build your startup on DigitalOcean.">Hatch Startup Program</a></li>
+            <li role="menuitem"><a href="https://marketplace.digitalocean.com/vendors/" title="List your open source One-Click Application in the DigitalOcean Marketplace">Marketplace Partner Program</a></li>
+            <li role="menuitem"><a href="https://www.digitalocean.com/droplets-for-demos/" title="DigitalOcean credits to fund research for conference and meetup presentations">Presentation Grants</a></li>
+            <li role="menuitem"><a href="https://github.com/digitalocean">DigitalOcean on GitHub</a></li>
+          </ul>
+        </div>
+      </div>
+    </li>
+    <li role="menuitem" data-show="mobile" data-flex="grow" class="right">
+      <a href="javascript:void(0);" data-js="modal_toggle">
+        <span class="icon-menu-thin"></span>
+      </a>
+    </li>
+    <li role="menuitem" aria-haspopup="true" data-flex="grow">
+      <form name="do_nav-search" method="GET" action="https://www.digitalocean.com/community/search">
+        <label for="q">
+          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" shape-rendering="auto"
+               width="14px" height="14px">
+            <use xlink:href="#do_nav-search"></use>
+          </svg>
+        </label>
+        <input type="text" name="q" id="q" title="Search" placeholder="Search DigitalOcean" autocomplete="off" spellcheck="false" class="search" />
+        </form>
+        <div class="mini search-results-dropdown" aria-expanded="false">
+            <div class="header-search-results-list"></div>
+            <div id="btn-wrap">
+              <a class="more-search-results" data-search-path="/community/search" href="/community/search">
+                View All Results
+              </a>
+            </div>
+        </div>
+        <script type='text/template' id='autocomplete-hits-template'>
+          <div class="inner-search">
+            <ul>
+              <li class="section">
+                <p>{{section}}</p>
+              </li>
+
+              {{#hits}}
+                <li>
+                  <span class='icon icon-{{css_name}}'></span>
+                  <a href='{{url}}'>{{title}}</a>
+                </li>
+              {{/hits}}
+            </ul>
+
+            {{#hasMoreResults}}
+              <a href="/community/search?q={{query}}">View All Results</a>
+            {{/hasMoreResults}}
+          </div>
+        </script>
+    </li>
+    <li role="menuitem">
+      <a class="button primary" href="/community/auth/digitalocean?display=sessionless+register">Sign Up</a>
+    </li>
+  </ul>
+
+  <div class="mobile_nav_bg" data-js="modal_toggle"></div>
+  <div class="mobile_nav">
+    <a data-dismiss='modal' aria-label="close" href="javascript:void(0);" data-js="modal_toggle"><span class="icon-close"></span></a>
+    <div class="mobile_nav_content">
+      <header>Community</header>
+      <ul role="menu">
+        <li role="menuitem">
+          <a data-activatable="true" href="/community/tutorials">Tutorials</a>
+        </li>
+        <li role="menuitem">
+          <a data-activatable="true" href="/community/questions">Questions</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.meetup.com/pro/digitalocean">Meetups</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/write-for-donations/">Write for us</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://hacktoberfest.digitalocean.com">Hacktoberfest</a>
+        </li>
+        <li role="menuitem">
+          <a href="/community/tools">Community Projects</a>
+        </li>
+      </ul>
+      <header>Products</header>
+      <ul role="menu">
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/">Homepage</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/pricing">Pricing</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/products">Product Overview</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://marketplace.digitalocean.com/">Marketplace</a>
+        </li>
+      </ul>
+      <header>Customers</header>
+      <ul role="menu">
+        <li role="menuitem">
+          <a href="https://cloud.digitalocean.com/login">Control panel</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/docs/">Documentation</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/company/contact/#support">Contact Support</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/company/contact/sales/">Contact Sales</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<header>
+  <div class="legacy-header ">
+    <div class="flash-container">
+      
+    </div>
+
+    <div class="wrapper">
+      
+    </div>
+  </div>
+</header>
+
+
+
+      
+
+      <div class='wrapper layout-wrapper'>
+
+        
+
+
+
+
+
+
+
+
+
+
+<div class="section-content section-content-growable content Tutorial-content">
+  <div class='postable-info-bar-container'>
+  <div class='postable-info-bar'>
+    <div class="author-byline">
+      
+    </div>
+
+    <div class='right-section'>
+      
+
+
+        <div class='section-item table-of-contents-triggers'><div class="toc-trigger-mobile" data-toggle="modal" data-target="#contents-modal">
+  <a href="javascript:void(0);">
+    <span class="icon icon-contents"></span>
+    <span class="title">Contents</span>
+    <span class="icon icon-arrow-down"></span>
+  </a>
+</div>
+
+</div>
+
+    </div>
+  </div>
+</div>
+
+
+
+  <div class="container tutorial-header">
+    
+
+      <div class="featured-items-right-bar">
+        <h3>Related</h3>
+          <a href="https://marketplace.digitalocean.com/apps/kubernetes-monitoring-stack-beta?utm_source=community_related">
+            <div class="featured-item-highlight">
+                  <span class="featured-item-highlight-image"><img width="45" height="45" alt="Marketplace" src="https://digitalocean.cdn.prismic.io/digitalocean%2F559b194a-ce06-43e4-9fd2-4c4738909353_monitoring-logo.svg" /></span>
+                Kubernetes Monitoring Stack (BETA)
+                <span class="featured-item-category">
+                  
+                  Marketplace
+                </span>
+              </div>
+</a>          <a href="/community/tutorials/how-to-use-vundle-to-manage-vim-plugins-on-a-linux-vps">
+            <div class="featured-item-regular">
+                  How To Use Vundle to Manage Vim Plugins on a Linux VPS
+                  <span class="featured-item-category">
+                    <img width="14" height="14" alt="Tutorial" src="/assets/community/tutorials/featured-item-tutorial-icon-2150ccbef202144a53cea261312af267.png" />
+                    Tutorial
+                  </span>
+                </div>
+</a>          <a href="/community/tutorials/how-to-use-the-linux-fuser-command">
+            <div class="featured-item-regular">
+                  How To Use the Linux Fuser Command
+                  <span class="featured-item-category">
+                    <img width="14" height="14" alt="Tutorial" src="/assets/community/tutorials/featured-item-tutorial-icon-2150ccbef202144a53cea261312af267.png" />
+                    Tutorial
+                  </span>
+                </div>
+</a>      </div>
+
+
+
+    <h1 class="content-title Tutorial-header">How To Monitor Your System Security with osquery on Ubuntu 16.04</h1>
+
+    <span class="meta-section timestamp"><span class="tutorial-date-text">Posted</span><span class="tutorial-date">February 15, 2017</span></span>
+
+    <span class="meta-section pageviews"><span class="icon icon-eye v-mid"></span><span class="views-count v-mid">45.6k</span><span class="sr-only"> views</span></span>
+
+    <span class="meta-section tags">
+      <a class="tag" href="/community/tags/system-tools?type=tutorials">System Tools</a> <a class="tag" href="/community/tags/monitoring?type=tutorials">Monitoring</a> <a class="tag" href="/community/tags/logging?type=tutorials">Logging</a> <a class="tag" href="/community/tags/security?type=tutorials">Security</a>
+      <a class="tag" href="/community/tags/ubuntu-16-04?type=tutorials">Ubuntu 16.04</a>
+    </span>
+  </div>
+
+  <div class="tutorial-authors">
+    <div class="component-collaborators-container">
+  <ul class="component-collaborators-content">
+        <li class="collaborator-byline-avatar">
+          <a href="/community/users/finid">
+            <img alt="finid" class="avatar avatar-large" src="https://secure.gravatar.com/avatar/989a7705a77732d888ddaff8b440fc3d?secure=true&d=identicon" width="80" height="80" />
+</a>        </li>
+
+    <li class="collaborators-byline-data">
+        <p class="names">By <a href="/community/users/finid">finid</a></p>
+
+      <p>
+          <a class="advice" href="https://www.digitalocean.com/community/write-for-digitalocean">Become an author</a>
+      </p>
+    </li>
+  </ul>
+</div>
+
+  </div>
+
+
+    <div class="content-body tutorial-content" data-growable-markdown>
+      
+      <h3 id="introduction">Introduction</h3>
+
+<p><a href="https://github.com/facebook/osquery">osquery</a> is an open-source security tool that takes an operating system and turns it into one giant database, with tables that you can query using SQL-like statements. With these queries, you can monitor file integrity, check on the status and configuration of the firewall, perform security audits of the target server, and more.</p>
+
+<p>It&rsquo;s a cross-platform application with support for recent versions of macOS, Windows 10, CentOS, and Ubuntu. It&rsquo;s offically described as an &ldquo;SQL-powered operating system instrumentation, monitoring, and analytics&rdquo; framework, and originated from Facebook. </p>
+
+<p>With osquery, you can run commands like <code>select * from logged_in_users ;</code> against your server, and get back a result like this:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>+-----------+----------+-------+------------------+------------+------+
+| type      | user     | tty   | host             | time       | pid  |
++-----------+----------+-------+------------------+------------+------+
+| login     | LOGIN    | ttyS0 |                  | 1483580429 | 1546 |
+| login     | LOGIN    | tty1  |                  | 1483580429 | 1549 |
+| user      | root     | pts/0 | 24.27.68.82      | 1483580584 | 1752 |
+| user      | sammy    | pts/1 | 11.11.11.11      | 1483580770 | 4057 |
+| boot_time | reboot   | ~     | 4.4.0-57-generic | 1483580419 | 0    |
+| runlevel  | runlevel | ~     | 4.4.0-57-generic | 1483580426 | 53   |
++-----------+----------+-------+------------------+------------+------+
+</code></pre>
+<p>If this appeals to you, you&rsquo;ll love using osquery as a system security monitoring and intrusion detection tool for your server.</p>
+
+<p>Installing osquery gives you access to the following components:</p>
+
+<ul>
+<li><code>osqueryi</code>: The interactive osquery shell, for performing ad-hoc queries. </li>
+<li><code>osqueryd</code>: A daemon for scheduling and running queries in the background.</li>
+<li><code>osqueryctl</code>: A helper script for testing a deployment or configuration of osquery. It can also be used instead of the operating system&rsquo;s service manager to start/stop/restart <code>osqueryd</code>.<br></li>
+</ul>
+
+<p><code>osqueryi</code> and <code>osqueryd</code> are independent tools. They don&rsquo;t communicate, and you can use one without the other. Most of the flags and options needed to run each are the same,  and you can launch <code>osqueryi</code> using <code>osqueryd</code>&rsquo;s configuration file so you can customize the environment without using lots of command-line switches.</p>
+
+<p>In this tutorial, you&rsquo;ll:</p>
+
+<ul>
+<li>Install osquery.</li>
+<li>Configure aspects of the operating system, like Rsyslog, that osquery needs to function properly.</li>
+<li>Set up a configuration file that can be used by both <code>osqueryi</code> and <code>osqueryd</code>.</li>
+<li>Work with osquery <em>packs</em>, which are groups of predefined queries you can add to a schedule.</li>
+<li>Perform ad-hoc queries using <code>osqueryi</code> to look for security issues.</li>
+<li>Start the daemon so that it can run queries automatically.</li>
+</ul>
+
+<p>Logs generated by <code>osqueryd</code>, the daemon, are intended to be shipped off to external logging endpoints that require additional expertise to set up and use properly. This tutorial will not cover that configuration, but you&rsquo;ll learn how to configure and run the daemon and save results locally.</p>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<p>To complete this tutorial, you&rsquo;ll need to have the following in place:</p>
+
+<ul>
+<li>An Ubuntu 16.04 server, configured with a non-root user with sudo privileges and a firewall. Follow the  <a href="https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-16-04">Initial Setup Guide for Ubuntu 16.04</a> to set this up.</li>
+</ul>
+
+<p>You should also have a basic understanding of SQL and a <a href="https://www.digitalocean.com/community/tutorials/an-introduction-to-securing-your-linux-vps">fundamental knowledge of Linux system security</a>.</p>
+
+<h2 id="step-1-–-installing-osquery-on-the-server">Step 1 – Installing osquery on the Server</h2>
+
+<p>You can install osquery by compiling it from source, or by using the package manager. Since there&rsquo;s no installable package in the official Ubuntu repository, you&rsquo;ll have to add the project&rsquo;s official Ubuntu repository to the system.</p>
+
+<p>First, add the repository&rsquo;s public key:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 1484120AC4E9F8A1A577AEEE97A80C63C9D8B80B
+</li></ul></code></pre>
+<p>Then add the repository:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo add-apt-repository "deb [arch=amd64] https://osquery-packages.s3.amazonaws.com/xenial xenial main"
+</li></ul></code></pre>
+<p>Update the package database:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo apt-get update
+</li></ul></code></pre>
+<p>Finally, install osquery:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo apt-get install osquery
+</li></ul></code></pre>
+<p>Out of the box, osquery is not incredibly useful; it is not a plug-and-play application.  Whether you intend to use the interactive shell or the daemon, you have to pass some flags and options, either from the command line or via a configuration file. To view the flags and options available to the daemon, type:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">osqueryd --help
+</li></ul></code></pre>
+<p>The output will include dozens of command-line flags and configuration options. Shown below is a partial output from the test server used for this article.</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>osquery 2.1.2, your OS as a high-performance relational database
+Usage: osqueryd [OPTION]&hellip; 
+
+osquery command line flags:
+
+    --flagfile PATH                           Line-delimited file of additional flags
+    --config_check                            Check the format of an osquery config and exit
+    --config_dump                             Dump the contents of the configuration
+    --config_path VALUE                       Path to JSON config file
+    --config_plugin VALUE                     Config plugin name
+    --config_tls_endpoint VALUE               TLS/HTTPS endpoint for config retrieval
+    --config_tls_max_attempts VALUE           Number of attempts to retry a TLS config/enroll request
+    --config_tls_refresh VALUE                Optional interval in seconds to re-read configuration
+    --daemonize                               Run as daemon (osqueryd only)
+
+&hellip;
+
+&hellip;
+
+osquery configuration options (set by config or CLI flags):
+
+    --audit_allow_config                      Allow the audit publisher to change auditing configuration
+    --audit_allow_sockets                     Allow the audit publisher to install socket-related rules
+    --audit_persist                           Attempt to retain control of audit
+    --aws_access_key_id VALUE                 AWS access key ID
+    --aws_firehose_period VALUE               Seconds between flushing logs to Firehose (default 10)
+    --aws_firehose_stream VALUE               Name of Firehose stream for logging
+    --aws_kinesis_period VALUE                Seconds between flushing logs to Kinesis (default 10)
+    --aws_kinesis_random_partition_key        Enable random kinesis partition keys
+    --aws_kinesis_stream VALUE                Name of Kinesis stream for logging
+    --aws_profile_name VALUE                  AWS profile for authentication and region configuration
+    --aws_region VALUE                        AWS region
+</code></pre>
+<p>To see additional command-line flags only available to the interactive shell, type:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">osqueryi --help
+</li></ul></code></pre>
+<p>Running <code>osqueryi</code> is the easiest method for listing and querying the osquery tables available out of the box. As an example, launch it using the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">osqueryi --verbose
+</li></ul></code></pre>
+<p>This will place you in an interactive shell, and you&rsquo;ll see an output similar to this:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>I0105 01:52:54.987584  4761 init.cpp:364] osquery initialized [version=2.1.2]
+I0105 01:52:54.987808  4761 extensions.cpp:351] Could not autoload extensions: Failed reading: /etc/osquery/extensions.load
+I0105 01:52:54.987944  4761 extensions.cpp:364] Could not autoload modules: Failed reading: /etc/osquery/modules.load
+I0105 01:52:54.988209  4761 init.cpp:606] Error reading config: config file does not exist: /etc/osquery/osquery.conf
+I0105 01:52:54.988334  4761 events.cpp:886] Error registering subscriber: socket_events: Subscriber disabled via configuration
+I0105 01:52:54.993973  4763 interface.cpp:307] Extension manager service starting: /home/sammy/.osquery/shell.em
+Using a virtual database. Need help, type '.help'
+osquery&gt;
+</code></pre>
+<p>Because of the error and information messages in the output, it&rsquo;s obvious that all parts of osquery are not functioning correctly.  Certain queries, like <code>select * from yara ;</code>w ill return nothing, showing that the table has not been populated with data.</p>
+
+<p>Other queries, like <code>select time, severity, message from syslog ;</code> will return a message like the following, indicating there&rsquo;s more work we need to do:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>W1202 15:44:48.600539  1720 virtual_table.cpp:492] Table syslog is event-based but events are disabled
+W1202 15:44:48.600587  1720 virtual_table.cpp:499] Please see the table documentation: https://osquery.io/docs/#syslog
+</code></pre>
+<p>We&rsquo;ll make some modifications to our server&rsquo;s configuration to resolve this issue.</p>
+
+<p>Exit the console by typing:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="osquery&gt;;">.exit
+</li></ul></code></pre>
+<p>In the next section, we&rsquo;ll modify aspects of the operating system that osquery needs to function properly. </p>
+
+<h2 id="step-2-–-allowing-osquery-to-access-the-system-log">Step 2 – Allowing osquery to Access the System Log</h2>
+
+<p>In this step, we&rsquo;ll modify the operating system&rsquo;s syslog application to allow osquery to consume and query the system log. On Ubuntu 16.04, that means modifying the Rsyslog configuration file. And the only modification you need to make is append a few lines of code to the configuration file.</p>
+
+<p>To begin, open the <code>/etc/rsyslog.conf</code> file:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo nano /etc/rsyslog.conf
+</li></ul></code></pre>
+<p>We need to add some lines of configuration that tell Rsyslog what pipe to write to, and which syslog parameters to write to that pipe. By default, the pipe is <code>/var/osquery/syslog_pipe</code>.  osquery then populates its <code>syslog</code> table from information written to that pipe.</p>
+
+<p>Append the following lines to the file:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="/etc/rsyslog.conf">/etc/rsyslog.conf</div>template(
+  name="OsqueryCsvFormat"
+  type="string"
+  string="%timestamp:::date-rfc3339,csv%,%hostname:::csv%,%syslogseverity:::csv%,%syslogfacility-text:::csv%,%syslogtag:::csv%,%msg:::csv%\n"
+)
+*.* action(type="ompipe" Pipe="/var/osquery/syslog_pipe" template="OsqueryCsvFormat")
+</code></pre>
+<p>Save and close the file. To apply the changes, restart the syslog daemon:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo systemctl restart rsyslog
+</li></ul></code></pre>
+<p>Now let&rsquo;s create a configuration file that sets up some default options and schedules some queries.</p>
+
+<h2 id="step-3-–-creating-an-osquery-configuration-file">Step 3 – Creating an osquery Configuration File</h2>
+
+<p>Creating a configuration file makes it easier to run <code>osqueryi</code>. Instead of having to pass a lot of command line options, <code>osqueryi</code> can read those options from a configuration file located in  <code>/etc/osquery/osquery.conf</code>. And, of course, the configuration file will also be available to the daemon. </p>
+
+<p>The configuration file also holds queries that need to be executed on schedule. However, most of the queries that you can run on schedule are shipped as what are called <em>packs</em>. Packs are files located in the <code>/usr/share/osquery/packs</code> directory. </p>
+
+<p>osquery doesn&rsquo;t come with a configuration file, but there&rsquo;s a sample configuration file that you may copy over to <code>/etc/osquery</code> and modify. However, that file does not have all the options you need to run it on a Linux distribution like Ubuntu, so we&rsquo;ll create our own.</p>
+
+<p>There are three sections to the configuration file:</p>
+
+<ul>
+<li>A list of daemon options and feature settings. These can also be read by <code>osqueryi</code>. </li>
+<li>A list of scheduled queries to run and when they should run. </li>
+<li>A list of packs to be used to conduct more specific scheduled queries. </li>
+</ul>
+
+<p>The following is a list of the options we&rsquo;ll be using for our configuration file, what they mean and the values we&rsquo;ll be setting them to.  This list of options is sufficient for running <code>osqueryi</code> and <code>osqueryd</code> on Ubuntu 16.04 annd other Linux distributions. </p>
+
+<ul>
+<li><strong>config_plugin</strong>: Where do want osquery to read its configurations from. By default, they are read from a file on disk, so the value for this is <code>filesystem</code>.</li>
+<li><strong>logger_plugin</strong>: Specifies where osquery should write results of scheduled queries. Once again, we&rsquo;ll use <code>filesystem</code>.</li>
+<li><strong>logger_path</strong>: This is the path to the log directory where you&rsquo;ll find files containing info, warnings, errors and results of scheduled queries. By default, this is <code>/var/log/osquery</code>.</li>
+<li><strong>disable_logging</strong>: By setting the value of this to <code>false</code> we enable logging.</li>
+<li><strong>log_result_events</strong>: By setting this to <code>true</code>, each line in the results logs will represent a state change.<br></li>
+<li><strong>schedule_splay_percent</strong>: This tells osquery that when a large number of queries are scheduled at the same interval, to run them spread out in order to limit any performance impact on the server. Default value is <code>10</code> , which is a percentage.</li>
+<li><strong>pidfile</strong>: Where to write the process id of the osquery daemon. The default is <code>/var/osquery/osquery.pidfile</code>.</li>
+<li><strong>events_expiry</strong>: In seconds, how long to hold subscriber results in the osquery backing store. Out of the box, this is set to <code>3600</code>.</li>
+<li><strong>database_path</strong>: The path to osquery&rsquo;s database. We&rsquo;ll use the default, which is <code>/var/osquery/osquery.db</code>.</li>
+<li><strong>verbose</strong>: With logging enabled, this is used to enable or disable verbose informational messages. We&rsquo;ll set this to <code>false</code>.</li>
+<li><strong>worker_threads</strong>: Number of work dispatch threads used to process queries. This is set to <code>2</code> by default, so we&rsquo;ll be leaving it at that.</li>
+<li><strong>enable_monitor</strong>: Used to enable or disable the schedule monitor. We&rsquo;ll enable it, so the value will be <code>true</code>.</li>
+<li><strong>disable_events</strong>: Used to regulate osquery&rsquo;s publish/subscribe system. We need this enabled, so the value here will be <code>false</code>.</li>
+<li><strong>disable_audit</strong>: Used to disable receiving events from the operating system&rsquo;s audit subsystem. We need it enabled, so the value used here will be <code>false</code>.</li>
+<li><strong>audit_allow_config</strong>:  Allow the audit publisher to change the auditing configuration. Default is <code>true</code>.</li>
+<li><strong>audit_allow_sockets</strong>: This allows the audit publisher to install socket-related rules. The value will be <code>true</code>.</li>
+<li><strong>host_identifier</strong>: This is used to identify the host running osquery. When aggreagting results from multiple servers, it helps to easily determine what server a particular log entry is coming from. The value is either <code>hostname</code> or <code>uuid</code>. Out of the box, it&rsquo;s set to <code>hostname</code>, so we&rsquo;ll use that value.</li>
+<li><strong>enable_syslog</strong>: In order for osquery to consume syslog information, this has to be set to <code>true</code>.</li>
+<li><strong>schedule_default_interval</strong>: When a scheduled query&rsquo;s interval is not set, use this value. It&rsquo;s in seconds, and we&rsquo;ll set it to <code>3600</code>.</li>
+</ul>
+
+<p>You&rsquo;ve already seen how to view all the command line flags and configuration options avialable to <code>osqueryi</code> and <code>osqueryd</code>, but the above options will be enough to run osquery on this server.</p>
+
+<p>Create and open the configuration file using the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo nano /etc/osquery/osquery.conf
+</li></ul></code></pre>
+<p>The configuration file uses the <a href="https://www.digitalocean.com/community/tutorials/an-introduction-to-json">JSON</a> format. Copy the following content into the file:</p>
+<div class="code-label " title="/etc/osquery/osquery.conf">/etc/osquery/osquery.conf</div><pre class="code-pre "><code langs="">{
+  "options": {
+    "config_plugin": "filesystem",
+    "logger_plugin": "filesystem",
+    "logger_path": "/var/log/osquery",
+    "disable_logging": "false",
+    "log_result_events": "true",
+    "schedule_splay_percent": "10",
+    "pidfile": "/var/osquery/osquery.pidfile",
+    "events_expiry": "3600",
+    "database_path": "/var/osquery/osquery.db",
+    "verbose": "false",
+    "worker_threads": "2",
+    "enable_monitor": "true",
+    "disable_events": "false",
+    "disable_audit": "false",
+    "audit_allow_config": "true",
+    "host_identifier": "hostname",
+    "enable_syslog": "true",
+    "audit_allow_sockets": "true",
+    "schedule_default_interval": "3600" 
+  },
+</code></pre>
+<p>The next part of the configuration file is the scheduling section. Each query is identified by a key or name, which must be unique in the file, followed by the query to run and the interval, in seconds, to run the query. We&rsquo;ll add a scheduled query that looks at the <code>crontab</code> table every 300 seconds.</p>
+
+<p>Add these lines to the configuration file:</p>
+<div class="code-label " title="/etc/osquery/osquery.conf">/etc/osquery/osquery.conf</div><pre class="code-pre "><code langs="">  "schedule": {
+    "crontab": {
+      "query": "SELECT * FROM crontab;",
+      "interval": 300
+    }
+  },
+</code></pre>
+<p>You can write any number of queries that you&rsquo;d like. Just keep the correct format. If you don&rsquo;t, the file will fail validation.  For example, to add a couple more queries, add these lines:</p>
+<div class="code-label " title="/etc/osquery/osquery.conf">/etc/osquery/osquery.conf</div><pre class="code-pre "><code langs="">  "schedule": {
+    "crontab": {
+      "query": "SELECT * FROM crontab;",
+      "interval": 300
+    }<span class="highlight">,</span>
+    <span class="highlight">"system_profile": {</span>
+      <span class="highlight">"query": "SELECT * FROM osquery_schedule;"</span>
+    <span class="highlight">},</span> 
+    <span class="highlight">"system_info": {</span>
+      <span class="highlight">"query": "SELECT hostname, cpu_brand, physical_memory FROM system_info;",</span>
+      <span class="highlight">"interval": 3600</span>
+    <span class="highlight">}</span>
+  },
+</code></pre>
+<p>After the scheduled queries, you can add special queries called <strong>decorators</strong>, which are queries that prepend data to other scheduled queries. The decorator queries shown here will prepend the UUID of the host running osquery and the username of the user to every scheduled query. </p>
+
+<p>Append these lines to the file:</p>
+<div class="code-label " title="/etc/osquery/osquery.conf">/etc/osquery/osquery.conf</div><pre class="code-pre "><code langs="">  "decorators": {
+    "load": [
+      "SELECT uuid AS host_uuid FROM system_info;",
+      "SELECT user AS username FROM logged_in_users ORDER BY time DESC LIMIT 1;"
+    ]
+  },
+</code></pre>
+<p>Finally, we can point osquery to a list of packs that contain more specific queries. Every installation of osquery comes with a default set of packs located in the <code>/usr/share/osquery/packs</code> directory. One of the packs is for macOS, while the rest are for Linux systems. Though you can use the packs from their default location, you may also copy them to the <code>/etc/osquery</code> directory. </p>
+
+<p>Add these lines to the file to complete the file.</p>
+<div class="code-label " title="/etc/osquery/osquery.conf">/etc/osquery/osquery.conf</div><pre class="code-pre "><code langs="">  "packs": {
+     "osquery-monitoring": "/usr/share/osquery/packs/osquery-monitoring.conf",
+     "incident-response": "/usr/share/osquery/packs/incident-response.conf",
+     "it-compliance": "/usr/share/osquery/packs/it-compliance.conf",
+     "vuln-management": "/usr/share/osquery/packs/vuln-management.conf"
+  }
+}
+</code></pre>
+<p>Note the closing curly brace at the end, which matches the opening curly brace on the first line of the file. Your completed configuration file should look like this:</p>
+<div class="code-label " title="/etc/osquery/osquery.conf">/etc/osquery/osquery.conf</div><pre class="code-pre "><code class="code-highlight language-json">{
+  "options": {
+    "config_plugin": "filesystem",
+    "logger_plugin": "filesystem",
+    "logger_path": "/var/log/osquery",
+    "disable_logging": "false",
+    "log_result_events": "true",
+    "schedule_splay_percent": "10",
+    "pidfile": "/var/osquery/osquery.pidfile",
+    "events_expiry": "3600",
+    "database_path": "/var/osquery/osquery.db",
+    "verbose": "false",
+    "worker_threads": "2",
+    "enable_monitor": "true",
+    "disable_events": "false",
+    "disable_audit": "false",
+    "audit_allow_config": "true",
+    "host_identifier": "hostname",
+    "enable_syslog": "true",
+    "audit_allow_sockets": "true",
+    "schedule_default_interval": "3600" 
+  },
+  "schedule": {
+    "crontab": {
+      "query": "SELECT * FROM crontab;",
+      "interval": 300
+    },
+    "system_profile": {
+      "query": "SELECT * FROM osquery_schedule;"
+    }, 
+    "system_info": {
+      "query": "SELECT hostname, cpu_brand, physical_memory FROM system_info;",
+      "interval": 3600
+    }
+  },
+  "decorators": {
+    "load": [
+      "SELECT uuid AS host_uuid FROM system_info;",
+      "SELECT user AS username FROM logged_in_users ORDER BY time DESC LIMIT 1;"
+    ]
+  },
+  "packs": {
+     "osquery-monitoring": "/usr/share/osquery/packs/osquery-monitoring.conf",
+     "incident-response": "/usr/share/osquery/packs/incident-response.conf",
+     "it-compliance": "/usr/share/osquery/packs/it-compliance.conf",
+     "vuln-management": "/usr/share/osquery/packs/vuln-management.conf"
+  }
+}
+</code></pre>
+<p>Save and close the file, then validate it using the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo osqueryctl config-check
+</li></ul></code></pre>
+<p>The output should look like this: </p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>I0104 11:11:46.022858 24501 rocksdb.cpp:187] Opening RocksDB handle: /var/osquery/osquery.db
+</code></pre>
+<p>If there&rsquo;s an error, the output will indicate the location of the error so you can fix it. </p>
+
+<p>Once you have a valid configuration file, you can move on to configuring the osquery pack required for file integrity monitoring.</p>
+
+<h2 id="step-4-–-setting-up-the-osquery-file-integrity-monitoring-pack">Step 4 – Setting Up the osquery File Integrity Monitoring Pack</h2>
+
+<p>Keeping a watchful eye on the integrity of the files on your server is a critical aspect of monitoring its system security. To this end, osquery offers a ready solution.</p>
+
+<p>The packs you added to the configuration in the previous section ship out of the box. In this section, we&rsquo;ll add one more pack to the list, which will contain the query and directives that will be used for file integrity monitoring. For this exercise, we&rsquo;ll call the file <code>fim.conf</code>. </p>
+
+<p>Create this file and open it in your editor:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo nano /usr/share/osquery/packs/fim.conf
+</li></ul></code></pre>
+<p>We&rsquo;ll create a pack that will monitor for file events in the <code>/home</code>, <code>/etc</code>, and <code>/tmp</code> directories every 300 seconds. The complete setup for the pack file is shown in the following file listing. Copy it into the file. </p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="/usr/share/osquery/packs/fim.conf">/usr/share/osquery/packs/fim.conf</div>{
+  "queries": {
+    "file_events": {
+      "query": "select * from file_events;",
+      "removed": false,
+      "interval": 300
+    }
+  },
+  "file_paths": {
+    "homes": [
+      "/root/.ssh/%%",
+      "/home/%/.ssh/%%"
+    ],
+      "etc": [
+      "/etc/%%"
+    ],
+      "home": [
+      "/home/%%"
+    ],
+      "tmp": [
+      "/tmp/%%"
+    ]
+  }
+}
+</code></pre>
+<p>Save and close the file. </p>
+
+<p>To make the new file and its rules available to osquery, reference it in the pack list at the end of <code>/etc/osquery/osquery.conf</code>. Open the file for editing:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo nano /etc/osquery/osquery.conf
+</li></ul></code></pre>
+<p>Then modify the packs section to include the new file:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="/etc/osquery/osquery.conf">/etc/osquery/osquery.conf</div>
+&hellip;
+
+"packs": {
+     <span class="highlight">"fim": "/usr/share/osquery/packs/fim.conf",</span>
+     "osquery-monitoring": "/usr/share/osquery/packs/osquery-monitoring.conf",
+     "incident-response": "/usr/share/osquery/packs/incident-response.conf",
+     "it-compliance": "/usr/share/osquery/packs/it-compliance.conf",
+     "vuln-management": "/usr/share/osquery/packs/vuln-management.conf"
+  }
+</code></pre>
+<p>Save and close the file. And just to be sure that you didn&rsquo;t make a mistake in the file, validate it again:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo osqueryctl config-check
+</li></ul></code></pre>
+<p>Now let&rsquo;s start using <code>osqueryi</code> to query the system.</p>
+
+<h2 id="step-5-–-using-osqueryi-to-perform-ad-hoc-security-checks">Step 5 – Using osqueryi to Perform Ad-hoc Security Checks</h2>
+
+<p>There are many places where osquery comes in handy. In this section, you&rsquo;ll perform various security checks on your system using <code>osqueryi</code>, the interactive shell. Keep in mind that at this point, we&rsquo;ve still not started the osquery daemon. And that&rsquo;s the beauty of osquery - you can run queries using <code>osqueryi</code> even if the daemon is not active, while still using the configuration file we built to configure the environment.</p>
+
+<p>To launch <code>osquery</code> with a configuration file, type:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo osqueryi --config_path /etc/osquery/osquery.conf --verbose
+</li></ul></code></pre>
+<p><span class='note'><strong>Note</strong>: Passing <code>osqueryi</code> and <code>osqueryd</code> the <strong>verbose</strong>  option is a good practice as it lets you see any errors or warnings that might indicate issues with osquery. And ordinarily, <code>osqueryi</code> can be run without root privileges, but if you&rsquo;re calling it while specifying the daemon&rsquo;s configuration file, you must run it as root.<br></span></p>
+
+<p>Let&rsquo;s start with the basic security checks and work our way up from there. For example, who else other than you is logged into the system now? Find out with this query:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="osquery&gt;;">select * from logged_in_users ;
+</li></ul></code></pre>
+<p>The output should look like this:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>+-----------+----------+-------+------------------+------------+------+
+| type      | user     | tty   | host             | time       | pid  |
++-----------+----------+-------+------------------+------------+------+
+| boot_time | reboot   | ~     | 4.4.0-57-generic | 1483580419 | 0    |
+| runlevel  | runlevel | ~     | 4.4.0-57-generic | 1483580426 | 53   |
+| login     | LOGIN    | ttyS0 |                  | 1483580429 | 1546 |
+| login     | LOGIN    | tty1  |                  | 1483580429 | 1549 |
+| user      | <span class="highlight">root</span>     | pts/0 | <span class="highlight">11.11.11.11</span>      | 1483580584 | 1752 |
+| user      | <span class="highlight">sammy</span>    | pts/1 | <span class="highlight">11.11.11.11</span>      | 1483580770 | 4057 |
++-----------+----------+-------+------------------+------------+------+
+</code></pre>
+<p>In this output, there are two real user accounts logged into the machine, and they&rsquo;re both from the same IP address. That IP address should be a known IP address. If it&rsquo;s not, you should investigate where that login came from.</p>
+
+<p>The previous query tells you who&rsquo;s logged in now, but what about previous logins? You can find out by querying the <strong>last</strong> table, like this:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="osquery&gt;;">select * from last ;
+</li></ul></code></pre>
+<p>The output indicated nothing out of the ordinary, so no other person has logged into the machine recently:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>+----------+-------+------+------+------------+------------------+
+| username | tty   | pid  | type | time       | host             |
++----------+-------+------+------+------------+------------------+
+| reboot   | ~     | 0    | 2    | 1483580419 | 4.4.0-57-generic |
+| runlevel | ~     | 53   | 1    | 1483580426 | 4.4.0-57-generic |
+|          | ttyS0 | 1546 | 5    | 1483580429 |                  |
+| LOGIN    | ttyS0 | 1546 | 6    | 1483580429 |                  |
+|          | tty1  | 1549 | 5    | 1483580429 |                  |
+| LOGIN    | tty1  | 1549 | 6    | 1483580429 |                  |
+| <span class="highlight">root</span>     | pts/0 | 1752 | 7    | 1483580584 | <span class="highlight">11.11.11.11</span>      |
+| <span class="highlight">sammy</span>    | pts/1 | 4057 | 7    | 1483580770 | <span class="highlight">11.11.11.11</span>      |
++----------+-------+------+------+------------+------------------+
+</code></pre>
+<p>Is the firewall configured and activated? Is the firewall still running? If in doubt, run this query to find out:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="osquery&gt;;">select * from iptables ;
+</li></ul></code></pre>
+<p>If there&rsquo;s no output, then it means the IPTables firewall has not been configured. For an Internet-facing server that&rsquo;s not a good thing, so you better configure the firewall. </p>
+
+<p>You can run the previous command, modified to filter on particular columns, like this:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="osquery&gt;;">select chain, policy, src_ip, dst_ip from iptables ;
+</li></ul></code></pre>
+<p>That query should give an output like the following. Look for any unusual source and destination IP addresses that you did not configure:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>+---------+--------+---------+-----------+
+| chain   | policy | src_ip  | dst_ip    |
++---------+--------+---------+-----------+
+| INPUT   | ACCEPT | 0.0.0.0 | 0.0.0.0   |
+| INPUT   | ACCEPT | 0.0.0.0 | 127.0.0.0 |
+| INPUT   | ACCEPT | 0.0.0.0 | 0.0.0.0   |
+| INPUT   | ACCEPT | 0.0.0.0 | 0.0.0.0   |
+| INPUT   | ACCEPT | 0.0.0.0 | 0.0.0.0   |
+| INPUT   | ACCEPT | 0.0.0.0 | 0.0.0.0   |
+| INPUT   | ACCEPT | 0.0.0.0 | 0.0.0.0   |
+| INPUT   | ACCEPT | 0.0.0.0 | 0.0.0.0   |
+| INPUT   | ACCEPT | 0.0.0.0 | 0.0.0.0   |
+| INPUT   | ACCEPT | 0.0.0.0 | 0.0.0.0   |
+| FORWARD | ACCEPT | 0.0.0.0 | 0.0.0.0   |
+| FORWARD | ACCEPT | 0.0.0.0 | 0.0.0.0   |
+| OUTPUT  | ACCEPT | 0.0.0.0 | 0.0.0.0   |
+| OUTPUT  | ACCEPT | 0.0.0.0 | 0.0.0.0   |
++---------+--------+---------+-----------+
+</code></pre>
+<p>What type of jobs are scheduled in crontab? Did you schedule them? This query will help you find malware that have been scheduled to run at specific intervals:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="osquery&gt;;">select command, path from crontab ;
+</li></ul></code></pre>
+<p>And the output should take this form. Any command in there that looks suspicious demands further investigation:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>+----------------------------------------------------------------------------------------------------------------------------------------+--------------------------------+
+| command                                                                                                                                | path                           |
++----------------------------------------------------------------------------------------------------------------------------------------+--------------------------------+
+| root cd / &amp;&amp; run-parts --report /etc/cron.hourly                                                                                       | /etc/crontab                   |
+| root test -x /usr/sbin/anacron || ( cd / &amp;&amp; run-parts --report /etc/cron.daily )                                                       | /etc/crontab                   |
+| root test -x /usr/sbin/anacron || ( cd / &amp;&amp; run-parts --report /etc/cron.weekly )                                                      | /etc/crontab                   |
+| root test -x /usr/sbin/anacron || ( cd / &amp;&amp; run-parts --report /etc/cron.monthly )                                                     | /etc/crontab                   |
+| root if [ -x /usr/share/mdadm/checkarray ] &amp;&amp; [ $(date +\%d) -le 7 ]; then /usr/share/mdadm/checkarray --cron --all --idle --quiet; fi | /etc/cron.d/mdadm              |
+| root test -x /etc/cron.daily/popularity-contest &amp;&amp; /etc/cron.daily/popularity-contest --crond                                          | /etc/cron.d/popularity-contest |
++----------------------------------------------------------------------------------------------------------------------------------------+--------------------------------+
+</code></pre>
+<p>Are there files on the system that are setuid-enabled? There are quite a few on any Ubuntu 16.04 server, but which ones are they, and are there any that are not supposed to be on the system? Answers to these question will help you detect backdoored binaries. Run this query periodically and compare its results against older results so that you can keep an eye on any additions. That query is:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="osquery&gt;;">select * from suid_bin ;
+</li></ul></code></pre>
+<p>A partial output from this query might look like this:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>+-------------------------------+----------+-----------+-------------+
+| path                          | username | groupname | permissions |
++-------------------------------+----------+-----------+-------------+
+| /bin/ping6                    | root     | root      | S           |
+| /bin/su                       | root     | root      | S           |
+| /bin/mount                    | root     | root      | S           |
+| /bin/umount                   | root     | root      | S           |
+| /bin/fusermount               | root     | root      | S           |
+| /bin/ntfs-3g                  | root     | root      | S           |
+| /bin/ping                     | root     | root      | S           |
+| /sbin/mount.ntfs-3g           | root     | root      | S           |
+| /sbin/mount.ntfs              | root     | root      | S           |
+| /sbin/unix_chkpwd             | root     | shadow    | G           |
+| /sbin/pam_extrausers_chkpwd   | root     | shadow    | G           |
+| /usr/bin/chage                | root     | shadow    | G           |
+| /usr/bin/locate               | root     | mlocate   | G           |
+| /usr/bin/chfn                 | root     | root      | S           |
+| /usr/bin/chsh                 | root     | root      | S           |
+| /usr/bin/newuidmap            | root     | root      | S           |
+| /usr/bin/write                | root     | tty       | G           |
+| /usr/bin/mlocate              | root     | mlocate   | G           |
+| /usr/bin/at                   | daemon   | daemon    | SG          |
+| /usr/bin/sg                   | root     | root      | S           |
+</code></pre>
+<p>To view a list of loaded kernel modules, run this query:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="osquery&gt;;">select name, used_by, status from kernel_modules where status="Live" ;
+</li></ul></code></pre>
+<p>This is another query you&rsquo;ll want to run periodically and compare its output against older results to see if anything&rsquo;s changed.</p>
+
+<p>Yet another method that will help you find backdoors on the server is to run a query that lists all the listening ports. To do that, execute this query:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="osquery&gt;;">select * from listening_ports ;
+</li></ul></code></pre>
+<p>On a fresh server with only SSH running on port <code>22</code>, the output would look like this:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>+-------+------+----------+--------+---------+
+| pid   | port | protocol | family | address |
++-------+------+----------+--------+---------+
+| 1686  | 22   | 6        | 2      | 0.0.0.0 |
+| 1686  | 22   | 6        | 10     | ::      |
+| 25356 | 0    | 0        | 0      |         |
++-------+------+----------+--------+---------+
+</code></pre>
+<p>On your server, if the output only includes ports you know the server should be listening on, there&rsquo;s nothing to worry about. But if there were other ports open, you&rsquo;ll want to investigate what those ports are.</p>
+
+<p>To look at file activity on the server, run this query:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="osquery&gt;;">select target_path, action, uid from file_events ;
+</li></ul></code></pre>
+<p>The output shows all recent file activity on the server, along with the user id responsible for the activity.</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>+---------------------------+---------+------+
+| target_path               | action  | uid  |
++---------------------------+---------+------+
+| /home/sammy/..bashrc.swp  | CREATED | 1000 |
+| /home/sammy/..bashrc.swp  | UPDATED | 1000 |
+| /home/sammy/..bashrc.swp  | UPDATED | 1000 |
+| /home/sammy/.bashrc       | UPDATED | 1000 |
+| /home/sammy/..bashrc.swp  | DELETED | 1000 |
+| /home/sammy/..bashrc.swp  | CREATED | 1000 |
+| /home/sammy/..bashrc.swp  | UPDATED | 1000 |
+| /home/sammy/..bashrc.swp  | UPDATED | 1000 |
+| /home/sammy/.bashrc       | UPDATED | 1000 |
+| /home/sammy/.bashrc       | UPDATED | 1000 |
+| /home/sammy/.bashrc       | UPDATED | 1000 |
+| /home/sammy/..bashrc.swp  | DELETED |      |
+| /etc/test_file.txt        | DELETED |      |
+| /home/sammy/.bash_history | UPDATED | 1000 |
+| /home/sammy/.bash_history | UPDATED | 1000 |
+| /etc/secret_file.md       | CREATED | 0    |
+| /etc/secret_file.md       | UPDATED | 0    |
+| /etc/secret_file.md       | UPDATED | 0    |
++---------------------------+---------+------+
+</code></pre>
+<p>There are many queries like those that you can run on your server to get an idea of possible security issues. </p>
+
+<p>If you&rsquo;re unsure about a table&rsquo;s schema, use the following command to find out:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="osquery&gt;;">.schema <span class="highlight">name-of-table</span>
+</li></ul></code></pre>
+<p>And you can the list the available tables with:</p>
+<pre class="code-pre custom_prefix"><code langs=""><ul class="prefixed"><li class="line" prefix="osquery&gt;;">.tables
+</li></ul></code></pre>
+<p>There are many more examples in the packs that ship with osquery, and many are designed to run periodically by <code>osqueryd</code>. In the next section, you&rsquo;ll learn how to start the daemon to run those queries.</p>
+
+<h2 id="step-6-–-running-osqueryd">Step 6 – Running osqueryd</h2>
+
+<p><code>osqueryd</code>, the daemon, allows osquery to run queries at set intervals. Those queries include the ones you configured in Step 4, the ones in the packs we specified in that step, and in the FIM pack we configured in Step 5. If you haven&rsquo;t studied the them yet, now is a good time to take a look at the contents of <code>/usr/share/osquery/packs</code>.</p>
+
+<p>Results generated by <code>osqueryd</code> are written to a file called <code>osqueryd.results.log</code> in the <code>/var/log/osquery</code> directory. Out of the box, that file does not exist. It only gets created when the daemon is started and starts generating results. </p>
+
+<p>You can start <code>osqueryd</code> using either <code>systemctl</code> or <code>osqueryctl</code>. Both accomplish the same thing, so it doesn&rsquo;t matter which one you use. <code>osqueryd</code> will check for the existence of a configuration file when it starts, and alert you if it doesn&rsquo;t find one. It will remain running without a configuration file, although it won&rsquo;t do anything useful.</p>
+
+<p>But since you have already set up a configuration file, all you need to do here is start the daemon:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo systemctl start osqueryd
+</li></ul></code></pre>
+<p>Or you can type:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo osqueryctl start
+</li></ul></code></pre>
+<p>In a few minutes after starting the daemon, the size of <code>/var/log/osquery/osqueryd.results.log</code> should increase. You can see that happening by typing and repeating the next command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">ls -lh /var/log/osquery/osqueryd.results.log
+</li></ul></code></pre>
+<p>The increasing size of the file indicates that the results of the scheduled queries are being written to disk. Unfortunately, osquery does not have an alerting facility like <a href="https://www.digitalocean.com/community/tutorials?q=ossec">OSSEC</a>, so you can&rsquo;t see the results of scheduled queries unless you view the results file. You can do that with the <code>tail</code> command, which will continuously stream the last 10 lines of that file to your screen:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo tail -f /var/log/osquery/osqueryd.results.log
+</li></ul></code></pre>
+<p>Press <code>CTRL+C</code> to stop tailing the log.</p>
+
+<p>Longer-term, you would want to ship the query results log to an external analysis platform that you can work with. Viable open source options include <a href="https://github.com/mwielgoszewski/doorman">Doorman</a>, <a href="https://github.com/apfelwerk/Zentral/wiki">Zentral</a>, and <a href="https://www.elastic.co/products/elasticsearch">ElasticSearch</a>. </p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>osquery is a powerful tool, useful for running one-off and scheduled queries using a familiar SQL syntax. <code>osqueryi</code> is the osquery component for writing one-off queries, while <code>osqueryd</code> is for scheduling queries. To make sense of the results of scheduled queries, you need to ship them off to an external log analysis platform.  You can find more information about osquery at <a href="https://osquery.io">https://osquery.io/</a>.</p>
+
+    </div>
+</div>
+
+<div class="tutorial-footer">
+  
+<div class='tutorial-footer-details'>
+
+  <div class='postable-info-bar-container'>
+  <div class='postable-info-bar'>
+
+    <div class="author-byline">
+      <div class="component-collaborators-container">
+  <ul class="component-collaborators-content">
+        <li class="collaborator-byline-avatar">
+          <a href="/community/users/finid">
+            <img alt="finid" class="avatar avatar-large" src="https://secure.gravatar.com/avatar/989a7705a77732d888ddaff8b440fc3d?secure=true&d=identicon" width="80" height="80" />
+</a>        </li>
+
+    <li class="collaborators-byline-data">
+        <p class="names">By <a href="/community/users/finid">finid</a></p>
+
+      <p>
+      </p>
+    </li>
+  </ul>
+</div>
+
+    </div>
+  </div>
+</div>
+
+
+  <div class='section-content tutorial-contributors two'>
+    <div class="component-collaborators-container">
+      <ul class="component-collaborators-content">
+
+          <li class="collaborator-byline-avatar">
+            <a href="/community/users/bhogan">
+                <div class="mod-avatar mod-avatar-large"><img alt="bhogan" class="avatar avatar-large" src="https://secure.gravatar.com/avatar/d753bf40d7283f16ec0db2c9b0d18b58?secure=true&d=identicon" width="80" height="80" /><span class="mod-star" title="MOD" data-toggle="tooltip" data-container="body"><span class="mod-star-icon" /></span></div>
+</a>          </li>
+
+
+        <li class="collaborators-byline-data">
+            <p class="names">Editor: <a href="/community/users/bhogan">Brian Hogan</a></p>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+    
+<div class="hsb--content">
+  <div class="hsb--undo hsb--hide">
+    <span class="icon icon-helpfulness-upvoted"></span>
+    <span class="hsb--question">You rated this helpful.</span>
+    <button name="button" type="submit" class="hsb--button-down hsb--vote-down-js" data-upvotable-type="Tutorial">Undo</button>
+  </div>
+
+  <div class="hsb--flagging-undo hsb--hide">
+    <span class="icon icon-helpfulness-flag"></span>
+    <span class="hsb--question">You reported this tutorial.</span>
+    <button name="button" type="submit" class="hsb--button-down hsb--unflagging-js">Undo</button>
+  </div>
+
+  <div class="hsb--do">
+    <span class="hsb--question">Was this helpful?</span>
+    <button name="button" type="submit" class="hsb--button hsb--vote-up-js" data-upvotable-id="2259" data-upvotable-type="Tutorial">Yes</button>
+    <button name="button" type="submit" class="hsb--button hsb--flagging-js" data-url="/community/tutorials/how-to-monitor-your-system-security-with-osquery-on-ubuntu-16-04/flag" data-flaggable-id="2259">No</button>
+  </div>
+
+  <div class="hsb--social-and-comments">
+    <div class="hsb--social-sharing">
+      <a target="_blank" class="share-popup" href="http://twitter.com/share?text=How To Monitor Your System Security with osquery on Ubuntu 16.04&amp;url=https://www.digitalocean.com/community/tutorials/how-to-monitor-your-system-security-with-osquery-on-ubuntu-16-04?utm_content=how-to-monitor-your-system-security-with-osquery-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=twshare">
+        <span class="icon icon-helpfulness-twitter"></span>
+</a>
+      <a target="_blank" class="share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/how-to-monitor-your-system-security-with-osquery-on-ubuntu-16-04?utm_content=how-to-monitor-your-system-security-with-osquery-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=fbshare">
+        <span class="icon icon-helpfulness-facebook"></span>
+</a>
+      <a target="_blank" class="share-popup" href="https://news.ycombinator.com/submitlink?t=How To Monitor Your System Security with osquery on Ubuntu 16.04&amp;u=https://www.digitalocean.com/community/tutorials/how-to-monitor-your-system-security-with-osquery-on-ubuntu-16-04?utm_content=how-to-monitor-your-system-security-with-osquery-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=hnshare">
+        <span class="icon icon-helpfulness-hacker-news"></span>
+</a>    </div>
+
+    <div class="hsb--comment">
+      <span class="icon icon-helpfulness-comment"></span>
+      <strong class="amount">2</strong>
+    </div>
+  </div>
+</div>
+
+
+</div>
+
+
+  
+    <div class='related-tutorials'>
+    <div class='section-content'>
+      <h2>Related</h2>
+
+      <ul>
+        <li title="How To Use Vundle to Manage Vim Plugins on a Linux VPS">
+  <a class="panel" href="/community/tutorials/how-to-use-vundle-to-manage-vim-plugins-on-a-linux-vps">
+    <h6>Tutorial</h6>
+    <div class="panel-data">
+      <h5>How To Use Vundle to Manage Vim Plugins on a Linux VPS</h5>
+      <p>Adding plugins to the vim text editor can enhance the functionality of your text editor.  However, managing plugins can get overwhelming when you are dealing with more than a few, especially if they have similar names.  To address this problem, vundle, a vim plugin manager was created.  In this guide, we&#39;ll talk about how to install and use vundle to manage your vim plugins.</p>
+    </div>
+  </a>
+</li>
+<li title="How To Use the Linux Fuser Command">
+  <a class="panel" href="/community/tutorials/how-to-use-the-linux-fuser-command">
+    <h6>Tutorial</h6>
+    <div class="panel-data">
+      <h5>How To Use the Linux Fuser Command</h5>
+      <p>The fuser command is a very smart unix utility used to find which process is using a file, a directory or a socket. It also gives information about the user owning the process and the type of access, as well as displays the process id(PID) of every process using the specified files or file systems.</p>
+    </div>
+  </a>
+</li>
+<li title="How To Configure Collectd to Gather System Metrics for Graphite on Ubuntu 14.04">
+  <a class="panel" href="/community/tutorials/how-to-configure-collectd-to-gather-system-metrics-for-graphite-on-ubuntu-14-04">
+    <h6>Tutorial</h6>
+    <div class="panel-data">
+      <h5>How To Configure Collectd to Gather System Metrics for Graphite on Ubuntu 14.04</h5>
+      <p>Collectd is a daemon that can be configured to collect statistics about your server and common services.  In this guide, we will install and configure collectd to collect system statistics and send them to Graphite for visualization.  We will set this up using an Ubuntu 14.04 server.</p>
+    </div>
+  </a>
+</li>
+<li title="How To Install and Use Graphite on an Ubuntu 14.04 Server">
+  <a class="panel" href="/community/tutorials/how-to-install-and-use-graphite-on-an-ubuntu-14-04-server">
+    <h6>Tutorial</h6>
+    <div class="panel-data">
+      <h5>How To Install and Use Graphite on an Ubuntu 14.04 Server</h5>
+      <p>Tracking statistics is a great way to make informed decisions about your systems, servers, and applications.  Graphite is a graphing library that can be used to render customized graphs for any kind of data that is send to it.  In this guide, we&#39;ll talk about how to install and use Graphite on an Ubuntu 14.04 server.</p>
+    </div>
+  </a>
+</li>
+
+      </ul>
+    </div>
+  </div>
+
+
+  <div class='looking-for-an-answer'>
+  <div class='section-content'>
+    <h4>Still looking for an answer?</h4>
+
+    <div class="lfa--actions">
+      <a href="/community/questions/new?tags=Security%2CMonitoring%2CLogging%2CSystem+Tools" class="lfa--action-box">
+        <span class="icon icon-look-for-answer-question"></span>
+        Ask a question
+      </a>
+      <a href="#q" class="lfa--action-box">
+        <span class="icon icon-look-for-answer-search-thin"></span>
+        Search for more help
+      </a>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="content-comments">
+  <div class="section-content">
+    <div class="tutorial commentable" id="tutorial_2259">
+
+  <div class="comments-header">
+    <h4 class="comments-count">
+        <span>2 Comments</span>
+    </h4>
+  </div>
+
+    <div class="response response-form no-avatar">
+  <div class="js-display-on-error flash error hidden"></div>
+
+
+  <form class="content-form disabled-form" id="new_comment" action="/community/tutorials/how-to-monitor-your-system-security-with-osquery-on-ubuntu-16-04/comments" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="&#x2713;" />
+
+    <textarea name="comment[content]" id="comment_content" placeholder="Leave a comment..." class="js-comment-content tutorial-comment-field" data-markdown="true">
+</textarea>
+
+      <div class="log-in-notice "><a href="/community/auth/digitalocean">Log In to Comment</a></div>
+
+    <div class='clearfix'></div>
+</form>
+</div>
+
+
+  <div class="comments">
+    <ul class="response-list">
+          <a class="js-click-on-load hidden" rel="nofollow" data-remote="true" href="/community/tutorials/how-to-monitor-your-system-security-with-osquery-on-ubuntu-16-04/comments">Load</a>
+    </ul>
+
+      <div class='comments-spinner'><div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+</div>
+  </div>
+
+  <div class='load-more-container'></div>
+</div>
+
+
+  </div>
+</div>
+
+<div class="creative-commons">
+  <a class="creative-commons-image" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><img rel="license" alt="Creative Commons License" src="/assets/community/creativecommons-08b32a9279fcd47fcd78ac6a26331389.png" /></a>
+    <div class="license-text">This work is licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.</div>
+</div>
+
+
+
+
+
+
+        <div class="clearfix"></div>
+      </div>
+
+            <footer>
+        <section>
+            <a href="https://www.digitalocean.com/write-for-donations/" class="panel">
+            <div class="photo_wrap">
+              <img class="photo" src="https://digitalocean.cdn.prismic.io/digitalocean/70910e9fdeb57be46aaa209ce8d9b4dc8e117fab_w4do2.jpg" alt="">
+            </div>
+            <span class="heading">Become a contributor</span>
+            <p>
+                You get paid; we donate to tech nonprofits.
+            </p>
+          </a>
+            <a href="https://www.meetup.com/pro/digitalocean" class="panel">
+            <div class="photo_wrap">
+              <img class="photo" src="https://digitalocean.cdn.prismic.io/digitalocean/2491485f96735e5982e330914d8a617f85395fab_meetups.jpg" alt="">
+            </div>
+            <span class="heading">Connect with other developers</span>
+            <p>
+                Find a DigitalOcean Meetup near you.
+            </p>
+          </a>
+            <a href="https://www.digitalocean.com/community/newsletter" class="panel">
+            <div class="photo_wrap">
+              <img class="photo" src="https://digitalocean.cdn.prismic.io/digitalocean/ca12c951cc76f33037f3384bba9942545d160d82_iaan_illo.jpg" alt="">
+            </div>
+            <span class="heading">Get our biweekly newsletter</span>
+            <p>
+                Sign up for Infrastructure as a Newsletter.
+            </p>
+          </a>
+      </section>
+      <section class="slim ">
+        <span class="heading">Featured on Community</span>
+            <a href="https://www.digitalocean.com/community/tutorials/an-introduction-to-kubernetes">Intro to Kubernetes</a>
+            <a href="https://www.digitalocean.com/community/tutorial_series/how-to-code-in-python-3">Learn Python 3</a>
+            <a href="https://www.digitalocean.com/community/tutorials/machine-learning-projects-python-a-digitalocean-ebook">Machine Learning in Python</a>
+            <a href="https://www.digitalocean.com/community/tutorials/how-to-write-your-first-program-in-go">Getting started with Go</a>
+            <a href="https://www.digitalocean.com/community/tutorial_series/from-containers-to-kubernetes-with-node-js">Migrate Node.js to Kubernetes</a>
+        <hr>
+        <span class="heading">DigitalOcean Products</span>
+            <a href="https://www.digitalocean.com/products/droplets/">Droplets</a>
+            <a href="https://www.digitalocean.com/products/managed-databases/">Managed Databases</a>
+            <a href="https://www.digitalocean.com/products/kubernetes/">Managed Kubernetes</a>
+            <a href="https://www.digitalocean.com/products/spaces/">Spaces Object Storage</a>
+            <a href="https://marketplace.digitalocean.com/">Marketplace</a>
+      </section>
+        <section class="product">
+          <a class="copy" href="/products">
+            <h3>Welcome to the developer cloud</h3>
+            <p>DigitalOcean makes it simple to launch in the cloud and scale up as you grow – whether you’re running one virtual machine or ten thousand.</p>
+            <span class="link_text">Learn More</a>
+          </div>
+          <div class="feature">
+            <a class="img_wrap" href="/products">
+              <img class="photo" src="https://digitalocean.cdn.prismic.io/digitalocean/95c1215227aa7f39f2bd23076de28feb969741c7_cloud.digitalocean.com_projects_63f9252f-652b-4645-9c0c-bee96f2bc503_resources_ic0ce81-2.png" alt="DigitalOcean Cloud Control Panel">
+            </a>
+          </div>
+        </section>
+        <section class="dark">
+          <div class="vlist grow">
+            <a href="https://www.digitalocean.com">
+              <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+                <title>DigitalOcean Homepage</title>
+                <g fill="#0080FF" fill-rule="evenodd">
+                  <path
+                    d="M24.9153 50v-9.661c10.226 0 18.1638-10.1413 14.2372-20.904-1.4406-3.983-4.6327-7.1751-8.6158-8.6158C19.774 6.921 9.6327 14.8305 9.6327 25.0565H0C0 8.7571 15.7627-3.9548 32.8531 1.3842c7.4576 2.3446 13.418 8.2768 15.7345 15.7344C53.9266 34.2373 41.2429 50 24.9153 50">
+                  </path>
+                  <path
+                    d="M15.339 40.3672h9.6045v-9.6045H15.339zM7.9379 47.7684h7.401v-7.4012H7.938zM1.7514 40.3672H7.938v-6.1864H1.7514z">
+                  </path>
+                </g>
+              </svg>
+            </a>
+            <br><br>
+            © <script type="text/javascript">
+              document.write(new Date().getFullYear());
+
+            </script> DigitalOcean, LLC. All rights reserved.
+          </div>
+
+              <div class="vlist">
+                <span class="heading">Company</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/about/">About</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/about/leadership/">Leadership</a>
+                    </li>
+                    <li>
+                      <a href="https://blog.digitalocean.com/">Blog</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/careers/">Careers</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/partners/">Partners</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/referral-program/">Referral Program</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/press/">Press</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/legal/">Legal &amp; Security</a>
+                    </li>
+                </ul>
+              </div>
+              <div class="vlist">
+                <span class="heading">Products</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/">Products Overview</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/pricing/">Pricing</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/droplets/">Droplets</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/kubernetes/">Kubernetes</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/managed-databases/">Managed Databases</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/spaces/">Spaces</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/marketplace/">Marketplace</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/load-balancer/">Load Balancers</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/block-storage/">Block Storage</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/tools-and-integrations/">Tools &amp; Integrations</a>
+                    </li>
+                    <li>
+                      <a href="https://developers.digitalocean.com/documentation/">API</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/docs">Documentation</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/docs/release-notes/">Release Notes</a>
+                    </li>
+                </ul>
+              </div>
+              <div class="vlist">
+                <span class="heading">Community</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/tutorials">Tutorials</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/questions">Q&amp;A</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/tools">Tools and Integrations</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/tags">Tags</a>
+                    </li>
+                    <li>
+                      <a href="https://ideas.digitalocean.com/">Product Ideas</a>
+                    </li>
+                    <li>
+                      <a href="https://www.meetup.com/pro/digitalocean/?utm_source=do_www">Meetups</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/write-for-donations/">Write for DOnations</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/droplets-for-demos/">Droplets for Demos</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/hatch/">Hatch Startup Program</a>
+                    </li>
+                    <li>
+                      <a href="http://store.digitalocean.com/">Shop Swag</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/research/">Research Program</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/currents/">Currents Research</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/open-source/">Open Source</a>
+                    </li>
+                </ul>
+              </div>
+              <div class="vlist">
+                <span class="heading">Contact</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/support/">Support</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/company/contact/sales/">Sales</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/company/contact/#abuse">Report Abuse</a>
+                    </li>
+                    <li>
+                      <a href="https://status.digitalocean.com/">System Status</a>
+                    </li>
+                </ul>
+              </div>
+        </section>
+      </footer>
+
+
+      <div id='sign-in-modal' class='modal fade mini-modal' style="display: none;">
+  <div class='modal-dialog'>
+    <div class='modal-content'>
+      <div class='modal-header'>
+        <h1>Almost there!</h1>
+        <a class='close-button' data-dismiss='modal' aria-label="close"  href=''><span class='icon icon-close-light'></span></a>
+      </div>
+      <div class='modal-body'>
+        <div class='sign-in-message'>Sign into your account, or create a new one, to start interacting.</div>
+
+        <div class='sign-in-modal-actions'>
+          <a class="sign-in-link button blue-button" data-default-url="/community/auth/digitalocean" href="/community/auth/digitalocean">Log In</a>
+          <a class="sign-up-link button blue-button" data-default-url="/community/auth/digitalocean?display=sessionless+register" href="/community/auth/digitalocean?display=sessionless+register">Sign Up</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+      <script>
+    $(function() {
+      window.initHelpfulnessActions(2259);
+    });
+  </script>
+  <script>
+    $(function() {
+      var p, h5, panel, remainingSpace;
+      var lineHeight = 31, clamp = 1;
+
+      var panels = document.querySelectorAll('li .panel-data');
+
+      for (var i = 0, len = panels.length; i < len; i++) {
+        panel = panels[i];
+
+        p = panel.querySelector('p');
+        h5 = panel.querySelector('h5');
+        remainingSpace = panel.offsetHeight - h5.offsetHeight;
+
+        // Clamp text only when the remaining space isn't enought for p content.
+        if (remainingSpace < p.scrollHeight) {
+          clamp = parseInt(p.offsetHeight / lineHeight);
+
+          p.style.cssText = "-webkit-line-clamp:" + clamp +
+            "; display: -webkit-box; -webkit-box-orient: vertical;";
+        }
+      }
+    });
+  </script>
+
+  <script>
+    $(function() {
+      if (!!window.init_sharing) {
+        window.init_sharing();
+      }
+      new window.NewsletterSignup();
+      new window.GrowableMarkdown({ target: '[data-growable-markdown]' });
+    });
+  </script>
+  <script type="application/ld+json">
+    {"@context":"http://schema.org","@type":"Article","name":"How To Monitor Your System Security with osquery on Ubuntu 16.04","headline":"How To Monitor Your System Security with osquery on Ubuntu 16.04","alternativeHeadline":"How To Monitor Your System Security with osquery on Ubuntu 16.04","description":"osquery is an open-source security tool that takes an operating system and turns it into one giant database, with tables that you can query using SQL-like statements. With these queries, you can monitor file integrity, check on the status...","keywords":"System Tools,Monitoring,Logging,Security","url":"https://www.digitalocean.com/community/tutorials/how-to-monitor-your-system-security-with-osquery-on-ubuntu-16-04","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.digitalocean.com/community/tutorials/how-to-monitor-your-system-security-with-osquery-on-ubuntu-16-04"},"dateModified":"2017-02-15T20:21:13Z","inLanguage":"en","accessMode":"textual","accessModeSufficient":"textual","isAccessibleForFree":true,"license":"https://creativecommons.org/licenses/by-nc-sa/4.0/","publishingPrinciples":"https://www.digitalocean.com/community/tutorials/technical-recommendations-and-best-practices-for-digitalocean-s-tutorials","author":[{"@type":"Person","name":"finid","@id":"https://www.digitalocean.com/community/users/finid"}],"datePublished":"2017-02-15T20:18:13Z","editor":{"@type":"Person","name":"Brian Hogan","@id":"bhogan"},"image":{"@type":"ImageObject","url":"https://www.digitalocean.com/assets/community/illustrations/DigitalOcean_Community-02cc36407e7a978ed4fc9ed98f3ed87c.jpg","height":375,"width":750},"interactionStatistic":[{"@type":"InteractionCounter","interactionType":"http://schema.org/LikeAction","userInteractionCount":"11"},{"@type":"InteractionCounter","interactionType":"http://schema.org/CommentAction","userInteractionCount":"2"}],"sourceOrganization":{"@type":"Organization","name":"DigitalOcean Community","url":"https://www.digitalocean.com/community"},"publisher":{"@type":"Organization","name":"DigitalOcean","url":"https://www.digitalocean.com","logo":{"@type":"ImageObject","url":"https://assets.digitalocean.com/logos/DO_Logo_horizontal_blue.png","width":351,"height":60}}}
+  </script>
+
+
+    
+  </body>
+</html>

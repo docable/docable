@@ -4,7 +4,7 @@ setup:
     host: vagrant@127.0.0.1:2003
     privateKey: id_rsa
 
-../tutorials/61_ubuntu16_do.html:
+../tutorials/docable/61_ubuntu16_do.html:
   steps:
     - run: "First, create a sonarqube user:"
     - run: "Next, create the directory that will hold the SonarQube files:"

@@ -4,7 +4,7 @@ setup:
     host: vagrant@127.0.0.1:2003
     privateKey: id_rsa
 
-../tutorials/54_ubuntu16_vultr.html:
+../tutorials/docable/54_ubuntu16_vultr.html:
   steps:
     - run: "Install Ansible on your local machine or another server."
       persistent: p1

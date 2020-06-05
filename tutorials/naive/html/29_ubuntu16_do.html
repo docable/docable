@@ -1,0 +1,2127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Kubernetes Package Management with Helm and CI/CD with Jenkins X | DigitalOcean</title>
+
+<meta name="description" content="In this second article of the CI/CD with Kubernetes series, you will preview two Kubernetes-specific tools that have been developed to manage cloud native CI/CD: the Helm package manager and the Jenkins X pipeline automation tool. In order to effectiv">
+<meta name="keywords" content="Kubernetes Deployment CI/CD">
+
+<meta name="og:title" content="Kubernetes Package Management with Helm and CI/CD with Jenkins X | DigitalOcean">
+<meta name="og:description" content="In this second article of the CI/CD with Kubernetes series, you will preview two Kubernetes-specific tools that have been developed to manage cloud native CI/CD: the Helm package manager and the Jenkins X pipeline automation tool. In order to effectiv">
+<meta name="og:site_name" content="DigitalOcean">
+<meta name="og:type" content="article">
+<meta name="og:image" content="https://community-cdn-digitalocean-com.global.ssl.fastly.net/assets/tutorials/images/large/Kubernetes_CI-CD_-_Blog_Header.png?1550789889">
+
+<meta name="twitter:site" content="DigitalOcean">
+<meta name="twitter:title" content="Kubernetes Package Management with Helm and CI/CD with Jenkins X | DigitalOcean">
+<meta name="twitter:description" content="In this second article of the CI/CD with Kubernetes series, you will preview two Kubernetes-specific tools that have been developed to manage cloud native CI/CD: the Helm package manager and the Jenkins X pipeline automation tool. In order to effectiv">
+<meta name="twitter:creator" content="DigitalOcean">
+<meta name="twitter:card" content="photo" />
+<meta name="twitter:url" content="https://www.digitalocean.com/community/tutorials/webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x"/>
+<meta name="twitter:image" content="https://community-cdn-digitalocean-com.global.ssl.fastly.net/assets/tutorials/images/large/Kubernetes_CI-CD_-_Blog_Header.png?1550789889">
+
+  <link rel='canonical' href='https://www.digitalocean.com/community/tutorials/webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x'>
+
+<link rel="preconnect" href="https://digitalocean.cdn.prismic.io">
+<link rel="preconnect" href="https://hello.myfonts.net">
+
+
+    <link rel="stylesheet" media="all" href="/assets/community/application-b828e623bec3c41208f9f701850222a0.css" />
+
+    
+    <meta name="csrf-param" content="authenticity_token" />
+<meta name="csrf-token" content="j0F7dU7/4ICKt2457Hc3JQ5ZVgdZkAWP9XXy9h4POnkO1udnxzYGZX21J8at+TU/Y7/bL9qbfrev+vePr339Tw==" />
+    <script src="/assets/community/prerequisites-9a51dfaadf0d3629cc636286133a958d.js"></script>
+    <script>
+//<![CDATA[
+
+  window.cookieDomain = '.digitalocean.com';
+
+//]]>
+</script><script src="https://assets.digitalocean.com/cookieConsent/cookieConsent.js"></script>
+<link rel="stylesheet" href="https://assets.digitalocean.com/cookieConsent/cookieConsent.css">
+
+    <script type="text/javascript">
+  if(window.analytics=window.analytics||[],window.analytics.included)window.console&&console.error&&console.error("analytics.js included twice");else{window.analytics.included=!0,window.analytics.methods=["identify","group","track","page","pageview","alias","ready","on","once","off","trackLink","trackForm","trackClick","trackSubmit"],window.analytics.factory=function(a){return function(){var n=Array.prototype.slice.call(arguments);return n.unshift(a),window.analytics.push(n),window.analytics}};for(var i=0;i<window.analytics.methods.length;i++){var key=window.analytics.methods[i];window.analytics[key]=window.analytics.factory(key)}window.analytics.load=function(a){var n=document.createElement("script");n.type="text/javascript",n.async=!0,n.src=("https:"===document.location.protocol?"https://":"http://")+"cdn.segment.com/analytics.js/v1/"+a+"/analytics.min.js";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(n,t)},window.analytics.SNIPPET_VERSION="2.0.9",window.analytics.load("puo3uv968t")}
+  window.analytics.page();
+</script>
+
+<!-- Google Tag Manager -->
+<script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-KHWBBT');
+</script>
+<!-- End Google Tag Manager -->
+
+<script src="/assets/community/internalCookies-d2a3579f6b37d00c8045b16853b90462.js"></script>
+
+      <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="/community/tutorials/feed">
+    <script>
+      window.comApp = {
+        prefix: '/community',
+        svgIconPath: 'https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg',
+        railsEnv: 'production',
+        rootUrl: 'https://www.digitalocean.com/community',
+        algolia_application_id: '6ZHEUVKJ88',
+        algolia_api_key: 'c5470567eae7fa1177d43222e18ba086'
+      };
+    </script>
+      <script src="https://go.digitalocean.com/js/forms2/js/forms2.min.js"></script>
+
+    <script src="/assets/community/application-dd2f12c7d68945c016e67a784d8785fc.js"></script>
+  </head>
+  <body class="feature-filter-bar feature-upvotes tutorials-controller tutorial-single" data-env="production" data-prefix="/community" data-user-id="" data-facebook-app-id="694818843983011"   data-completed-tutorial-id="" data-tutorial-id="2909" data-js="tutorial"
+  data-upvote="null"
+  data-flagged=""
+>
+    
+
+    <div class='outside_viewport'>
+        <div id="contents-modal" class="modal fade mini-modal" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1>Contents</h1>
+          <button class="close-button icon icon-close-light" data-dismiss="modal" aria-label="close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="table-of-contents-modal"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="share-modal" class="modal fade mini-modal" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1>Share</h1>
+        <button type="button" class="close-button icon icon-close-light" aria-label="close" data-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="social-sharing social-sharing-container">
+          <ul class="top ">
+            <li class="shareBtn" id="sbTwitter">
+              <a href="http://twitter.com/share?text=Webinar Series: Kubernetes Package Management with Helm and CI/CD with Jenkins X&amp;url=https://www.digitalocean.com/community/tutorials/webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x?utm_content=webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x&amp;utm_medium=community&amp;utm_source=twshare" class="share-icon share-popup" title="Share on Twitter" target="_blank">
+                <span class="sIcon icon-bird"></span>
+              </a>
+              <a href="http://twitter.com/share?text=Webinar Series: Kubernetes Package Management with Helm and CI/CD with Jenkins X&amp;url=https://www.digitalocean.com/community/tutorials/webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x?utm_content=webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x&amp;utm_medium=community&amp;utm_source=twshare" class="share-link share-popup" title="Share on Twitter" target="_blank">
+                Twitter
+              </a>
+            </li>
+            <li class="shareBtn" id="sbFacebook">
+              <a class="share-icon share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x?utm_content=webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+                <span class="sIcon icon-facebook-B"></span>
+              </a>
+
+              <a class="share-link share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x?utm_content=webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+                Facebook
+              </a>
+            </li>
+            <li class="shareBtn" id="sbYC">
+              <a href="https://news.ycombinator.com/submitlink?t=Webinar Series: Kubernetes Package Management with Helm and CI/CD with Jenkins X&amp;u=https://www.digitalocean.com/community/tutorials/webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x?utm_content=webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x&amp;utm_medium=community&amp;utm_source=hnshare" class="share-icon share-popup" target="_blank" title="Submit to Hacker News">
+                <span class="sIcon icon-hacker-news"></span>
+              </a>
+              <a href="https://news.ycombinator.com/submitlink?t=Webinar Series: Kubernetes Package Management with Helm and CI/CD with Jenkins X&amp;u=https://www.digitalocean.com/community/tutorials/webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x?utm_content=webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x&amp;utm_medium=community&amp;utm_source=hnshare" class="share-link share-popup" target="_blank" title="Submit to Hacker News">
+                Hacker News
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <div class="table-of-contents">
+    <div data-js="tableOfContentsDesktop"></div>
+  </div>
+  
+  
+  
+  <div id="share-modal" class="modal fade mini-modal" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1>Share</h1>
+        <button type="button" class="close-button icon icon-close-light" aria-label="close" data-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="social-sharing social-sharing-container">
+          <ul class="bottom ">
+            <li class="shareBtn" id="sbTwitter">
+              <a href="http://twitter.com/share?text=Webinar Series: Kubernetes Package Management with Helm and CI/CD with Jenkins X&amp;url=https://www.digitalocean.com/community/tutorials/webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x?utm_content=webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x&amp;utm_medium=community&amp;utm_source=twshare" class="share-icon share-popup" title="Share on Twitter" target="_blank">
+                <span class="sIcon icon-bird"></span>
+              </a>
+              <a href="http://twitter.com/share?text=Webinar Series: Kubernetes Package Management with Helm and CI/CD with Jenkins X&amp;url=https://www.digitalocean.com/community/tutorials/webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x?utm_content=webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x&amp;utm_medium=community&amp;utm_source=twshare" class="share-link share-popup" title="Share on Twitter" target="_blank">
+                Twitter
+              </a>
+            </li>
+            <li class="shareBtn" id="sbFacebook">
+              <a class="share-icon share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x?utm_content=webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+                <span class="sIcon icon-facebook-B"></span>
+              </a>
+
+              <a class="share-link share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x?utm_content=webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+                Facebook
+              </a>
+            </li>
+            <li class="shareBtn" id="sbYC">
+              <a href="https://news.ycombinator.com/submitlink?t=Webinar Series: Kubernetes Package Management with Helm and CI/CD with Jenkins X&amp;u=https://www.digitalocean.com/community/tutorials/webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x?utm_content=webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x&amp;utm_medium=community&amp;utm_source=hnshare" class="share-icon share-popup" target="_blank" title="Submit to Hacker News">
+                <span class="sIcon icon-hacker-news"></span>
+              </a>
+              <a href="https://news.ycombinator.com/submitlink?t=Webinar Series: Kubernetes Package Management with Helm and CI/CD with Jenkins X&amp;u=https://www.digitalocean.com/community/tutorials/webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x?utm_content=webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x&amp;utm_medium=community&amp;utm_source=hnshare" class="share-link share-popup" target="_blank" title="Submit to Hacker News">
+                Hacker News
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div id="newsletter-signup-dialog" class="newsletter-signups-dialog" data-newsletter-signup-dialog data-article-target=".content-body">
+  <div class="form-message">
+  <div class="pull-right">
+    <a href="javascript:;" class="newsletter-signups-dialog-dismiss" data-newsletter-signup-dismiss>&times;</a>
+
+  </div>
+  <h4 class="newsletter-signups-dialog-title">
+    Sign up for our newsletter.
+  </h4>
+  <p class="newsletter-signups-dialog-description">
+    Get the latest tutorials on SysAdmin and open source topics.
+  </p>
+  <form class="newsletter-signup" id="new_newsletter_signup" data-newsletter-signup="true" action="/community/newsletter" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="&#x2713;" />
+
+  <input data-newsletter-signup-field="url" type="hidden" name="newsletter_signup[url]" id="newsletter_signup_url" />
+  <input data-newsletter-signup-field="title" type="hidden" name="newsletter_signup[title]" id="newsletter_signup_title" />
+
+  <div class="newsletter-signup-ajax-error" data-newsletter-signup-ajax-error></div>
+
+
+  <div class="form-group">
+    <input placeholder="Enter your email address" required="required" class="field" type="email" name="newsletter_signup[email]" id="newsletter_signup_email" />
+  </div>
+
+  <button data-disable-with="Sign Up" class="button blue-button">
+    Sign Up
+  </button>
+
+</form>
+
+</div>
+
+<div class="thanks-message hidden" data-newsletter-signup-successful> 
+  <div class='pull-right'> 
+    <a href='javascript:;' class='newsletter-signups-dialog-dismiss icon icon-close-light' data-newsletter-signup-dismiss></a> 
+  </div> 
+
+  <span class='newsletter-signups-dialog-success'> 
+    Thanks for signing up! 
+  </span> 
+</div>
+
+</div>
+
+
+      
+    </div>
+
+      
+      
+<div style="display: none;">
+  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <symbol id="do_nav-logo" xmlns="http://www.w3.org/2000/svg"> <title>DigitalOcean home</title> <g fill="currentColor" fill-rule="evenodd"> <path d="M14.4942 29v-5.5674c5.9572 0 10.5633-5.8478 8.2892-12.059-.8425-2.3006-2.693-4.1355-5.0126-4.9706-6.262-2.2534-12.1564 2.3135-12.1573 8.2207 0 0-.0006.0014-.0014.0014H0C0 5.2123 9.1687-2.1167 19.1138.9624c4.3459 1.3457 7.7993 4.7708 9.1561 9.081C31.3742 19.9068 23.985 29 14.4942 29"></path> <path d="M14.507 23.4468H8.9103v-5.549s.0005-.0011.0011-.0011h5.5949c.0006 0 .0009.0006.0009.0006v5.5495M8.9093 27.7118H4.6105l-.0012-.0012v-4.2638h4.3009v4.2638l-.0009.0012M4.6125 23.4468H1.0088c-.0015 0-.0026-.0012-.0026-.0012v-3.5724s.0011-.0025.0026-.0025h3.601c.0015 0 .0027.0011.0027.0011v3.575M43.2806 9.6357h1.649c1.8346 0 3.345.358 4.49 1.0647 1.2714.7603 1.9164 2.2069 1.9164 4.2991 0 2.1554-.6465 3.6671-1.9207 4.4942h-.0008c-1.0971.7196-2.5981 1.0846-4.462 1.0846h-1.6719V9.6357zm8.324-1.0736c-1.6598-1.142-3.7252-1.721-6.1387-1.721h-5.2537V23.373h5.2537c2.4074 0 4.4737-.6113 6.1407-1.8157.907-.6382 1.6197-1.5304 2.1185-2.651.4962-1.1144.7479-2.4288.7479-3.9067 0-1.4605-.2517-2.758-.7482-3.857-.4988-1.104-1.212-1.972-2.1202-2.5804zM58.1303 6.6376c-.5051 0-.9403.1777-1.2906.5254-.3546.335-.5346.7597-.5346 1.2618 0 .501.1791.9322.532 1.2825.3529.35.788.528 1.2932.528.5042 0 .9394-.178 1.2928-.528.3535-.3508.5324-.7821.5324-1.2825 0-.5015-.18-.926-.5324-1.2592-.3534-.3503-.7886-.528-1.2928-.528M56.6247 23.3729h2.9538V11.7294h-2.9538zM69.5321 19.5787c-.5162.5814-1.1793.8635-2.0264.8635-.8471 0-1.5064-.282-2.015-.863-.5065-.5777-.7637-1.3439-.7637-2.2773 0-.9479.2572-1.7238.764-2.3058.502-.576 1.1796-.8683 2.0147-.8683.8465 0 1.5096.284 2.0262.8695.5142.582.7751 1.3573.7751 2.3046 0 .9328-.2609 1.6988-.7749 2.2768zm.775-6.8767c-.8908-.7858-1.8858-1.2444-2.9614-1.2444-1.6305 0-2.9859.5598-4.0276 1.662-1.0555 1.0932-1.5907 2.5006-1.5907 4.1823 0 1.644.5269 3.0464 1.568 4.1709 1.0498 1.088 2.4123 1.6396 4.0503 1.6396 1.139 0 2.1182-.3144 2.9157-.9356v.268c0 .9662-.2608 1.7176-.7751 2.234-.5137.5154-1.226.7764-2.1173.7764-1.3637 0-2.2183-.5314-3.2589-1.9262l-2.0115 1.917.0542.0754c.4346.605 1.1 1.197 1.9785 1.7594.8787.5603 1.9832.8447 3.2832.8447 1.7536 0 3.1726-.5363 4.2172-1.5933 1.0506-1.0628 1.5835-2.486 1.5835-4.2286V11.7294H70.307v.9726zM75.7434 23.3729h2.9541V11.7294h-2.9541zM77.249 6.6376c-.5052 0-.94.1777-1.2906.5254-.3547.335-.5344.7597-.5344 1.2618 0 .501.1789.9322.532 1.2825.353.35.7878.528 1.293.528.5045 0 .9396-.178 1.2928-.528.3535-.3508.5323-.7821.5323-1.2825 0-.5015-.1797-.926-.5323-1.2592-.3532-.3503-.7883-.528-1.2929-.528M85.1724 8.5831h-2.9082v3.1463h-1.6888v2.6702h1.6888v4.8365c0 1.5134.3047 2.5964.9064 3.2181.6031.6247 1.6741.9414 3.1831.9414.48 0 .963-.0156 1.4354-.0463l.133-.0088v-2.6683l-1.013.0526c-.7033 0-1.1728-.1226-1.3961-.3637-.226-.245-.3406-.7636-.3406-1.5404v-4.421h2.7497v-2.6703h-2.7497V8.583M101.7735 23.3729h2.9544V6.8412h-2.9544zM134.5728 19.2094c-.5286.5874-1.0693 1.0966-1.4855 1.3613v.0005c-.4085.2599-.924.3918-1.532.3918-.8703 0-1.5703-.3144-2.1405-.9621-.567-.644-.8545-1.4716-.8545-2.4613s.2838-1.8162.8436-2.4556c.5625-.6434 1.2588-.9562 2.1285-.9562.9515 0 1.9548.5869 2.8145 1.5947l1.9525-1.8568c-1.273-1.6433-2.897-2.4081-4.8352-2.4081-1.622 0-3.028.5862-4.1788 1.7411-1.1446 1.147-1.7251 2.6074-1.7251 4.3409 0 1.7335.58 3.1977 1.7234 4.352 1.1447 1.1557 2.5514 1.7417 4.1805 1.7417 2.139 0 3.8651-.9158 5.029-2.5935l-1.9204-1.8304M140.2405 16.0973c.1422-.5567.401-1.0207.7714-1.381.4005-.3906.9214-.5885 1.5489-.5885.716 0 1.2702.2019 1.6474.6014.3495.3696.5467.8296.588 1.368h-4.5557zm6.4569-2.7414c-.4191-.5788-.9896-1.0448-1.6965-1.3854-.7047-.3404-1.526-.513-2.441-.513-1.6489 0-2.9982.6037-4.0113 1.7946-.9836 1.182-1.4818 2.651-1.4818 4.3665 0 1.7648.547 3.2253 1.6254 4.341 1.0727 1.1105 2.5083 1.6737 4.267 1.6737 1.992 0 3.627-.799 4.8587-2.3752l.0666-.0847-1.9273-1.837c-.1789.2139-.4317.4561-.6628.6722-.2918.273-.5659.4842-.8588.6289-.4415.218-.9369.3255-1.4907.3255-.8187 0-1.4964-.2388-2.0147-.71-.4847-.4403-.768-1.0345-.843-1.7683h7.8265l.0264-1.0693c0-.7569-.1038-1.4862-.3088-2.1677a6.312 6.312 0 0 0-.934-1.8918zM152.797 18.9234c.3352-.2318.8085-.3483 1.4073-.3483.7112 0 1.4654.1413 2.2426.421v1.1421c-.6421.592-1.4996.8922-2.5499.8922-.5114 0-.909-.1126-1.1822-.3355-.2683-.218-.3985-.4955-.3985-.847 0-.3994.1571-.7022.4808-.9245zm5.2452-6.3229h-.0003c-.8952-.758-2.1328-1.143-3.678-1.143-.9829 0-1.902.2144-2.7336.6324-.7691.387-1.5245 1.0275-2.0043 1.8662l.0298.0358 1.8917 1.796c.7791-1.2322 1.6454-1.66 2.7941-1.66.6172 0 1.1298.1643 1.5234.4881.3916.3216.5819.7304.5819 1.249v.5652c-.7324-.221-1.4629-.333-2.1738-.333-1.47 0-2.6663.3432-3.555 1.0193-.9.6852-1.3562 1.665-1.3562 2.9125 0 1.094.3847 1.9829 1.1461 2.6433.7677.6372 1.7275.961 2.8524.961 1.1246 0 2.177-.4495 3.132-1.2191v.9587h2.9089v-7.4852c0-1.4173-.4572-2.523-1.3591-3.2872zM170.7656 12.8285c-.8227-.9092-1.9791-1.371-3.4371-1.371-1.172 0-2.1236.3338-2.8357.9926v-.7207h-2.897v11.6435h2.954v-6.4215c0-.8823.2119-1.5828.6293-2.0826.4162-.4987.989-.741 1.75-.741.6691 0 1.1765.2167 1.5506.662.3759.4474.5662 1.0638.5662 1.8335v6.7496H172v-6.7496c0-1.6127-.415-2.889-1.2344-3.7948M92.8158 18.9234c.3351-.2318.8087-.3483 1.4075-.3483.7112 0 1.4652.1413 2.2426.421v1.1421c-.6421.592-1.4998.8922-2.5502.8922-.5114 0-.9087-.1126-1.1819-.3355-.2683-.218-.3988-.4955-.3988-.847 0-.3994.1574-.7022.4808-.9245zm5.2451-6.3229h-.0003c-.8952-.758-2.1328-1.143-3.6776-1.143-.983 0-1.902.2144-2.7337.6324-.7694.387-1.5247 1.0275-2.0043 1.8662l.0295.0358 1.8917 1.796c.7792-1.2322 1.6458-1.66 2.7941-1.66.6172 0 1.1298.1643 1.5234.4881.3916.3216.5822.7304.5822 1.249v.5652c-.7327-.221-1.4631-.333-2.174-.333-1.47 0-2.6664.3432-3.555 1.0193-.8999.6852-1.3562 1.665-1.3562 2.9125 0 1.094.3847 1.9829 1.1463 2.6433.7677.6372 1.7272.961 2.8524.961 1.1246 0 2.1766-.4495 3.1318-1.2191v.9587H99.42v-7.4852c0-1.4173-.457-2.523-1.359-3.2872zM115.4464 9.5808c-3.0682 0-5.5645 2.4755-5.5645 5.5188s2.4963 5.5188 5.5645 5.5188c3.0682 0 5.5645-2.4755 5.5645-5.5188s-2.4963-5.5188-5.5645-5.5188zm0 14.0408c-4.7383 0-8.5928-3.8228-8.5928-8.522 0-4.6994 3.8545-8.5223 8.5928-8.5223 4.738 0 8.5925 3.8229 8.5925 8.5223 0 4.6992-3.8545 8.522-8.5925 8.522z"></path> </g> </symbol>
+    <symbol id="do_nav-community_logo" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 532.2 99.8" fill="currentColor"> <path class="st0" d="M98.5,23c15.5,0,27.7,12.1,27.7,28.2c0,16.1-12.3,28.1-27.7,28.1c-15.6,0-27.7-11.9-27.7-28.1 C70.8,35.1,82.9,23,98.5,23z M98.5,67.9c8.7,0,14.9-7,14.9-16.8c0-9.8-6.2-16.8-14.9-16.8c-8.8,0-15,7-15,16.8 C83.5,60.9,89.7,67.9,98.5,67.9z"/> <path class="st0" d="M166.8,45.9c0-7-3.5-11.6-9.9-11.6c-7.2,0-11.1,5.3-11.1,13.1V78h-12.5V24.3h12.3V29c2.4-2.8,7-6,13.9-6 c7.3,0,12.2,3.1,15,7c4.4-4.9,10-7,16.8-7c14.4,0,21.4,8.5,21.4,23.8V78h-12.5V45.9c0-7-3.5-11.6-9.9-11.6 c-7.2,0-11.2,5.3-11.2,13.1V78h-12.4V45.9z"/> <path class="st0" d="M255.5,45.9c0-7-3.5-11.6-9.9-11.6c-7.2,0-11.1,5.3-11.1,13.1V78h-12.5V24.3h12.3V29c2.4-2.8,7-6,13.9-6 c7.3,0,12.2,3.1,15,7c4.4-4.9,10-7,16.8-7c14.4,0,21.4,8.5,21.4,23.8V78h-12.5V45.9c0-7-3.5-11.6-9.9-11.6 c-7.2,0-11.2,5.3-11.2,13.1V78h-12.4V45.9z"/> <path class="st0" d="M322.5,56.4c0,7,3.6,11.6,10.1,11.6c7.2,0,11.2-5.6,11.2-13.5V24.3h12.5V78h-12.3v-4.4 c-3.4,3.7-8.1,5.6-13.9,5.6c-11.9,0-20.1-8.4-20.1-23.7V24.3h12.5V56.4z"/> <path class="st0" d="M378.2,78h-12.5V24.3h12.3v4.4c2.7-3.1,7.7-5.7,13.9-5.7c13.1,0,21.3,8.5,21.3,23.8V78h-12.5V46.8 c0-7.5-3.7-12.5-10.6-12.5c-7.8,0-11.8,5.6-11.8,14V78z"/> <path class="st0" d="M427.8,0.2c4.4,0,7.9,3.4,7.9,7.8s-3.5,7.9-7.9,7.9c-4.4,0-7.9-3.5-7.9-7.9S423.4,0.2,427.8,0.2z M421.4,24.3 h12.5V78h-12.5V24.3z"/> <path class="st0" d="M446.7,59.1V35.5h-6.5V24.3h6.5v-15H459v15h12.2v11.2H459v21.7c0,7.8,1.8,9.8,8.8,9.8c1.2,0,4.1-0.2,4.1-0.2 v11.2c0,0-2.4,0.2-6.7,0.2C451.2,78.1,446.7,72.7,446.7,59.1z"/> <path class="st0" d="M497.3,78.7l-21.3-54.4h14.2l14,38.8l14.2-38.8h13.6l-24.1,60.2c-3.7,9.4-7.2,15.3-21.3,15.3 c-2.5,0-4.8-0.1-4.8-0.1V88c0,0,1.5,0.1,2.8,0.1c7.6,0,9.8-2.3,11.8-7.8L497.3,78.7z"/> <path class="st0" d="M62.4,55.9c-5.3,7-12.2,11.4-22.1,11.4c-15.6,0-27-11.7-27-27.5c0-16.1,11.4-27.8,26.5-27.8 c10,0,16.8,4.8,21.3,11.3l8.4-8.8C63.1,5.7,53.3,0,39.7,0C17.1,0,0,15.9,0,39.8c0,23.4,17.1,39.4,40.1,39.4c13.1,0,22-4.9,28.6-12.2 L62.4,55.9z"/> </symbol>
+    <symbol id="do_nav-control_panel_icon" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M19.6875 23.4862C19.6885 23.9722 19.4965 24.4388 19.1537 24.7833C18.8109 25.1279 18.3454 25.3222 17.8594 25.3237H3.23438C2.99366 25.3232 2.75539 25.2753 2.53321 25.1827C2.31102 25.09 2.10927 24.9545 1.93949 24.7839C1.7697 24.6132 1.63522 24.4108 1.54373 24.1881C1.45223 23.9655 1.40552 23.727 1.40626 23.4862V3.25498C1.40577 3.01417 1.45271 2.77562 1.54441 2.55295C1.63611 2.33028 1.77077 2.12785 1.9407 1.95722C2.11063 1.7866 2.31251 1.65111 2.5348 1.5585C2.75709 1.46589 2.99545 1.41797 3.23626 1.41748L17.8613 1.44186C18.347 1.44384 18.812 1.63843 19.1544 1.98292C19.4968 2.32741 19.6885 2.79366 19.6875 3.27936V23.4862Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M43.5863 12.27C43.5828 12.7516 43.3883 13.212 43.0456 13.5503C42.7028 13.8885 42.2397 14.0768 41.7582 14.0738H27.1332C26.8947 14.0755 26.6582 14.0302 26.4372 13.9405C26.2162 13.8507 26.015 13.7183 25.8453 13.5508C25.6755 13.3833 25.5404 13.1839 25.4477 12.9642C25.355 12.7444 25.3065 12.5085 25.3051 12.27V3.24565C25.308 2.76461 25.5019 2.30442 25.8439 1.96621C26.186 1.62799 26.6484 1.43941 27.1294 1.4419L41.7544 1.41753C42.2365 1.41403 42.7002 1.60205 43.0437 1.94027C43.3872 2.27849 43.5823 2.73924 43.5863 3.22128V12.27Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M19.6875 41.7956C19.686 42.0347 19.6375 42.2712 19.5446 42.4915C19.4518 42.7118 19.3164 42.9117 19.1463 43.0797C18.9762 43.2477 18.7747 43.3806 18.5532 43.4707C18.3318 43.5609 18.0947 43.6065 17.8556 43.605L3.23063 43.5806C2.74908 43.5826 2.28644 43.3934 1.94436 43.0545C1.60228 42.7155 1.40873 42.2547 1.40625 41.7731V32.7563C1.40748 32.5175 1.45575 32.2813 1.54831 32.0612C1.64087 31.8412 1.7759 31.6415 1.94569 31.4736C2.11547 31.3057 2.31667 31.173 2.53779 31.0829C2.75892 30.9929 2.99562 30.9473 3.23438 30.9488H17.8594C18.3414 30.9463 18.8047 31.1352 19.1475 31.4742C19.4903 31.8131 19.6845 32.2742 19.6875 32.7563V41.7956Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M27.1349 43.605C26.894 43.6045 26.6555 43.5565 26.433 43.4638C26.2106 43.3711 26.0087 43.2354 25.8387 43.0646C25.6688 42.8937 25.5341 42.6911 25.4426 42.4682C25.351 42.2453 25.3042 42.0066 25.3049 41.7656V21.5381C25.3042 21.2973 25.3509 21.0587 25.4424 20.8359C25.5338 20.6132 25.6683 20.4106 25.8381 20.2398C26.0078 20.069 26.2095 19.9333 26.4317 19.8405C26.6539 19.7476 26.8923 19.6995 27.1331 19.6987H41.7581C41.9989 19.6995 42.2372 19.7476 42.4594 19.8405C42.6816 19.9333 42.8833 20.069 43.0531 20.2398C43.2228 20.4106 43.3573 20.6132 43.4488 20.8359C43.5402 21.0587 43.5869 21.2973 43.5862 21.5381V41.7412C43.5872 42.2271 43.3955 42.6935 43.0532 43.0383C42.7109 43.3831 42.2458 43.5781 41.7599 43.5806L27.1349 43.605Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+    <symbol id="do_nav-community_icon" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#clip0)"> <path d="M12.6562 10.5469C12.6562 9.85155 12.8624 9.17184 13.2487 8.5937C13.635 8.01556 14.1841 7.56495 14.8265 7.29886C15.4689 7.03277 16.1758 6.96315 16.8577 7.0988C17.5397 7.23445 18.1661 7.56929 18.6578 8.06095C19.1495 8.55262 19.4843 9.17905 19.6199 9.86101C19.7556 10.543 19.686 11.2499 19.4199 11.8922C19.1538 12.5346 18.7032 13.0837 18.1251 13.47C17.5469 13.8563 16.8672 14.0625 16.1719 14.0625" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M16.1719 18.2812C16.0328 18.2812 15.8969 18.3225 15.7812 18.3997C15.6656 18.477 15.5755 18.5868 15.5223 18.7153C15.4691 18.8438 15.4551 18.9852 15.4823 19.1215C15.5094 19.2579 15.5764 19.3832 15.6747 19.4816C15.773 19.5799 15.8983 19.6469 16.0347 19.674C16.1711 19.7011 16.3125 19.6872 16.4409 19.634C16.5694 19.5808 16.6792 19.4906 16.7565 19.375C16.8338 19.2594 16.875 19.1234 16.875 18.9844C16.875 18.7979 16.8009 18.6191 16.6691 18.4872C16.5372 18.3553 16.3584 18.2812 16.1719 18.2812Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M32.3438 4.21875V12.6562" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M29.5312 1.40625C30.2772 1.40625 30.9925 1.70257 31.52 2.23001C32.0474 2.75746 32.3438 3.47283 32.3438 4.21875" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M4.21875 1.40625H29.5312" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M1.40625 4.21875C1.40625 3.47283 1.70257 2.75746 2.23001 2.23001C2.75746 1.70257 3.47283 1.40625 4.21875 1.40625" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M1.40625 23.9062V4.21875" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M4.21875 26.7188C3.47283 26.7187 2.75746 26.4224 2.23001 25.895C1.70257 25.3675 1.40625 24.6522 1.40625 23.9062" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M9.84375 26.7188H4.21875" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M9.84375 35.1562V26.7188" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M15.4688 30.9375L9.84375 35.1562" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M43.5938 35.1562H37.9688V43.5938L29.5312 35.1562H21.0938V18.2812H43.5938V35.1562Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M32.3438 23.9062V29.5312" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </g> <defs> <clipPath id="clip0"> <rect width="45" height="45" fill="white"/> </clipPath> </defs> </symbol>
+    <symbol id="do_nav-search" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M15.7 13.3l-3.81-3.83A5.93 5.93 0 0 0 13 6c0-3.31-2.69-6-6-6S1 2.69 1 6s2.69 6 6 6c1.3 0 2.48-.41 3.47-1.11l3.83 3.81c.19.2.45.3.7.3.25 0 .52-.09.7-.3a.996.996 0 0 0 0-1.41v.01zM7 10.7c-2.59 0-4.7-2.11-4.7-4.7 0-2.59 2.11-4.7 4.7-4.7 2.59 0 4.7 2.11 4.7 4.7 0 2.59-2.11 4.7-4.7 4.7z"></path></symbol>
+    <symbol id="do_nav-logomark" x="0px" y="0px" viewBox="65.2 173.5 180 180" fill="currentColor"><path d="M155.2,351.7v-34.2c36.2,0,64.3-35.9,50.4-74c-5.1-14.1-16.4-25.4-30.5-30.5c-38.1-13.8-74,14.2-74,50.4l0,0H67c0-57.7,55.8-102.7,116.3-83.8c26.4,8.3,47.5,29.3,55.7,55.7C257.9,295.9,213,351.7,155.2,351.7z"/> <polygon points="155.3,317.6 121.3,317.6 121.3,283.6 121.3,283.6 155.3,283.6 155.3,283.6"/> <polygon points="121.3,343.8 95.1,343.8 95.1,343.8 95.1,317.6 121.3,317.6"/> <path d="M95.1,317.6H73.2l0,0v-21.9l0,0h21.9l0,0V317.6z"/></symbol>
+    <symbol id="do_nav-write4do" viewBox="0 0 30 30" fill="none" stroke="currentColor"> <path d="M16.3063 17.67L11.6663 18.3338L12.3288 13.6925L24.2613 1.76002C24.7887 1.23257 25.5041 0.936249 26.25 0.936249C26.6194 0.936249 26.9851 1.009 27.3263 1.15034C27.6675 1.29168 27.9776 1.49885 28.2388 1.76002C28.4999 2.02118 28.7071 2.33123 28.8484 2.67246C28.9898 3.01369 29.0625 3.37942 29.0625 3.74877C29.0625 4.11811 28.9898 4.48384 28.8484 4.82507C28.7071 5.1663 28.4999 5.47635 28.2388 5.73752L16.3063 17.67Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M22.935 3.08624L26.9125 7.06374"  stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M23.4375 17.8125V27.1875C23.4375 27.6848 23.24 28.1617 22.8883 28.5133C22.5367 28.865 22.0598 29.0625 21.5625 29.0625H2.8125C2.31522 29.0625 1.83831 28.865 1.48667 28.5133C1.13504 28.1617 0.9375 27.6848 0.9375 27.1875V8.4375C0.9375 7.94022 1.13504 7.46331 1.48667 7.11167C1.83831 6.76004 2.31522 6.5625 2.8125 6.5625H12.1875" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+    <symbol id="do_nav-meetups" viewBox="0 0 30 30" fill="none" stroke="currentColor"> <path d="M27.1901 4.6875H2.81506C1.77953 4.6875 0.940063 5.52697 0.940063 6.5625V27.1875C0.940063 28.223 1.77953 29.0625 2.81506 29.0625H27.1901C28.2256 29.0625 29.0651 28.223 29.0651 27.1875V6.5625C29.0651 5.52697 28.2256 4.6875 27.1901 4.6875Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M0.940063 12.1875H29.0651" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M8.44006 7.5V0.9375" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M21.5651 7.5V0.9375" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+    <symbol id="do_nav-hacktoberfest" viewBox="0 0 30 30" fill="none" stroke="currentColor"> <path d="M19.2063 24.9918L16.5714 22.3569V14.4854L13.986 17.0708V23.5755L12.5615 25L11.1371 23.5591V8.44175L10.7419 8.04652L8.93042 9.8662L8 8.94401L11.9358 5.00823L11.944 5.01647L12.1005 5.16468L13.9778 7.04199V13.8431L16.5632 11.2577V8.42528L15.2705 7.12433L17.3948 5L19.4286 7.03376V20.9572L20.4249 21.9535L21.6352 20.7431L22.5492 21.6571L19.2063 24.9918Z" fill="currentcolor"/> <rect x="0.75" y="0.75" width="28.5" height="28.5" rx="2.25" stroke-width="1.5" stroke="currentColor"/> </symbol>
+    <symbol id="do_nav-build" viewBox="0 0 16 16" fill="none" stroke="currentColor"> <path d="M1.5 14.5C1.23478 14.5 0.98043 14.3946 0.792893 14.2071C0.605357 14.0196 0.5 13.7652 0.5 13.5V2.57667C0.500879 2.29139 0.614596 2.01804 0.81632 1.81632C1.01804 1.6146 1.29139 1.50088 1.57667 1.5H14.4287C14.7125 1.50088 14.9845 1.61403 15.1852 1.81476C15.386 2.01548 15.4991 2.28747 15.5 2.57133V13.4233C15.4991 13.7086 15.3854 13.982 15.1837 14.1837C14.982 14.3854 14.7086 14.4991 14.4233 14.5H1.5Z" stroke-linecap="round" stroke-linejoin="round"/> <path d="M15.5 4.5H0.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M11 7.5L13 9.5L11 11.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M5 7.5L3 9.5L5 11.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M9 7.5L7 11.5" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+  </svg>
+</div>
+
+<nav class="do_nav" role="navigation" aria-label="Navigation">
+  <ul role="menubar" class="utility">
+    <li role="banner" data-flex="grow" data-show="always">
+    </li>
+    <li role="menuitem">
+      <a href="/products/">Products</a>
+    </li>
+    <li role="menuitem">
+      <a href="/pricing/">Pricing</a>
+    </li>
+    <li role="menuitem" aria-haspopup="true" tabindex="0">
+      <span class="expander">Docs</span>
+      <div class="mini" aria-expanded="false">
+        <ul role="menu">
+          <li role="menuitem">
+            <a href="/docs/">Product Docs</a>
+          </li>
+          <li role="menuitem">
+            <a href="https://developers.digitalocean.com/documentation/">API Docs</a>
+          </li>
+        </ul>
+      </div>
+    </li>
+      <li role="menuitem" aria-haspopup="true" tabindex="0">
+      <span class="expander">Log in</span>
+        <div class="mini" aria-expanded="false">
+          <header>Log in to</header>
+          <ul role="menu">
+            <li role="menuitem">
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <use xlink:href="#do_nav-community_icon"></use>
+              </svg>
+              <a id="log-in" href="/community/auth/digitalocean">Community</a>
+            </li>
+            <li role="menuitem">
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <use xlink:href="#do_nav-control_panel_icon"></use>
+              </svg>
+              <a href="https://cloud.digitalocean.com/registrations/new">Control Panel</a>
+            </li>
+          </ul>
+        </div>
+      </li>
+  </ul>
+
+  <ul role="menubar" class="primary">
+    <li role="menuitem" data-show="always">
+      <a href="https://www.digitalocean.com/">
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" shape-rendering="auto">
+          <use xlink:href="#do_nav-logomark"></use>
+        </svg>
+      </a>
+    </li>
+    <li role="menuitem" data-show="always">
+      <a role="home" title="DigitalOcean Community Home" href="/community">
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="120px" height="24px"
+             shape-rendering="auto">
+          <use xlink:href="#do_nav-community_logo"></use>
+        </svg>
+</a>    </li>
+    <li role="menuitem">
+      <a data-activatable="true" href="/community/tutorials">Tutorials</a>
+    </li>
+    <li role="menuitem">
+      <a data-activatable="true" href="/community/questions">Questions</a>
+    </li>
+    <li role="menuitem" aria-haspopup="true" class="mega_parent" tabindex="0">
+      <span class="expander">Get Involved</span>
+      <div class="mega" aria-expanded="false">
+        <div class="section column">
+          <header>Participate</header>
+          <ul role="menu">
+            <li role="menuitem">
+              <a href="https://www.digitalocean.com/write-for-donations/" class="with_image">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <use xlink:href="#do_nav-write4do"></use>
+                </svg>
+                <p>
+                  <strong>Write for DigitalOcean</strong>
+                  You get paid, we donate to tech non-profits.
+                </p>
+              </a>
+            </li>
+            <li role="menuitem">
+              <a href="https://www.meetup.com/pro/digitalocean" class="with_image">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <use xlink:href="#do_nav-meetups"></use>
+                </svg>
+                <p>
+                  <strong>DigitalOcean Meetups</strong>
+                  Find and meet other developers in your city.
+                </p>
+              </a>
+            </li>
+            <li role="menuitem">
+              <a href="https://hacktoberfest.digitalocean.com" class="with_image">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <use xlink:href="#do_nav-hacktoberfest"></use>
+                </svg>
+                <p>
+                  <strong>Hacktoberfest</strong>
+                  Contribute to Open Source
+                </p>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="section column">
+          <header>
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+              <use xlink:href="#do_nav-build"></use>
+            </svg>
+            Build with DigitalOcean
+          </header>
+          <ul role="menu" class="indent">
+            <li role="menuitem">
+              <a title="Community-built tools and integrations that use the DigitalOcean API" href="/community/tools">Community Tools and Integrations</a>
+            </li>
+            <li role="menuitem"><a href="https://www.digitalocean.com/hatch/" title="Build your startup on DigitalOcean.">Hatch Startup Program</a></li>
+            <li role="menuitem"><a href="https://marketplace.digitalocean.com/vendors/" title="List your open source One-Click Application in the DigitalOcean Marketplace">Marketplace Partner Program</a></li>
+            <li role="menuitem"><a href="https://www.digitalocean.com/droplets-for-demos/" title="DigitalOcean credits to fund research for conference and meetup presentations">Presentation Grants</a></li>
+            <li role="menuitem"><a href="https://github.com/digitalocean">DigitalOcean on GitHub</a></li>
+          </ul>
+        </div>
+      </div>
+    </li>
+    <li role="menuitem" data-show="mobile" data-flex="grow" class="right">
+      <a href="javascript:void(0);" data-js="modal_toggle">
+        <span class="icon-menu-thin"></span>
+      </a>
+    </li>
+    <li role="menuitem" aria-haspopup="true" data-flex="grow">
+      <form name="do_nav-search" method="GET" action="https://www.digitalocean.com/community/search">
+        <label for="q">
+          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" shape-rendering="auto"
+               width="14px" height="14px">
+            <use xlink:href="#do_nav-search"></use>
+          </svg>
+        </label>
+        <input type="text" name="q" id="q" title="Search" placeholder="Search DigitalOcean" autocomplete="off" spellcheck="false" class="search" />
+        </form>
+        <div class="mini search-results-dropdown" aria-expanded="false">
+            <div class="header-search-results-list"></div>
+            <div id="btn-wrap">
+              <a class="more-search-results" data-search-path="/community/search" href="/community/search">
+                View All Results
+              </a>
+            </div>
+        </div>
+        <script type='text/template' id='autocomplete-hits-template'>
+          <div class="inner-search">
+            <ul>
+              <li class="section">
+                <p>{{section}}</p>
+              </li>
+
+              {{#hits}}
+                <li>
+                  <span class='icon icon-{{css_name}}'></span>
+                  <a href='{{url}}'>{{title}}</a>
+                </li>
+              {{/hits}}
+            </ul>
+
+            {{#hasMoreResults}}
+              <a href="/community/search?q={{query}}">View All Results</a>
+            {{/hasMoreResults}}
+          </div>
+        </script>
+    </li>
+    <li role="menuitem">
+      <a class="button primary" href="/community/auth/digitalocean?display=sessionless+register">Sign Up</a>
+    </li>
+  </ul>
+
+  <div class="mobile_nav_bg" data-js="modal_toggle"></div>
+  <div class="mobile_nav">
+    <a data-dismiss='modal' aria-label="close" href="javascript:void(0);" data-js="modal_toggle"><span class="icon-close"></span></a>
+    <div class="mobile_nav_content">
+      <header>Community</header>
+      <ul role="menu">
+        <li role="menuitem">
+          <a data-activatable="true" href="/community/tutorials">Tutorials</a>
+        </li>
+        <li role="menuitem">
+          <a data-activatable="true" href="/community/questions">Questions</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.meetup.com/pro/digitalocean">Meetups</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/write-for-donations/">Write for us</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://hacktoberfest.digitalocean.com">Hacktoberfest</a>
+        </li>
+        <li role="menuitem">
+          <a href="/community/tools">Community Projects</a>
+        </li>
+      </ul>
+      <header>Products</header>
+      <ul role="menu">
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/">Homepage</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/pricing">Pricing</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/products">Product Overview</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://marketplace.digitalocean.com/">Marketplace</a>
+        </li>
+      </ul>
+      <header>Customers</header>
+      <ul role="menu">
+        <li role="menuitem">
+          <a href="https://cloud.digitalocean.com/login">Control panel</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/docs/">Documentation</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/company/contact/#support">Contact Support</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/company/contact/sales/">Contact Sales</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<header>
+  <div class="legacy-header ">
+    <div class="flash-container">
+      
+    </div>
+
+    <div class="wrapper">
+      
+    </div>
+  </div>
+</header>
+
+
+
+      
+
+      <div class='wrapper layout-wrapper'>
+
+        
+
+
+
+
+
+
+  <div class="TutorialBar" data-js="tutorialBar">
+    <div class="TutorialBar-container">
+      <div class="TutorialBar-series">
+          <a class="TutorialBar-seriesSingle" href="https://www.digitalocean.com/community/tutorial_series/webinar-series-ci-cd-on-kubernetes">Webinar Series: CI/CD on Kubernetes</a>
+        <div class="TutorialBar-separator">
+          <svg class='svg-icon svg-icon-arrow-right'><use xlink:href='https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-arrow-right'></use></svg>
+        </div>
+      </div>
+      <div class="TutorialBar-tutorial">
+        <div class="TutorialBar-dropdown">
+          <button class="Button--reset TutorialBar-dropdownTrigger" type="button" data-js="tutorialDropdown">
+            <span class="TutorialBar-dropdownText">Webinar Series: Kubernetes Package Management with Helm and CI/CD with Jenkins X</span> <span class="TutorialBar-dropdownArrow"><svg class='svg-icon svg-icon-caret-down'><use xlink:href='https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-caret-down'></use></svg></span>
+          </button>
+          <div class="TutorialBar-dropdownContent TutorialBar-dropdownContent--article">
+            <ul class="TutorialBar-tutorialList" data-js="tutorialList">
+                <li data-completed-tutorial-id="" data-tutorial-id="2820" data-js="tutorial" class="">
+                  <a href="https://www.digitalocean.com/community/tutorials/webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes" class="TutorialBar-tutorialListContainer" data-tutorialInteraction>
+                    <div class="TutorialBar-tutorialListIcon">
+                      <svg class='svg-icon svg-icon-completed'><use xlink:href='https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-completed'></use></svg>
+                    </div>
+                    <div class="TutorialBar-tutorialListContent">
+                      Webinar Series: Building Blocks for Doing CI/CD with Kubernetes
+                    </div>
+                  </a>
+                </li>
+                <li data-completed-tutorial-id="" data-tutorial-id="2909" data-js="tutorial" class="is-current">
+                  <a href="https://www.digitalocean.com/community/tutorials/webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x" class="TutorialBar-tutorialListContainer" data-tutorialInteraction>
+                    <div class="TutorialBar-tutorialListIcon">
+                      <svg class='svg-icon svg-icon-completed'><use xlink:href='https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-completed'></use></svg>
+                    </div>
+                    <div class="TutorialBar-tutorialListContent">
+                      Webinar Series: Kubernetes Package Management with Helm and CI/CD with Jenkins X
+                    </div>
+                  </a>
+                </li>
+                <li data-completed-tutorial-id="" data-tutorial-id="2918" data-js="tutorial" class="">
+                  <a href="https://www.digitalocean.com/community/tutorials/webinar-series-gitops-tool-sets-on-kubernetes-with-circleci-and-argo-cd" class="TutorialBar-tutorialListContainer" data-tutorialInteraction>
+                    <div class="TutorialBar-tutorialListIcon">
+                      <svg class='svg-icon svg-icon-completed'><use xlink:href='https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-completed'></use></svg>
+                    </div>
+                    <div class="TutorialBar-tutorialListContent">
+                      Webinar Series: GitOps Tool Sets on Kubernetes with CircleCI and Argo CD
+                    </div>
+                  </a>
+                </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+<div class="section-content section-content-growable content Tutorial-content content-has-mobile-image">
+  <div class='postable-info-bar-container'>
+  <div class='postable-info-bar'>
+    <div class="author-byline">
+      
+    </div>
+
+    <div class='right-section'>
+      
+
+
+        <div class='section-item table-of-contents-triggers'><div class="toc-trigger-mobile" data-toggle="modal" data-target="#contents-modal">
+  <a href="javascript:void(0);">
+    <span class="icon icon-contents"></span>
+    <span class="title">Contents</span>
+    <span class="icon icon-arrow-down"></span>
+  </a>
+</div>
+
+</div>
+
+    </div>
+  </div>
+</div>
+
+
+    <img alt="Webinar Series: Kubernetes Package Management with Helm and CI/CD with Jenkins X" title="Webinar Series: Kubernetes Package Management with Helm and CI/CD with Jenkins X" class="tutorial-image-mobile" src="https://community-cdn-digitalocean-com.global.ssl.fastly.net/assets/tutorials/images/large/Kubernetes_CI-CD_-_Blog_Header.png?1550789889" />
+
+  <div class="container tutorial-header">
+    
+
+      <div class="featured-items-right-bar">
+        <h3>Related</h3>
+          <a href="https://marketplace.digitalocean.com/apps/kubernetes-monitoring-stack-beta?utm_source=community_related">
+            <div class="featured-item-highlight">
+                  <span class="featured-item-highlight-image"><img width="45" height="45" alt="Marketplace" src="https://digitalocean.cdn.prismic.io/digitalocean%2F559b194a-ce06-43e4-9fd2-4c4738909353_monitoring-logo.svg" /></span>
+                Kubernetes Monitoring Stack (BETA)
+                <span class="featured-item-category">
+                  
+                  Marketplace
+                </span>
+              </div>
+</a>          <a href="https://www.digitalocean.com/products/kubernetes/">
+            <div class="featured-item-regular">
+                Now Available: DigitalOcean Kubernetes
+                <span class="featured-item-category">
+                  <img width="14" height="14" src="https://digitalocean.cdn.prismic.io/digitalocean%2Ff7af7f25-db78-40d1-ad9f-7b1c23366b02_kubernetes.svg" alt="Digitalocean%2ff7af7f25 db78 40d1 ad9f 7b1c23366b02 kubernetes" />
+                  Product
+                </span>
+              </div>
+</a>          <a href="/community/tutorials/how-to-install-aegir-and-use-it-to-deploy-drupal-sites-on-a-debian-vps">
+            <div class="featured-item-regular">
+                  How To Install Aegir and Use it to Deploy Drupal Sites on a Debian VPS
+                  <span class="featured-item-category">
+                    <img width="14" height="14" alt="Tutorial" src="/assets/community/tutorials/featured-item-tutorial-icon-2150ccbef202144a53cea261312af267.png" />
+                    Tutorial
+                  </span>
+                </div>
+</a>          <a href="/community/tutorials/how-to-deploy-with-mina-getting-started">
+            <div class="featured-item-regular">
+                  How To Deploy With Mina: Getting Started
+                  <span class="featured-item-category">
+                    <img width="14" height="14" alt="Tutorial" src="/assets/community/tutorials/featured-item-tutorial-icon-2150ccbef202144a53cea261312af267.png" />
+                    Tutorial
+                  </span>
+                </div>
+</a>      </div>
+
+
+      <img alt="Webinar Series: Kubernetes Package Management with Helm and CI/CD with Jenkins X" title="Webinar Series: Kubernetes Package Management with Helm and CI/CD with Jenkins X" class="tutorial-image" src="https://community-cdn-digitalocean-com.global.ssl.fastly.net/assets/tutorials/images/large/Kubernetes_CI-CD_-_Blog_Header.png?1550789889" />
+
+    <h1 class="content-title Tutorial-header">Webinar Series: Kubernetes Package Management with Helm and CI/CD with Jenkins X</h1>
+
+    <span class="meta-section timestamp"><span class="tutorial-date-text">Posted</span><span class="tutorial-date">February 27, 2019</span></span>
+
+    <span class="meta-section pageviews"><span class="icon icon-eye v-mid"></span><span class="views-count v-mid">19.4k</span><span class="sr-only"> views</span></span>
+
+    <span class="meta-section tags">
+      <a class="tag" href="/community/tags/kubernetes?type=tutorials">Kubernetes</a> <a class="tag" href="/community/tags/ci-cd?type=tutorials">CI/CD</a> <a class="tag" href="/community/tags/deployment?type=tutorials">Deployment</a>
+      <a class="tag" href="/community/tags/ubuntu-16-04?type=tutorials">Ubuntu 16.04</a>
+    </span>
+  </div>
+
+  <div class="tutorial-authors">
+    <div class="component-collaborators-container">
+  <ul class="component-collaborators-content">
+        <li class="collaborator-byline-avatar">
+          <a href="/community/users/neependrakhare">
+            <img alt="neependrakhare" class="avatar avatar-large" src="https://secure.gravatar.com/avatar/92bcb0d14ff8fd6afad7409c34fc6197?secure=true&d=identicon" width="80" height="80" />
+</a>        </li>
+
+    <li class="collaborators-byline-data">
+        <p class="names">By <a href="/community/users/neependrakhare">neependrakhare</a></p>
+
+      <p>
+          <a class="advice" href="https://www.digitalocean.com/community/write-for-digitalocean">Become an author</a>
+      </p>
+    </li>
+  </ul>
+</div>
+
+  </div>
+
+
+    <div class="content-body tutorial-content" data-growable-markdown>
+      
+      <span class='note'><p></p>
+
+<h2 id="webinar-series">Webinar Series</h2>
+
+<p>This article supplements a <a href="https://go.digitalocean.com/cicd-on-k8s">webinar series on doing CI/CD with Kubernetes</a>. The series discusses how to take a cloud native approach to building, testing, and deploying applications, covering release management, cloud native tools, service meshes, and CI/CD tools that can be used with Kubernetes. It is designed to help developers and businesses that are interested in integrating CI/CD best practices with Kubernetes into their workflows.</p>
+
+<p>This tutorial includes the concepts and commands from the second session of the series, Kubernetes Package Management with Helm and CI/CD with Jenkins X.</p></span>
+
+<p><span class='warning'><strong>Warning:</strong> The procedures in this tutorial are meant for demonstration purposes only. As a result, they don&rsquo;t follow the best practices and security measures necessary for a production-ready deployment.<br></span></p>
+
+<p><iframe width="854" height="480" src="//www.youtube.com/embed/oZOZiL6XIfA?rel=0" frameborder="0" allowfullscreen></iframe></p>
+
+<h3 id="introduction">Introduction</h3>
+
+<p>In order to reduce error and organize complexity when deploying an application, CI/CD systems must include robust tooling for package management/deployment and pipelines with automated testing. But in modern production environments, the increased complexity of cloud-based infrastructure can present problems for putting together a reliable CI/CD environment. Two Kubernetes-specific tools developed to solve this problem are the <a href="https://helm.sh/">Helm</a> package manager and the <a href="https://jenkins-x.io/">Jenkins X</a> pipeline automation tool.</p>
+
+<p>Helm is a package manager specifically designed for Kubernetes, maintained by the <a href="https://www.cncf.io/">Cloud Native Computing Foundation</a> (CNCF) in collaboration with Microsoft, Google, Bitnami, and the Helm contributor community. At a high level, it accomplishes the same goals as Linux system package managers like APT or YUM: managing the installation of applications and dependencies behind the scenes and hiding the complexity from the user. But with Kubernetes, the need for this kind of management is even more pronounced: Installing applications requires the complex and tedious orchestration of YAML files, and upgrading or rolling back releases can be anywhere from difficult to impossible. In order to solve this problem, Helm runs on top of Kubernetes and packages applications into pre-configured resources called <em>charts</em>, which the user can manage with simple commands, making the process of sharing and managing applications more user-friendly.</p>
+
+<p>Jenkins X is a CI/CD tool used to automate production pipelines and environments for Kubernetes. Using Docker images, Helm charts, and the <a href="https://jenkins.io/pipeline/getting-started-pipelines/">Jenkins pipeline engine</a>, Jenkins X can automatically manage releases and versions and promote applications between environments on GitHub. </p>
+
+<p>In this second article of the  <a href="https://www.digitalocean.com/community/tutorial_series/webinar-series-ci-cd-on-kubernetes"><strong>CI/CD with Kubernetes</strong> series</a>, you will preview these two tools by:</p>
+
+<ul>
+<li><p>Managing, creating, and deploying Kubernetes packages with Helm.</p></li>
+<li><p>Building a CI/CD pipeline with Jenkins X.</p></li>
+</ul>
+
+<p>Though a variety of Kubernetes platforms can use Helm and Jenkins X, in this tutorial you will run a simulated Kubernetes cluster, set up in your local environment. To do this, you will use <a href="https://github.com/kubernetes/minikube">Minikube</a>, a program that allows you to try out Kubernetes tools on your own machine without having to set up a true Kubernetes cluster.</p>
+
+<p>By the end of this tutorial, you will have a basic understanding of how these Kubernetes-native tools can help you implement a CI/CD system for your cloud application.</p>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<p>To follow this tutorial, you will need:</p>
+
+<ul>
+<li><p>An Ubuntu 16.04 server with 16 GB of RAM or above. Since this tutorial is meant for demonstration purposes only, commands are run from the root account. <strong>Note that the unrestrained privileges of this account do not adhere to production-ready best practices and could affect your system.</strong> For this reason, it is suggested to follow these steps in a test environment such as a virtual machine or a <a href="https://www.digitalocean.com/products/droplets/">DigitalOcean Droplet</a>.</p></li>
+<li><p>A <a href="https://github.com/">GitHub account</a> and <a href="https://github.com/settings/tokens/new?scopes=repo,read:user,read:org,user:email,write:repo_hook,delete_repo">GitHub API token</a>. Be sure to record this API token so that you can enter it during the Jenkins X portion of this tutorial. </p></li>
+<li><p>Familiarity with Kubernetes concepts. Please refer to the article <a href="https://www.digitalocean.com/community/tutorials/an-introduction-to-kubernetes">An Introduction to Kubernetes</a> for more details. </p></li>
+</ul>
+
+<h2 id="step-1-—-creating-a-local-kubernetes-cluster-with-minikube">Step 1 — Creating a Local Kubernetes Cluster with Minikube</h2>
+
+<p>Before setting up Minikube, you will have to install its dependencies, including the Kubernetes command line tool <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl">kubectl</a>, the bidirectional data transfer relay <a href="http://www.dest-unreach.org/socat/">socat</a>, and the container program <a href="https://www.docker.com/">Docker</a>.</p>
+
+<p>First, make sure that your system&rsquo;s package manager can access packages over HTTPS with <code>apt-transport-https</code>:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">apt-get update
+</li><li class="line" prefix="$">apt-get install apt-transport-https
+</li></ul></code></pre>
+<p>Next, in order to ensure the kubectl download is valid, add the GPG key for the official Google repository to your system:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+</li></ul></code></pre>
+<p>Once you have added the GPG key, create the file <code>/etc/apt/sources.list.d/kubernetes.list</code> by opening it in your text editor:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">nano /etc/apt/sources.list.d/kubernetes.list
+</li></ul></code></pre>
+<p>Once this file is open, add the following line:</p>
+<div class="code-label " title="/etc/apt/sources.list.d/kubernetes.list">/etc/apt/sources.list.d/kubernetes.list</div><pre class="code-pre "><code langs="">deb http://apt.kubernetes.io/ kubernetes-xenial main
+</code></pre>
+<p>This will show your system the source for downloading kubectl. Once you have added the line, save and exit the file. With the nano text editor, you can do this by pressing <code>CTRL+X</code>, typing <code>y</code>, and pressing <code>ENTER</code>.</p>
+
+<p>Finally, update the source list for APT and install <code>kubectl</code>, <code>socat</code>, and <code>docker.io</code>:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">apt-get update
+</li><li class="line" prefix="$">apt-get install -y kubectl socat docker.io
+</li></ul></code></pre>
+<p><span class='note'><strong>Note:</strong> For Minikube to simulate a Kubernetes cluster, you must download the <code>docker.io</code> package rather than the newer <code>docker-ce</code> release. For production-ready environments, <code>docker-ce</code> would be the more appropriate choice, since it is better maintained in the official Docker repository.<br></span></p>
+
+<p>Now that you have installed kubectl, you can proceed with <a href="https://kubernetes.io/docs/tasks/tools/install-minikube/">installing Minikube</a>. First, use <code>curl</code> to download the program&rsquo;s binary: </p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">curl -Lo minikube https://storage.googleapis.com/minikube/releases/<span class="highlight">v0.28.0</span>/minikube-linux-amd64
+</li></ul></code></pre>
+<p>Next, change the access permissions of the file you just downloaded so that your system can execute it:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">chmod +x minikube
+</li></ul></code></pre>
+<p>Finally, copy the <code>minikube</code> file to the executable path at <code>/usr/local/bin/</code> and remove the original file from your home directory:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">cp minikube /usr/local/bin/
+</li><li class="line" prefix="$">rm minikube
+</li></ul></code></pre>
+<p>With Minikube installed on your machine, you can now start the program. To create a Minikube Kubernetes cluster, use the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">minikube start --vm-driver none
+</li></ul></code></pre>
+<p>The flag <code>--vm-driver none</code> instructs Minikube to run Kubernetes on the local host using containers rather than a virtual machine. Running Minikube this way means that you do not need to download a VM driver, but also means that the Kubernetes API server will run insecurely as root. </p>
+
+<p><span class='warning'><strong>Warning:</strong> Because the API server with root privileges will have unlimited access to the local host, it is not recommended to run Minikube using the <code>none</code> driver on personal workstations.<br></span></p>
+
+<p>Now that you have started Minikube, check to make sure that your cluster is running with the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">minikube status
+</li></ul></code></pre>
+<p>You will receive the following output, with your IP address in place of <code><span class="highlight">your_IP_address</span></code>:</p>
+<pre class="code-pre output"><code langs="">minikube: Running
+cluster: Running
+kubectl: Correctly Configured: pointing to minikube-vm at <span class="highlight">your_IP_address</span>
+</code></pre>
+<p>Now that you have set up your simulated Kubernetes cluster using Minikube, you can gain experience with Kubernetes package management by installing and configuring the Helm package manager on top of your cluster.</p>
+
+<h2 id="step-2-—-setting-up-the-helm-package-manager-on-your-cluster">Step 2 — Setting Up the Helm Package Manager on your Cluster</h2>
+
+<p>In order to coordinate the installation of applications on your Kubernetes cluster, you will now install the Helm package manager. Helm consists of a <code>helm</code> client that runs outside the cluster and a <code>tiller</code> server that manages application releases from within the cluster. You will have to install and configure both to successfully run Helm on your cluster.</p>
+
+<p>To <a href="https://github.com/helm/helm/blob/master/docs/install.md">install the Helm binaries</a>, first use <code>curl</code> to download the following <a href="https://raw.githubusercontent.com/helm/helm/master/scripts/get">installation script</a> from the official Helm GitHub repository into a new file named <code>get_helm.sh</code>:  </p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get &gt; get_helm.sh
+</li></ul></code></pre>
+<p>Since this script requires root access, change the permission of <code>get_helm.sh</code> so that the owner of the file (in this case, root) can read, write, and execute it:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">chmod 700 get_helm.sh
+</li></ul></code></pre>
+<p>Now, execute the script:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">./get_helm.sh
+</li></ul></code></pre>
+<p>When the script finishes, you will have <code>helm</code> installed to <code>/usr/local/bin/helm</code> and <code>tiller</code> installed to <code>/usr/local/bin/tiller</code>.</p>
+
+<p>Though <code>tiller</code> is now installed, it does not yet have the correct roles and permissions to access the necessary resources in your Kubernetes cluster. To assign these roles and permissions to <code>tiller</code>, you will have to create a <a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/"><em>service account</em></a> named <code>tiller</code>. In Kubernetes, a service account represents an identity for processes that run in a pod. After a process is authenticated through a service account, it can then contact the API server and access cluster resources. If a pod is not assigned a specific service account, it gets the default service account. You will also have to create a <a href="https://kubernetes.io/docs/reference/access-authn-authz/rbac/"><em>Role-Based access control</em></a> (RBAC) rule that authorizes the <code>tiller</code> service account.</p>
+
+<p>In Kubernetes RBAC API, a <em>role</em> contains rules that determine a set of permissions. A role can be defined with a scope of <code>namespace</code>  or <code>cluster</code>, and can only grant access to resources within a single namespace. <code>ClusterRole</code> can create the same permissions on the level of a cluster, granting access to cluster-scoped resources like nodes and namespaced resources like pods. To assign the <code>tiller</code> service account the right role, create a YAML file called <code>rbac_helm.yaml</code> and open it in your text editor:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">nano rbac_helm.yaml
+</li></ul></code></pre>
+<p>Add the following lines to the file to configure the <code>tiller</code> service account:</p>
+<div class="code-label " title="rbac_helm.yaml">rbac_helm.yaml</div><pre class="code-pre yaml"><code langs="">apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tiller
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: tiller
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: tiller
+    namespace: kube-system
+
+  - kind: User
+    name: "admin"
+    apiGroup: rbac.authorization.k8s.io
+
+  - kind: User
+    name: "kubelet"
+    apiGroup: rbac.authorization.k8s.io
+
+  - kind: Group
+    name: system:serviceaccounts
+    apiGroup: rbac.authorization.k8s.io
+</code></pre>
+<p>In the preceding file, <code>ServiceAccount</code> allows the <code>tiller</code> processes to access the apiserver as an authenticated service account. <code>ClusterRole</code> grants certain permissions to a role, and <code>ClusterRoleBinding</code> assigns that role to a list of <code>subjects</code>, including the <code>tiller</code> service account, the <code>admin</code> and <code>kubelet</code> users, and the <code>system:serviceaccounts</code> group. </p>
+
+<p>Next, deploy the configuration in <code>rbac_helm.yaml</code> with the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl apply -f rbac_helm.yaml 
+</li></ul></code></pre>
+<p>With the <code>tiller</code> configuration deployed, you can now initialize Helm with the <code>--service-acount</code> flag to use the service account you just set up:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">helm init --service-account tiller 
+</li></ul></code></pre>
+<p>You will receive the following output, representing a successful initialization:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>Creating /root/.helm
+Creating /root/.helm/repository
+Creating /root/.helm/repository/cache
+Creating /root/.helm/repository/local
+Creating /root/.helm/plugins
+Creating /root/.helm/starters
+Creating /root/.helm/cache/archive
+Creating /root/.helm/repository/repositories.yaml
+Adding stable repo with URL: https://kubernetes-charts.storage.googleapis.com
+Adding local repo with URL: http://127.0.0.1:8879/charts
+$HELM_HOME has been configured at /root/.helm.
+
+Tiller (the Helm server-side component) has been installed into your Kubernetes Cluster.
+
+Please note: by default, Tiller is deployed with an insecure 'allow unauthenticated users' policy.
+To prevent this, run `helm init` with the --tiller-tls-verify flag.
+For more information on securing your installation see: https://docs.helm.sh/using_helm/#securing-your-helm-installation
+Happy Helming!
+</code></pre>
+<p>This creates a <code>tiller</code> pod in the <code>kube-system</code> namespace. It also creates the <code>.helm</code> default repository in your <code>$HOME</code> directory and configures the default Helm stable chart repository at <code>https://kubernetes-charts.storage.googleapis.com</code> and the local Helm repository at <code>http://127.0.0.1:8879/charts</code>.</p>
+
+<p>To make sure that the <code>tiller</code> pod is running in the <code>kube-system</code> namespace, enter the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl --namespace kube-system get pods
+</li></ul></code></pre>
+<p>In your list of pods, <code>tiller-deploy</code> will appear, as is shown in the following output:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>NAME                                    READY   STATUS    RESTARTS   AGE
+etcd-minikube                           1/1     Running   0          2h
+kube-addon-manager-minikube             1/1     Running   0          2h
+kube-apiserver-minikube                 1/1     Running   0          2h
+kube-controller-manager-minikube        1/1     Running   0          2h
+kube-dns-86f4d74b45-rjql8               3/3     Running   0          2h
+kube-proxy-dv268                        1/1     Running   0          2h
+kube-scheduler-minikube                 1/1     Running   0          2h
+kubernetes-dashboard-5498ccf677-wktkl   1/1     Running   0          2h
+storage-provisioner                     1/1     Running   0          2h
+<span class="highlight">tiller-deploy-689d79895f-bggbk          1/1     Running   0          5m</span>
+</code></pre>
+<p>If the <code>tiller</code> pod&rsquo;s status is <code>Running</code>, it can now manage Kubernetes applications from inside your cluster on behalf of Helm.</p>
+
+<p>To make sure that the entire Helm application is working, search the Helm package repositiories for an application like MongoDB:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">helm search mongodb
+</li></ul></code></pre>
+<p>In the output, you will see a list of possible applications that fit your search term:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>NAME                                    CHART VERSION   APP VERSION     DESCRIPTION
+stable/mongodb                          5.4.0           4.0.6           NoSQL document-oriented database that stores JSON-like do&hellip;
+stable/mongodb-replicaset               3.9.0           3.6             NoSQL document-oriented database that stores JSON-like do&hellip;
+stable/prometheus-mongodb-exporter      1.0.0           v0.6.1          A Prometheus exporter for MongoDB metrics
+stable/unifi                            0.3.1           5.9.29          Ubiquiti Network's Unifi Controller
+</code></pre>
+<p>Now that you have installed Helm on your Kubernetes cluster, you can learn more about the package manager by creating a sample Helm chart and deploying an application from it.</p>
+
+<h2 id="step-3-—-creating-a-chart-and-deploying-an-application-with-helm">Step 3 — Creating a Chart and Deploying an Application with Helm</h2>
+
+<p>In the Helm package manager, individual packages are called <em>charts</em>. Within a chart, a set of files defines an application, which can vary in complexity from a pod to a structured, full-stack app. You can download charts from the Helm repositories, or you can use the <code>helm create</code> command to create your own.</p>
+
+<p>To test out the capabilities of Helm, create a new Helm chart named <code>demo</code> with the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">helm create demo
+</li></ul></code></pre>
+<p>In your home directory, you will find a new directory called <code>demo</code>, within which you can create and edit your own chart templates.</p>
+
+<p>Move into the <code>demo</code> directory and use <code>ls</code> to list its contents:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">cd demo
+</li><li class="line" prefix="$">ls
+</li></ul></code></pre>
+<p>You will find the following files and directories in <code>demo</code>:</p>
+<div class="code-label " title="demo">demo</div><pre class="code-pre "><code langs="">charts  Chart.yaml  templates  values.yaml
+</code></pre>
+<p>Using your text editor, open up the <code>Chart.yaml</code> file:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">nano Chart.yaml
+</li></ul></code></pre>
+<p>Inside, you will find the following contents:</p>
+<div class="code-label " title="demo/Chart.yaml">demo/Chart.yaml</div><pre class="code-pre yaml"><code langs="">apiVersion: v1
+appVersion: "1.0"
+description: A Helm chart for Kubernetes
+name: demo
+version: 0.1.0
+</code></pre>
+<p>In this <code>Chart.yaml</code> file, you will find fields like <code>apiVersion</code>,  which must be always <code>v1</code>, a <code>description</code> that gives additional information about what <code>demo</code> is, the <code>name</code> of the chart, and the <code>version</code> number, which Helm uses as a release marker. When you are done examining the file, close out of your text editor.</p>
+
+<p>Next, open up the <code>values.yaml</code> file:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">nano values.yaml
+</li></ul></code></pre>
+<p>In this file, you will find the following contents:</p>
+<div class="code-label " title="demo/values.yaml">demo/values.yaml</div><pre class="code-pre yaml"><code langs=""># Default values for demo.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: nginx
+  tag: stable
+  pullPolicy: IfNotPresent
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  paths: []
+  hosts:
+    - chart-example.local
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+</code></pre>
+<p>By changing the contents of <code>values.yaml</code>, chart developers can supply default values for the application defined in the chart, controlling replica count, image base, ingress access, secret management, and more. Chart users can supply their own values for these parameters with a custom YAML file using <code>helm install</code>. When a user provides custom values, these values will override the values in the chart’s <code>values.yaml</code> file.</p>
+
+<p>Close out the <code>values.yaml</code> file and list the contents of the <code>templates</code> directory with the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">ls templates
+</li></ul></code></pre>
+<p>Here you will find templates for various files that can control different aspects of your chart:</p>
+<div class="code-label " title="templates">templates</div><pre class="code-pre "><code langs="">deployment.yaml  _helpers.tpl  ingress.yaml  NOTES.txt  service.yaml  tests
+</code></pre>
+<p>Now that you have explored the <code>demo</code> chart, you can experiment with Helm chart installation by installing <code>demo</code>. Return to your home directory with the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">cd
+</li></ul></code></pre>
+<p>Install the <code>demo</code> Helm chart under the name <code>web</code> with <code>helm install</code>:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">helm install --name <span class="highlight">web</span> ./demo
+</li></ul></code></pre>
+<p>You will get the following output:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>NAME:   web
+LAST DEPLOYED: Wed Feb 20 20:59:48 2019
+NAMESPACE: default
+STATUS: DEPLOYED
+
+RESOURCES:
+==&gt; v1/Service
+NAME      TYPE       CLUSTER-IP     EXTERNAL-IP  PORT(S)  AGE
+web-demo  ClusterIP  10.100.76.231  &lt;none&gt;       80/TCP   0s
+
+==&gt; v1/Deployment
+NAME      DESIRED  CURRENT  UP-TO-DATE  AVAILABLE  AGE
+web-demo  1        0        0           0          0s
+
+==&gt; v1/Pod(related)
+NAME                       READY  STATUS             RESTARTS  AGE
+web-demo-5758d98fdd-x4mjs  0/1    ContainerCreating  0         0s
+
+
+NOTES:
+1. Get the application URL by running these commands:
+  export POD_NAME=$(kubectl get pods --namespace default -l "app.kubernetes.io/name=demo,app.kubernetes.io/instance=web" -o jsonpath="{.items[0].metadata.name}")
+  echo "Visit http://127.0.0.1:8080 to use your application"
+  kubectl port-forward $POD_NAME 8080:80
+</code></pre>
+<p>In this output, you will find the <code>STATUS</code> of your application, plus a list of relevant resources in your cluster.</p>
+
+<p>Next, list the deployments created by the <code>demo</code> Helm chart with the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl get deploy
+</li></ul></code></pre>
+<p>This will yield output that will list your active deployments:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>NAME       DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+web-demo   1         1         1            1           4m
+</code></pre>
+<p>Listing your pods with the command <code>kubectl get pods</code> would show the pods that are running your <code>web</code> application, which would look like the following:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>NAME                        READY   STATUS    RESTARTS   AGE
+web-demo-5758d98fdd-nbkqd   1/1     Running   0          4m
+</code></pre>
+<p>To demonstrate how changes in the Helm chart can release different versions of your application, open up <code>demo/values.yaml</code> in your text editor and change <code>replicaCount:</code> to <code>3</code> and <code>image:tag:</code> from <code>stable</code> to <code>latest</code>. In the following code block, you will find what the YAML file should look like after you have finished modifying it, with the changes highlighted:</p>
+<div class="code-label " title="demo/values.yaml">demo/values.yaml</div><pre class="code-pre "><code langs=""># Default values for demo.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: <span class="highlight">3</span>
+
+image:
+  repository: nginx
+  tag: <span class="highlight">latest</span>
+  pullPolicy: IfNotPresent
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 80
+. . .
+</code></pre>
+<p>Save and exit the file.</p>
+
+<p>Before you deploy this new version of your <code>web</code> application, list your Helm releases as they are now with the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">helm list
+</li></ul></code></pre>
+<p>You will receive the following output, with the one deployment you created earlier:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>NAME    REVISION        UPDATED                         STATUS          CHART           APP VERSION     NAMESPACE
+<span class="highlight">web     1               Wed Feb 20 20:59:48 2019        DEPLOYED        demo-0.1.0      1.0             default</span>
+</code></pre>
+<p>Notice that <code>REVISION</code> is listed as <code>1</code>, indicating that this is the first revision of the <code>web</code> application. </p>
+
+<p>To deploy the <code>web</code> application with the latest changes made to <code>demo/values.yaml</code>, upgrade the application with the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">helm upgrade web ./demo
+</li></ul></code></pre>
+<p>Now, list the Helm releases again:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">helm list
+</li></ul></code></pre>
+<p>You will receive the following output:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>NAME    REVISION        UPDATED                         STATUS          CHART           APP VERSION     NAMESPACE
+web     <span class="highlight">2</span>               Wed Feb 20 21:18:12 2019        DEPLOYED        demo-0.1.0      1.0             default
+</code></pre>
+<p>Notice that <code>REVISION</code> has changed to <code>2</code>, indicating that this is the second revision.</p>
+
+<p>To find the history of the Helm releases for <code>web</code>, use the following:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">helm history web
+</li></ul></code></pre>
+<p>This will show both of the revisions of the <code>web</code> application:</p>
+<div class="code-label " title="Output">Output</div><pre class="code-pre "><code langs="">REVISION        UPDATED                         STATUS          CHART           DESCRIPTION
+1               Wed Feb 20 20:59:48 2019        SUPERSEDED      demo-0.1.0      Install complete
+2               Wed Feb 20 21:18:12 2019        DEPLOYED        demo-0.1.0      Upgrade complete
+</code></pre>
+<p>To roll back your application to revision <code>1</code>, enter the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">helm rollback web 1
+</li></ul></code></pre>
+<p>This will yield the following output:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>Rollback was a success! Happy Helming!
+</code></pre>
+<p>Now, bring up the Helm release history:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">helm history web
+</li></ul></code></pre>
+<p>You will receive the following list:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>REVISION        UPDATED                         STATUS          CHART           DESCRIPTION
+1               Wed Feb 20 20:59:48 2019        SUPERSEDED      demo-0.1.0      Install complete
+2               Wed Feb 20 21:18:12 2019        SUPERSEDED      demo-0.1.0      Upgrade complete
+3               Wed Feb 20 21:28:48 2019        <span class="highlight">DEPLOYED</span>        demo-0.1.0      Rollback to 1
+</code></pre>
+<p>By rolling back the <code>web</code> application, you have created a third revision that has the same settings as revision <code>1</code>. Remember, you can always tell which revision is active by finding the <code>DEPLOYED</code> item under <code>STATUS</code>.</p>
+
+<p>To prepare for the next section, clean up your testing area by deleting your <code>web</code> release with the <code>helm delete</code> command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">helm delete web
+</li></ul></code></pre>
+<p>Examine the Helm release history again:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">helm history web
+</li></ul></code></pre>
+<p>You will receive the following output:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>REVISION        UPDATED                         STATUS          CHART           DESCRIPTION
+1               Wed Feb 20 20:59:48 2019        SUPERSEDED      demo-0.1.0      Install complete
+2               Wed Feb 20 21:18:12 2019        SUPERSEDED      demo-0.1.0      Upgrade complete
+3               Wed Feb 20 21:28:48 2019        <span class="highlight">DELETED</span>         demo-0.1.0      Deletion complete
+</code></pre>
+<p>The <code>STATUS</code> for <code>REVISION 3</code> has changed to <code>DELETED</code>, indicating that your deployed instance of <code>web</code> has been deleted. However, although this does delete the release, it does not delete it from store. In order to delete the release completely, run the <code>helm delete</code> command with the <code>--purge</code> flag.</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">helm delete web --purge
+</li></ul></code></pre>
+<p>In this step, you have managed application releases on Kubernetes with the Helm. If you would like to study Helm further, check out our <a href="https://www.digitalocean.com/community/tutorials/an-introduction-to-helm-the-package-manager-for-kubernetes">An Introduction to Helm, the Package Manager for Kubernetes</a> tutorial, or review the official <a href="https://docs.helm.sh/helm/">Helm documentation</a>.</p>
+
+<p>Next, you will set up and test the pipeline automation tool Jenkins X by using the <code>jx</code> CLI to create a CI/CD-ready Kubernetes cluster.</p>
+
+<h2 id="step-4-—-setting-up-the-jenkins-x-environment">Step 4 — Setting Up the Jenkins X Environment</h2>
+
+<p>With Jenkins X, you can create your Kubernetes cluster from the ground up with pipeline automation and CI/CD solutions built in. By installing the <code>jx</code> CLI tool, you will be able to efficiently manage application releases, Docker images, and Helm charts, in addition to automatically promoting your applications across environments in GitHub.</p>
+
+<p>Since you will be using <code>jx</code> to create your cluster, you must first delete the Minikube cluster that you already have. To do this, use the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">minikube delete
+</li></ul></code></pre>
+<p>This will delete the local simulated Kubernete cluster, but will not delete the default directories created when you first installed Minikube. To clean these off your machine, use the following commands:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">rm -rf ~/.kube
+</li><li class="line" prefix="$">rm -rf ~/.minikube
+</li><li class="line" prefix="$">rm -rf /etc/kubernetes/*
+</li><li class="line" prefix="$">rm -rf /var/lib/minikube/*
+</li></ul></code></pre>
+<p>Once you have completely cleared Minikube from your machine, you can move on to installing the Jenkins X binary.</p>
+
+<p>First, download the compressed <code>jx</code> file from the official <a href="https://github.com/jenkins-x">Jenkins X GitHub repository</a> with the <code>curl</code> command and uncompress it with the <code>tar</code> command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">curl -L https://github.com/jenkins-x/jx/releases/download/v1.3.781/jx-linux-amd64.tar.gz | tar xzv 
+</li></ul></code></pre>
+<p>Next, move the downloaded <code>jx</code> file to the executable path at <code>/usr/local/bin</code>:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">mv jx /usr/local/bin
+</li></ul></code></pre>
+<p>Jenkins X comes with a Docker Registry that runs inside your Kubernetes cluster. Since this is an internal element, security measures such as self-signed certificates can cause trouble for the program. To fix this, set Docker to use insecure registries for the local IP range. To do this, create the file <code>/etc/docker/daemon.json</code> and open it in your text editor:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">nano /etc/docker/daemon.json
+</li></ul></code></pre>
+<p>Add the following contents to the file:</p>
+<div class="code-label " title="/etc/docker/daemon.json">/etc/docker/daemon.json</div><pre class="code-pre "><code langs="">{
+  "insecure-registries" : ["0.0.0.0/0"]
+}
+</code></pre>
+<p>Save and exit the file. For these changes to take effect, restart the Docker service with the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">systemctl restart docker 
+</li></ul></code></pre>
+<p>To verify that you have configured Docker with insecure registries, use the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">docker info
+</li></ul></code></pre>
+<p>At the end of the output, you should see the following highlighted line:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>Containers: 0
+ Running: 0
+ Paused: 0
+ Stopped: 0
+Images: 15
+Server Version: 18.06.1-ce
+Storage Driver: overlay2
+ Backing Filesystem: extfs
+ Supports d_type: true
+ Native Overlay Diff: true
+
+. . .
+
+Registry: https://index.docker.io/v1/
+Labels:
+Experimental: false
+Insecure Registries:
+ <span class="highlight">0.0.0.0/0</span>
+ 127.0.0.0/8
+Live Restore Enabled: false
+</code></pre>
+<p>Now that you have downloaded Jenkins X and configured the Docker registry, use the <code>jx</code> CLI tool to create a Minikube Kubernetes cluster with CI/CD capabilities:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">jx create cluster minikube --cpu=5 --default-admin-password=admin --vm-driver=none --memory=13314
+</li></ul></code></pre>
+<p>Here you are creating a Kubernetes cluster using Minikube, with the flag <code>--cpu=5</code> to set 5 CPUs and <code>--memory=13314</code> to give your cluster 13314 MBs of memory. Since Jenkins X is a robust but large program, these specifications will ensure that Jenkins X works without problems in this demonstration. Also, you are using <code>--default-admin-password=admin</code> to set the Jenkins X password as <code>admin</code> and <code>--vm-driver=none</code> to set up the cluster locally, as you did in Step 1. </p>
+
+<p>As Jenkins X spins up your cluster, you will receive various prompts at different times throughout the process that set the parameters for your cluster and determine how it will communicate with GitHub to manage your production environments.</p>
+
+<p>First, you will receive the following prompt:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>? disk-size (MB) 150GB
+</code></pre>
+<p>Press <code>ENTER</code> to continue. Next, you will be prompted for the name you wish to use with git, the email address you wish to use with git, and your GitHub username. Enter each of these when prompted, then press <code>ENTER</code>.</p>
+
+<p>Next, Jenkins X will prompt you to enter your GitHub API token:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>To be able to create a repository on GitHub we need an API Token
+Please click this URL <span class="highlight">https://github.com/settings/tokens/new?scopes=repo,read:user,read:org,user:email,write:repo_hook,delete_repo</span>
+
+Then COPY the token and enter in into the form below:
+
+? API Token:
+</code></pre>
+<p>Enter your token here, or create a new token with the appropriate permissions using the highlighted URL in the preceding code block. </p>
+
+<p>Next, Jenkins X will ask:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>? Do you wish to use GitHub as the pipelines Git server: (Y/n)
+
+? Do you wish to use <span class="highlight">your_GitHub_username</span> as the pipelines Git user for GitHub server: (Y/n)
+</code></pre>
+<p>Enter <code>Y</code> for both questions.</p>
+
+<p>After this, Jenkins X will prompt you to answer the following:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>? Select Jenkins installation type:   [Use arrows to move, type to filter]
+&gt;Static Master Jenkins
+  Serverless Jenkins
+
+? Pick workload build pack:   [Use arrows to move, type to filter]
+&gt; Kubernetes Workloads: Automated CI+CD with GitOps Promotion
+  Library Workloads: CI+Release but no CD
+</code></pre>
+<p>For the prior, select <code>Static Master Jenkins</code>, and select <code>Kubernetes Workloads: Automated CI+CD with GitOps Promotion</code> for the latter. When prompted to select an organization for your environment repository, select your GitHub username.</p>
+
+<p>Finally, you will receive the following output, which verifies successful installation and provides your Jenkins X admin password.</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>Creating GitHub webhook for <span class="highlight">your_GitHub_username</span>/environment-horsehelix-production for url http://jenkins.jx.<span class="highlight">your_IP_address</span>.nip.io/github-webhook/
+
+Jenkins X installation completed successfully
+
+
+        ********************************************************
+
+             NOTE: Your admin password is: <span class="highlight">admin</span>
+
+        ********************************************************
+
+
+
+Your Kubernetes context is now set to the namespace: jx
+To switch back to your original namespace use: jx namespace default
+For help on switching contexts see: https://jenkins-x.io/developing/kube-context/
+
+To import existing projects into Jenkins:       jx import
+To create a new Spring Boot microservice:       jx create spring -d web -d actuator
+To create a new microservice from a quickstart: jx create quickstart
+</code></pre>
+<p>Next, use the <code>jx get</code> command to receive a list of URLs that show information about your application:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">jx get urls
+</li></ul></code></pre>
+<p>This command will yield a list similar to the following:</p>
+<pre class="code-pre output"><code langs="">Name                      URL
+jenkins                   http://jenkins.jx.<span class="highlight">your_IP_address</span>.nip.io
+jenkins-x-chartmuseum     http://chartmuseum.jx.<span class="highlight">your_IP_address</span>.nip.io
+jenkins-x-docker-registry http://docker-registry.jx.<span class="highlight">your_IP_address</span>.nip.io
+jenkins-x-monocular-api   http://monocular.jx.<span class="highlight">your_IP_address</span>.nip.io
+jenkins-x-monocular-ui    http://monocular.jx.<span class="highlight">your_IP_address</span>.nip.io
+nexus                     http://nexus.jx.<span class="highlight">your_IP_address</span>.nip.io
+</code></pre>
+<p>You can use the URLs to view Jenkins X data about your CI/CD environment via a UI by entering the address into your browser and entering your username and password. In this case, this will be &ldquo;admin&rdquo; for both.</p>
+
+<p>Next, in order to ensure that the service accounts in the namespaces <code>jx</code>, <code>jx-staging</code>, and <code>jx-production</code> have admin privileges, modify your RBAC policies with the following commands: </p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl create clusterrolebinding jx-staging1 --clusterrole=cluster-admin --user=admin --user=expose --group=system:serviceaccounts --serviceaccount=jx-staging:expose --namespace=jx-staging
+</li></ul></code></pre><pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl create clusterrolebinding jx-staging2 --clusterrole=cluster-admin --user=admin --user=expose --group=system:serviceaccounts --serviceaccount=jx-staging:default --namespace=jx-staging
+</li></ul></code></pre><pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl create clusterrolebinding jx-production1 --clusterrole=cluster-admin --user=admin --user=expose --group=system:serviceaccounts --serviceaccount=jx-production:expose --namespace=jx-productions
+</li></ul></code></pre><pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl create clusterrolebinding jx-production2 --clusterrole=cluster-admin --user=admin --user=expose --group=system:serviceaccounts --serviceaccount=jx-production:default --namespace=jx-productions
+</li></ul></code></pre><pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl create clusterrolebinding jx-binding1 --clusterrole=cluster-admin --user=admin --user=expose --group=system:serviceaccounts --serviceaccount=jx:expose --namespace=jx
+</li></ul></code></pre><pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl create clusterrolebinding jx-binding2 --clusterrole=cluster-admin --user=admin --user=expose --group=system:serviceaccounts --serviceaccount=jx:default --namespace=jx
+</li></ul></code></pre>
+<p>Now that you have created your local Kubernetes cluster with Jenkins X functionality built in, you can move on to creating an application on the platform to test its CI/CD capabilities and experience a Jenkins X pipeline.</p>
+
+<h2 id="step-5-—-creating-a-test-application-in-your-jenkins-x-environment">Step 5 — Creating a Test Application in Your Jenkins X Environment</h2>
+
+<p>With your Jenkins X environment set up in your Kubernetes cluster, you now have CI/CD infrastructure in place that can help you automate a testing pipeline. In this step, you will try this out by setting up a test application in a working Jenkins X pipeline.</p>
+
+<p>For demonstration purposes, this tutorial will use a sample RSVP application created by the <a href="https://cloudyuga.guru/explore">CloudYuga</a> team. You can find this application, along with other webinar materials, at the <a href="https://github.com/do-community/rsvpapp">DO-Community GitHub repository</a>. </p>
+
+<p>First, clone the sample application from the repository with the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">git clone https://github.com/do-community/rsvpapp.git
+</li></ul></code></pre>
+<p>Once you&rsquo;ve cloned the repository, move into the <code>rsvpapp</code> directory and remove the git files:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">cd rsvpapp
+</li><li class="line" prefix="$">rm -r .git/
+</li></ul></code></pre>
+<p>To initialize a git repository and a Jenkins X project for a new application, you can use <code>jx create</code> to start from scratch or a template, or <code>jx import</code> to import an existing application from a local project or git repository. For this tutorial, import the sample RSVP application by running the following command from within the application&rsquo;s home directory: </p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">jx import
+</li></ul></code></pre>
+<p>Jenkins X will prompt you for your GitHub username, whether you&rsquo;d like to initialize git, a commit message, your organization, and the name you would like for your repository. Answer yes to initialize git, then provide the rest of the prompts with your individual GitHub information and preferences. As Jenkins X imports the application, it will create Helm charts and a Jenkinsfile in your application&rsquo;s home directory. You can modify these charts and the Jenkinsfile as per your requirements.</p>
+
+<p>Since the sample RSVP application runs on port <code>5000</code> of its container, modify your <code>charts/rsvpapp/values.yaml</code> file to match this. Open the <code>charts/rsvpapp/values.yaml</code> in your text editor:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">nano charts/rsvpapp/values.yaml
+</li></ul></code></pre>
+<p>In this <code>values.yaml</code> file, set <code>service:internalPort:</code> to <code>5000</code>. Once you have made this change, your file should look like the following:</p>
+<div class="code-label " title="charts/rsvpapp/values.yaml">charts/rsvpapp/values.yaml</div><pre class="code-pre "><code langs=""># Default values for python.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+replicaCount: 1
+image:
+  repository: draft
+  tag: dev
+  pullPolicy: IfNotPresent
+service:
+  name: rsvpapp
+  type: ClusterIP
+  externalPort: 80
+  internalPort: <span class="highlight">5000</span>
+  annotations:
+    fabric8.io/expose: "true"
+    fabric8.io/ingress.annotations: "kubernetes.io/ingress.class: nginx"
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+ingress:
+  enabled: false
+</code></pre>
+<p>Save and exit your file.</p>
+
+<p>Next, change the <code>charts/preview/requirements.yaml</code> to fit with your application. <code>requirements.yaml</code> is a YAML file in which developers can declare chart dependencies, along with the location of the chart and the desired version. Since our sample application uses <a href="https://www.mongodb.com/">MongoDB</a> for database purposes, you&rsquo;ll need to modify the <code>charts/preview/requirements.yaml</code> file to list MongoDB as a dependency. Open the file in your text editor with the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">nano charts/preview/requirements.yaml
+</li></ul></code></pre>
+<p>Edit the file by adding the <code>mongodb-replicaset</code> entry after the <code>alias: cleanup</code> entry, as is highlighted in the following code block:</p>
+<div class="code-label " title="charts/preview/requirements.yaml">charts/preview/requirements.yaml</div><pre class="code-pre yaml"><code langs=""># !! File must end with empty line !!
+dependencies:
+- alias: expose
+  name: exposecontroller
+  repository: http://chartmuseum.jenkins-x.io
+  version: 2.3.92
+- alias: cleanup
+  name: exposecontroller
+  repository: http://chartmuseum.jenkins-x.io
+  version: 2.3.92
+<span class="highlight">- name: mongodb-replicaset</span>
+  <span class="highlight">repository: https://kubernetes-charts.storage.googleapis.com/</span>
+  <span class="highlight">version: 3.5.5</span>
+
+  # !! "alias: preview" must be last entry in dependencies array !!
+  # !! Place custom dependencies above !!
+- alias: preview
+  name: rsvpapp
+  repository: file://../rsvpapp
+</code></pre>
+<p>Here you have specified the <code>mongodb-replicaset</code> chart as a dependency for the <code>preview</code> chart.</p>
+
+<p>Next, repeat this process for your <code>rsvpapp</code> chart. Create the <code>charts/rsvpapp/requirements.yaml</code> file and open it in your text editor:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">nano charts/rsvpapp/requirements.yaml
+</li></ul></code></pre>
+<p>Once the file is open, add the following, making sure that there is a single line of empty space before and after the populated lines:</p>
+<div class="code-label " title="charts/rsvpapp/requirements.yaml">charts/rsvpapp/requirements.yaml</div><pre class="code-pre "><code langs="">
+dependencies:
+- name: mongodb-replicaset
+  repository: https://kubernetes-charts.storage.googleapis.com/
+  version: 3.5.5
+
+</code></pre>
+<p>Now you have specified the <code>mongodb-replicaset</code> chart as a dependency for your <code>rsvpapp</code> chart.</p>
+
+<p>Next, in order to connect the frontend of the sample RSVP application to the MongoDB backend, add a <code>MONGODB_HOST</code> environment variable to your <code>deployment.yaml</code> file in <code>charts/rsvpapp/templates/</code>. Open this file in your text editor:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">nano charts/rsvpapp/templates/deployment.yaml
+</li></ul></code></pre>
+<p>Add the following highlighted lines to the file, in addition to one blank line at the top of the file and two blank lines at the bottom of the file. Note that these blank lines are required for the YAML file to work:</p>
+<div class="code-label " title="charts/rsvpapp/templates/deployment.yaml">charts/rsvpapp/templates/deployment.yaml</div><pre class="code-pre "><code langs="">
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "fullname" . }}
+  labels:
+    draft: {{ default "draft-app" .Values.draft }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        draft: {{ default "draft-app" .Values.draft }}
+        app: {{ template "fullname" . }}
+{{- if .Values.podAnnotations }}
+      annotations:
+{{ toYaml .Values.podAnnotations | indent 8 }}
+{{- end }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        <span class="highlight">env:</span>
+        <span class="highlight">- name: MONGODB_HOST</span>
+          <span class="highlight">value: "mongodb://{{.Release.Name}}-mongodb-replicaset-0.{{.Release.Name}}-mongodb-replicaset,{{.Release.Name}}-mongodb-replicaset-1.{{.Release.Name}}-mongodb-replicaset,{{.Release.Name}}-mongodb-replicaset-2.{{.Release.Name}}-mongodb-replicaset:27017"</span>
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.service.internalPort }}
+        resources:
+{{ toYaml .Values.resources | indent 12 }}
+
+
+</code></pre>
+<p>With these changes, Helm will be able to deploy your application with MongoDB as its database.</p>
+
+<p>Next, examine the <code>Jenkinsfile</code> generated by Jenkins X by opening the file from your application&rsquo;s home directory:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">nano Jenkinsfile
+</li></ul></code></pre>
+<p>This <code>Jenkinsfile</code> defines the pipeline that is triggered every time you commit a version of your application to your GitHub repository. If you wanted to automate your code testing so that the tests are triggered every time the pipeline is triggered, you would add the test to this document.</p>
+
+<p>To demonstrate this, add a customized test case by replacing <code>sh "python -m unittest"</code> under <code>stage('CI Build and push snapshot')</code> and <code>stage('Build Release')</code> in the <code>Jenkinsfile</code> with the following highlighted lines:</p>
+<div class="code-label " title="/rsvpapp/Jenkinsfile">/rsvpapp/Jenkinsfile</div><pre class="code-pre Jenkinsfile"><code langs="">. . .
+  stages {
+    stage('CI Build and push snapshot') {
+      when {
+        branch 'PR-*'
+      }
+      environment {
+        PREVIEW_VERSION = "0.0.0-SNAPSHOT-$BRANCH_NAME-$BUILD_NUMBER"
+        PREVIEW_NAMESPACE = "$APP_NAME-$BRANCH_NAME".toLowerCase()
+        HELM_RELEASE = "$PREVIEW_NAMESPACE".toLowerCase()
+      }
+      steps {
+        container('python') {
+          <span class="highlight">sh "pip install -r requirements.txt"</span>
+          <span class="highlight">sh "python -m pytest tests/test_rsvpapp.py"</span>
+          sh "export VERSION=$PREVIEW_VERSION &amp;&amp; skaffold build -f skaffold.yaml"
+          sh "jx step post build --image $DOCKER_REGISTRY/$ORG/$APP_NAME:$PREVIEW_VERSION"
+          dir('./charts/preview') {
+            sh "make preview"
+            sh "jx preview --app $APP_NAME --dir ../.."
+          }
+        }
+      }
+    }
+    stage('Build Release') {
+      when {
+        branch 'master'
+      }
+      steps {
+        container('python') {
+
+          // ensure we're not on a detached head
+          sh "git checkout master"
+          sh "git config --global credential.helper store"
+          sh "jx step git credentials"
+
+          // so we can retrieve the version in later steps
+          sh "echo \$(jx-release-version) &gt; VERSION"
+          sh "jx step tag --version \$(cat VERSION)"
+          <span class="highlight">sh "pip install -r requirements.txt"</span>
+          <span class="highlight">sh "python -m pytest tests/test_rsvpapp.py"</span>
+          sh "export VERSION=`cat VERSION` &amp;&amp; skaffold build -f skaffold.yaml"
+          sh "jx step post build --image $DOCKER_REGISTRY/$ORG/$APP_NAME:\$(cat VERSION)"
+        }
+      }
+    }
+. . .
+</code></pre>
+<p>With the added lines, the Jenkins X pipeline will install dependencies and carry out a Python test whenever you commit a change to your application.</p>
+
+<p>Now that you have changed the sample RSVP application, commit and push these changes to GitHub with the following commands:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">git add *
+</li><li class="line" prefix="$">git commit -m update
+</li><li class="line" prefix="$">git push
+</li></ul></code></pre>
+<p>When you push these changes to GitHub, you will trigger a new build of your application. If you open the Jenkins UI by navigating to <code>http://jenkins.jx.<span class="highlight">your_IP_address</span>.nip.io</code> and entering &ldquo;admin&rdquo; for your username and password, you will find information about your new build. If you click &ldquo;Build History&rdquo; from the menu on the left side of the page, you should see a history of your committed builds. If you click on the blue icon next to a build then select &ldquo;Console Ouput&rdquo; from the lefthand menu, you will find the console output for the automated steps in your pipeline. Scrolling to the end of this output, you will find the following message:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>. . .
+Finished: SUCCESS
+</code></pre>
+<p>This means that your application has passed your customized tests and is now successfully deployed. </p>
+
+<p>Once Jenkins X builds the application release, it will promote the application to the <code>staging</code> environment. To verify that your application is running, list the applications running on your Kubernetes cluster by using the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">jx get app
+</li></ul></code></pre>
+<p>You will receive output similar to the following:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>APPLICATION STAGING PODS URL
+rsvpapp     0.0.2   1/1  http://rsvpapp.jx-staging.<span class="highlight">your_IP_address</span>.nip.io
+</code></pre>
+<p>From this, you can see that Jenkins X has deployed your application in your <code>jx-staging</code> environment as version <code>0.0.2</code>. The output also shows the URL that you can use to access your application. Visiting this URL will show you the sample RSVP application:</p>
+
+<p><img src="https://assets.digitalocean.com/articles/cart_64885/Sample_App_jx-staging.png" alt="Sample RSVP Application in the Staging Environment"></p>
+
+<p>Next, check out the activity of your application with the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">jx get activity -f rsvpapp 
+</li></ul></code></pre>
+<p>You will receive output similar to the following:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>STEP                                        STARTED      AGO DURATION STATUS
+<span class="highlight">your_GitHub_username</span>/rsvpappv/master #1    3h42m23s    4m51s Succeeded Version: 0.0.1
+  Checkout Source                          3h41m52s       6s Succeeded
+  CI Build and push snapshot               3h41m46s          NotExecuted
+  Build Release                            3h41m46s      56s Succeeded
+  Promote to Environments                  3h40m50s    3m17s Succeeded
+  Promote: staging                         3h40m29s    2m36s Succeeded
+    PullRequest                            3h40m29s    1m16s Succeeded  PullRequest: https://github.com/<span class="highlight">your_GitHub_username</span>/environment-horsehelix-staging/pull/1 Merge SHA: dc33d3747abdacd2524e8c22f0b5fbb2ac3f6fc7
+    Update                                 3h39m13s    1m20s Succeeded  Status: Success at: http://jenkins.jx.<span class="highlight">your_IP_address</span>.nip.io/job/<span class="highlight">your_GitHub_username</span>/job/environment-horsehelix-staging/job/master/2/display/redirect
+    Promoted                               3h39m13s    1m20s Succeeded  Application is at: http://rsvpapp.jx-staging.<span class="highlight">your_IP_address</span>.nip.io
+  Clean up                                 3h37m33s       1s Succeeded
+<span class="highlight">your_GitHub_username</span>/rsvpappv/master #2      28m37s    5m57s Succeeded Version: 0.0.2
+  Checkout Source                            28m18s       4s Succeeded
+  CI Build and push snapshot                 28m14s          NotExecuted
+  Build Release                              28m14s      56s Succeeded
+  Promote to Environments                    27m18s    4m38s Succeeded
+  Promote: staging                           26m53s     4m0s Succeeded
+    PullRequest                              26m53s     1m4s Succeeded  PullRequest: https://github.com/<span class="highlight">your_GitHub_username</span>/environment-horsehelix-staging/pull/2 Merge SHA: 976bd5ad4172cf9fd79f0c6515f5006553ac6611
+    Update                                   25m49s    2m56s Succeeded  Status: Success at: http://jenkins.jx.<span class="highlight">your_IP_address</span>.nip.io/job/<span class="highlight">your_GitHub_username</span>/job/environment-horsehelix-staging/job/master/3/display/redirect
+    Promoted                                 25m49s    2m56s Succeeded  Application is at: http://rsvpapp.jx-staging.<span class="highlight">your_IP_address</span>.nip.io
+  Clean up                                   22m40s       0s Succeeded
+</code></pre>
+<p>Here you are getting the Jenkins X activity for the RSVP application by applying a filter with <code>-f rsvpapp</code>.</p>
+
+<p>Next, list the pods running in the <code>jx-staging</code> namespace with the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl get pod -n jx-staging
+</li></ul></code></pre>
+<p>You will receive output similar to the following:</p>
+<pre class="code-pre output"><code langs="">NAME                                 READY     STATUS    RESTARTS   AGE
+jx-staging-mongodb-replicaset-0      1/1       Running   0          6m
+jx-staging-mongodb-replicaset-1      1/1       Running   0          6m
+jx-staging-mongodb-replicaset-2      1/1       Running   0          5m
+jx-staging-rsvpapp-c864c4844-4fw5z   1/1       Running   0          6m
+</code></pre>
+<p>This output shows that your application is running in the <code>jx-staging</code> namespace, along with three pods of the backend MongoDB database, adhering to the changes you made to the YAML files earlier.</p>
+
+<p>Now that you have run a test application through the Jenkins X pipeline, you can try out promoting this application to the production environment.</p>
+
+<h2 id="step-6-—-promoting-your-test-application-to-a-different-namespace">Step 6 — Promoting your Test Application to a Different Namespace</h2>
+
+<p>To finish up this demonstration, you will complete the CI/CD process by promoting the sample RSVP application to your <code>jx-production</code> namespace.</p>
+
+<p>First, use <code>jx promote</code> in the following command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">jx promote rsvpapp --version=0.0.2 --env=production
+</li></ul></code></pre>
+<p>This will promote the <code>rsvpapp</code> application running with <code>version=0.0.2</code> to the production environment. Throughout the build process, Jenkins X will prompt you to enter your GitHub account information. Answer these prompts with your individual responses as they appear.</p>
+
+<p>After successful promotion, check the list of applications:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">jx get app
+</li></ul></code></pre>
+<p>You will receive output similar to the following:</p>
+<pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>APPLICATION STAGING PODS URL                                             PRODUCTION PODS URL
+rsvpapp     0.0.2   1/1  http://rsvpapp.jx-staging.<span class="highlight">your_IP_address</span>.nip.io 0.0.2      1/1  http://rsvpapp.jx-production.<span class="highlight">your_IP_address</span>.nip.io
+</code></pre>
+<p>With this <code>PRODUCTION</code> information, you can confirm that Jenkins X has promoted <code>rsvpapp</code> to the production environment. For further verification, visit the production URL <code>http://rsvpapp.jx-production.<span class="highlight">your_IP_address</span>.nip.io</code> in your browser. You should see the working application, now runnning from &ldquo;production&rdquo;:</p>
+
+<p><img src="https://assets.digitalocean.com/articles/cart_64885/Sample_App_jx-production.png" alt="Sample RSVP Application in the Production Environment"></p>
+
+<p>Finally, list your pods in the <code>jx-production</code> namespace.</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">kubectl get pod -n jx-production
+</li></ul></code></pre>
+<p>You will find that <code>rsvpapp</code> and the MongoDB backend pods are running in this namespace:</p>
+<pre class="code-pre output"><code langs="">NAME                                     READY     STATUS    RESTARTS   AGE
+jx-production-mongodb-replicaset-0       1/1       Running   0          1m
+jx-production-mongodb-replicaset-1       1/1       Running   0          1m
+jx-production-mongodb-replicaset-2       1/1       Running   0          55s
+jx-production-rsvpapp-54748d68bd-zjgv7   1/1       Running   0          1m 
+</code></pre>
+<p>This shows that you have successfully promoted the RSVP sample application to your production environment, simulating the production-ready deployment of an application at the end of a CI/CD pipeline. </p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>In this tutorial, you used Helm to manage packages on a simulated Kubernetes cluster and customized a Helm chart to package and deploy your own application. You also set up a Jenkins X environment on your Kubernetes cluster and run a sample application through a CI/CD pipeline from start to finish.</p>
+
+<p>You now have experience with these tools that you can use when building a CI/CD system on your own Kubernetes cluster. If you&rsquo;d like to learn more about Helm, check out our <a href="https://www.digitalocean.com/community/tutorials/an-introduction-to-helm-the-package-manager-for-kubernetes">An Introduction to Helm, the Package Manager for Kubernetes</a> and <a href="https://www.digitalocean.com/community/tutorials/how-to-install-software-on-kubernetes-clusters-with-the-helm-package-manager">How To Install Software on Kubernetes Clusters with the Helm Package Manager</a> articles. To explore further CI/CD tools on Kubernetes, you can read about the Istio service mesh in the next tutorial in this webinar series.</p>
+
+    </div>
+</div>
+
+<div class="tutorial-footer">
+  
+<div class='tutorial-footer-details'>
+
+  <div class='postable-info-bar-container'>
+  <div class='postable-info-bar'>
+
+    <div class="author-byline">
+      <div class="component-collaborators-container">
+  <ul class="component-collaborators-content">
+        <li class="collaborator-byline-avatar">
+          <a href="/community/users/neependrakhare">
+            <img alt="neependrakhare" class="avatar avatar-large" src="https://secure.gravatar.com/avatar/92bcb0d14ff8fd6afad7409c34fc6197?secure=true&d=identicon" width="80" height="80" />
+</a>        </li>
+
+    <li class="collaborators-byline-data">
+        <p class="names">By <a href="/community/users/neependrakhare">neependrakhare</a></p>
+
+      <p>
+      </p>
+    </li>
+  </ul>
+</div>
+
+    </div>
+  </div>
+</div>
+
+
+  <div class='section-content tutorial-contributors two'>
+    <div class="component-collaborators-container">
+      <ul class="component-collaborators-content">
+
+          <li class="collaborator-byline-avatar">
+            <a href="/community/users/tnolan">
+                <div class="mod-avatar mod-avatar-large"><img class="avatar avatar-large" src="https://community-cdn-digitalocean-com.global.ssl.fastly.net/assets/users/avatars/large/fac1091e04a3075ca2ae99d29cbe169d10293219.JPG?1554846731" alt="Fac1091e04a3075ca2ae99d29cbe169d10293219" /><span class="mod-star" title="MOD" data-toggle="tooltip" data-container="body"><span class="mod-star-icon" /></span></div>
+</a>          </li>
+
+
+        <li class="collaborators-byline-data">
+            <p class="names">Editor: <a href="/community/users/tnolan">Timothy Nolan</a></p>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+    
+<div class="hsb--content">
+  <div class="hsb--undo hsb--hide">
+    <span class="icon icon-helpfulness-upvoted"></span>
+    <span class="hsb--question">You rated this helpful.</span>
+    <button name="button" type="submit" class="hsb--button-down hsb--vote-down-js" data-upvotable-type="Tutorial">Undo</button>
+  </div>
+
+  <div class="hsb--flagging-undo hsb--hide">
+    <span class="icon icon-helpfulness-flag"></span>
+    <span class="hsb--question">You reported this tutorial.</span>
+    <button name="button" type="submit" class="hsb--button-down hsb--unflagging-js">Undo</button>
+  </div>
+
+  <div class="hsb--do">
+    <span class="hsb--question">Was this helpful?</span>
+    <button name="button" type="submit" class="hsb--button hsb--vote-up-js" data-upvotable-id="2909" data-upvotable-type="Tutorial">Yes</button>
+    <button name="button" type="submit" class="hsb--button hsb--flagging-js" data-url="/community/tutorials/webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x/flag" data-flaggable-id="2909">No</button>
+  </div>
+
+  <div class="hsb--social-and-comments">
+    <div class="hsb--social-sharing">
+      <a target="_blank" class="share-popup" href="http://twitter.com/share?text=Webinar Series: Kubernetes Package Management with Helm and CI/CD with Jenkins X&amp;url=https://www.digitalocean.com/community/tutorials/webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x?utm_content=webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x&amp;utm_medium=community&amp;utm_source=twshare">
+        <span class="icon icon-helpfulness-twitter"></span>
+</a>
+      <a target="_blank" class="share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x?utm_content=webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x&amp;utm_medium=community&amp;utm_source=fbshare">
+        <span class="icon icon-helpfulness-facebook"></span>
+</a>
+      <a target="_blank" class="share-popup" href="https://news.ycombinator.com/submitlink?t=Webinar Series: Kubernetes Package Management with Helm and CI/CD with Jenkins X&amp;u=https://www.digitalocean.com/community/tutorials/webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x?utm_content=webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x&amp;utm_medium=community&amp;utm_source=hnshare">
+        <span class="icon icon-helpfulness-hacker-news"></span>
+</a>    </div>
+
+    <div class="hsb--comment">
+      <span class="icon icon-helpfulness-comment"></span>
+      <strong class="amount">1</strong>
+    </div>
+  </div>
+</div>
+
+
+</div>
+
+
+    <div class="tutorial-series-container">
+    <div class='section-content'>
+      <h2 class='tutorial-series-heading'>Tutorial Series</h2>
+          <div id="tutorial_series_80" class="tutorial-series">
+            <h3 class="series-title"><a href="/community/tutorial_series/webinar-series-ci-cd-on-kubernetes">Webinar Series: CI/CD on Kubernetes</a></h2>
+                <div class="description">
+                  The series discusses how to take a Cloud Native approach to building, testing, and deploying applications, covering release management, Cloud Native tools, Service Meshes, and CI/CD tools that can be used with Kubernetes. It is designed to help developers and businesses that are interested in integrating CI/CD best practices with Kubernetes into their worflows.
+                </div>
+              <div data-tutorial-series-list="80">
+  <button
+    type="button" class="button toggle-tutorials-list"
+    data-toggle-visibility-trigger
+    data-toggle-visibility="false"
+    data-toggle-visibility-target="[data-tutorial-series-list='80'] .TutorialSeries-list"
+    data-trigger-label-for-visible-state="Hide Tutorials"
+    data-trigger-label-for-hidden-state="Show Tutorials"
+  >
+  </button>
+  <ul class="TutorialSeries-list">
+      <li data-completed-tutorial-id="" data-tutorial-id="2820" data-js="tutorial">
+        <div class="TutorialSeries-listContainer">
+          <div class="TutorialSeries-listLeft">
+            <button type="button" class="Button--reset TutorialSeries-button " data-toggle="tooltip" title="Mark as Complete" data-js="markAsComplete" data-tutorialInteraction>
+              <svg class='svg-icon svg-icon-completed'><use xlink:href='https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-completed'></use></svg>
+            </button>
+          </div>
+          <div class="TutorialSeries-listRight">
+            <div class="TutorialSeries-headerContainer">
+              <div class="TutorialSeries-headerTitle">
+                <h2><a href="/community/tutorials/webinar-series-building-blocks-for-doing-ci-cd-with-kubernetes">Webinar Series: Building Blocks for Doing CI/CD with Kubernetes</a></h2>
+              </div>
+              <div class="TutorialSeries-headerDate">
+                September 12, 2018
+              </div>
+            </div>
+            <div class="TutorialSeries-description">
+              If you are getting started with containers, you will likely want to know how to automate the processes of building, testing, and deployment. 
+In this first article of the **CI/CD with Kubernetes** series, we will cover key topics for working with Kubernetes. By the end of this tutorial, you will have created container images with Docker, Buildah, and Kaniko. You will also have experience setting up a Kubernetes cluster with Deployments, Services, and Custom Resources. 
+            </div>
+          </div>
+        </div>
+      </li>
+      <li data-completed-tutorial-id="" data-tutorial-id="2909" data-js="tutorial">
+        <div class="TutorialSeries-listContainer">
+          <div class="TutorialSeries-listLeft">
+            <button type="button" class="Button--reset TutorialSeries-button " data-toggle="tooltip" title="Mark as Complete" data-js="markAsComplete" data-tutorialInteraction>
+              <svg class='svg-icon svg-icon-completed'><use xlink:href='https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-completed'></use></svg>
+            </button>
+          </div>
+          <div class="TutorialSeries-listRight">
+            <div class="TutorialSeries-headerContainer">
+              <div class="TutorialSeries-headerTitle">
+                <h2><a href="/community/tutorials/webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x">Webinar Series: Kubernetes Package Management with Helm and CI/CD with Jenkins X</a></h2>
+              </div>
+              <div class="TutorialSeries-headerDate">
+                February 21, 2019
+              </div>
+            </div>
+            <div class="TutorialSeries-description">
+              In this second article of the CI/CD with Kubernetes series, you will preview two Kubernetes-specific tools that have been developed to manage cloud native CI/CD: the Helm package manager and the Jenkins X pipeline automation tool. In order to effectively reduce error and organize complexity in application deployment, CI/CD systems must include robust tooling for package management/deployment and the creation of a development pipeline with automated testing.
+            </div>
+          </div>
+        </div>
+      </li>
+      <li data-completed-tutorial-id="" data-tutorial-id="2918" data-js="tutorial">
+        <div class="TutorialSeries-listContainer">
+          <div class="TutorialSeries-listLeft">
+            <button type="button" class="Button--reset TutorialSeries-button " data-toggle="tooltip" title="Mark as Complete" data-js="markAsComplete" data-tutorialInteraction>
+              <svg class='svg-icon svg-icon-completed'><use xlink:href='https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg#icon-completed'></use></svg>
+            </button>
+          </div>
+          <div class="TutorialSeries-listRight">
+            <div class="TutorialSeries-headerContainer">
+              <div class="TutorialSeries-headerTitle">
+                <h2><a href="/community/tutorials/webinar-series-gitops-tool-sets-on-kubernetes-with-circleci-and-argo-cd">Webinar Series: GitOps Tool Sets on Kubernetes with CircleCI and Argo CD</a></h2>
+              </div>
+              <div class="TutorialSeries-headerDate">
+                March  5, 2019
+              </div>
+            </div>
+            <div class="TutorialSeries-description">
+              GitOps, as proposed by Weaverworks in a 2017 blog post, uses Git as a "single source of truth" for CI/CD processes, integrating code changes that happen in your Git repository. In this tutorial, you will run through a demonstration of two tools that you can use to set up your own cloud-based GitOps CI/CD system: The Continuous Integration tool CircleCI and Argo CD, a declarative Continuous Delivery tool.
+            </div>
+          </div>
+        </div>
+      </li>
+  </ul>
+</div>
+
+          </div>
+    </div>
+  </div>
+
+    <div class='related-tutorials'>
+    <div class='section-content'>
+      <h2>Related</h2>
+
+      <ul>
+        <li title="How To Install Aegir and Use it to Deploy Drupal Sites on a Debian VPS">
+  <a class="panel" href="/community/tutorials/how-to-install-aegir-and-use-it-to-deploy-drupal-sites-on-a-debian-vps">
+    <h6>Tutorial</h6>
+    <div class="panel-data">
+      <h5>How To Install Aegir and Use it to Deploy Drupal Sites on a Debian VPS</h5>
+      <p>Aegir is massive hosting system for Drupal powered sites based on many Drupal itself (for Aegir core), Drupal deployment tools, and the Drush. Aegir makes it simple for you to host Drupal sites, as well as to manage and deploy them effectively. At the end of installation, you will get a hosting system controlled by web frontend with abillity to create new sites or transfer already existing websites into it very easily. This cool system is used by many companies that works with Drupal. Here&#39;s how to install Aegir and use it to deploy Drupal sites on a Debian VPS.</p>
+    </div>
+  </a>
+</li>
+<li title="How To Deploy With Mina: Getting Started">
+  <a class="panel" href="/community/tutorials/how-to-deploy-with-mina-getting-started">
+    <h6>Tutorial</h6>
+    <div class="panel-data">
+      <h5>How To Deploy With Mina: Getting Started</h5>
+      <p>In this DigitalOcean article we are going to learn a different way to automate remote server tasks, covering a large area from managing processes to actually deploying applications, using Mina: a Bash script generator and remote execution tool built on RAKE.</p>
+    </div>
+  </a>
+</li>
+<li title="How To Package And Distribute Python Applications">
+  <a class="panel" href="/community/tutorials/how-to-package-and-distribute-python-applications">
+    <h6>Tutorial</h6>
+    <div class="panel-data">
+      <h5>How To Package And Distribute Python Applications</h5>
+      <p>In this DigitalOcean article, we talk about the necessary tools for Python application distribution. We go over the key steps to allow readers to package their own useful libraries, modules, or applications -- which should help them with deploying project on droplets or sharing on the internet.
+</p>
+    </div>
+  </a>
+</li>
+<li title="Automated Provisioning of DigitalOcean Cloud Servers with Salt Cloud on Ubuntu 12.04">
+  <a class="panel" href="/community/tutorials/automated-provisioning-of-digitalocean-cloud-servers-with-salt-cloud-on-ubuntu-12-04">
+    <h6>Tutorial</h6>
+    <div class="panel-data">
+      <h5>Automated Provisioning of DigitalOcean Cloud Servers with Salt Cloud on Ubuntu 12.04</h5>
+      <p>This tutorial aims to provide the reader with a simplified, basic setup of an operable Salt Cloud master server. Users can then use this employ to automate the process of creating 1, 2 or a fleet of cloud servers.</p>
+    </div>
+  </a>
+</li>
+
+      </ul>
+    </div>
+  </div>
+
+
+  <div class='looking-for-an-answer'>
+  <div class='section-content'>
+    <h4>Still looking for an answer?</h4>
+
+    <div class="lfa--actions">
+      <a href="/community/questions/new?tags=Kubernetes%2CDeployment%2CCI%2FCD" class="lfa--action-box">
+        <span class="icon icon-look-for-answer-question"></span>
+        Ask a question
+      </a>
+      <a href="#q" class="lfa--action-box">
+        <span class="icon icon-look-for-answer-search-thin"></span>
+        Search for more help
+      </a>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="content-comments">
+  <div class="section-content">
+    <div class="tutorial commentable" id="tutorial_2909">
+
+  <div class="comments-header">
+    <h4 class="comments-count">
+        <span>1 Comment</span>
+    </h4>
+  </div>
+
+    <div class="response response-form no-avatar">
+  <div class="js-display-on-error flash error hidden"></div>
+
+
+  <form class="content-form disabled-form" id="new_comment" action="/community/tutorials/webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x/comments" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="&#x2713;" />
+
+    <textarea name="comment[content]" id="comment_content" placeholder="Leave a comment..." class="js-comment-content tutorial-comment-field" data-markdown="true">
+</textarea>
+
+      <div class="log-in-notice "><a href="/community/auth/digitalocean">Log In to Comment</a></div>
+
+    <div class='clearfix'></div>
+</form>
+</div>
+
+
+  <div class="comments">
+    <ul class="response-list">
+          <a class="js-click-on-load hidden" rel="nofollow" data-remote="true" href="/community/tutorials/webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x/comments">Load</a>
+    </ul>
+
+      <div class='comments-spinner'><div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+</div>
+  </div>
+
+  <div class='load-more-container'></div>
+</div>
+
+
+  </div>
+</div>
+
+<div class="creative-commons">
+  <a class="creative-commons-image" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><img rel="license" alt="Creative Commons License" src="/assets/community/creativecommons-08b32a9279fcd47fcd78ac6a26331389.png" /></a>
+    <div class="license-text">This work is licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.</div>
+</div>
+
+
+
+
+
+
+        <div class="clearfix"></div>
+      </div>
+
+            <footer>
+        <section>
+            <a href="https://www.digitalocean.com/write-for-donations/" class="panel">
+            <div class="photo_wrap">
+              <img class="photo" src="https://digitalocean.cdn.prismic.io/digitalocean/70910e9fdeb57be46aaa209ce8d9b4dc8e117fab_w4do2.jpg" alt="">
+            </div>
+            <span class="heading">Become a contributor</span>
+            <p>
+                You get paid; we donate to tech nonprofits.
+            </p>
+          </a>
+            <a href="https://www.meetup.com/pro/digitalocean" class="panel">
+            <div class="photo_wrap">
+              <img class="photo" src="https://digitalocean.cdn.prismic.io/digitalocean/2491485f96735e5982e330914d8a617f85395fab_meetups.jpg" alt="">
+            </div>
+            <span class="heading">Connect with other developers</span>
+            <p>
+                Find a DigitalOcean Meetup near you.
+            </p>
+          </a>
+            <a href="https://www.digitalocean.com/community/newsletter" class="panel">
+            <div class="photo_wrap">
+              <img class="photo" src="https://digitalocean.cdn.prismic.io/digitalocean/ca12c951cc76f33037f3384bba9942545d160d82_iaan_illo.jpg" alt="">
+            </div>
+            <span class="heading">Get our biweekly newsletter</span>
+            <p>
+                Sign up for Infrastructure as a Newsletter.
+            </p>
+          </a>
+      </section>
+      <section class="slim ">
+        <span class="heading">Featured on Community</span>
+            <a href="https://www.digitalocean.com/community/tutorials/an-introduction-to-kubernetes">Intro to Kubernetes</a>
+            <a href="https://www.digitalocean.com/community/tutorial_series/how-to-code-in-python-3">Learn Python 3</a>
+            <a href="https://www.digitalocean.com/community/tutorials/machine-learning-projects-python-a-digitalocean-ebook">Machine Learning in Python</a>
+            <a href="https://www.digitalocean.com/community/tutorials/how-to-write-your-first-program-in-go">Getting started with Go</a>
+            <a href="https://www.digitalocean.com/community/tutorial_series/from-containers-to-kubernetes-with-node-js">Migrate Node.js to Kubernetes</a>
+        <hr>
+        <span class="heading">DigitalOcean Products</span>
+            <a href="https://www.digitalocean.com/products/droplets/">Droplets</a>
+            <a href="https://www.digitalocean.com/products/managed-databases/">Managed Databases</a>
+            <a href="https://www.digitalocean.com/products/kubernetes/">Managed Kubernetes</a>
+            <a href="https://www.digitalocean.com/products/spaces/">Spaces Object Storage</a>
+            <a href="https://marketplace.digitalocean.com/">Marketplace</a>
+      </section>
+        <section class="product">
+          <a class="copy" href="/products">
+            <h3>Welcome to the developer cloud</h3>
+            <p>DigitalOcean makes it simple to launch in the cloud and scale up as you grow – whether you’re running one virtual machine or ten thousand.</p>
+            <span class="link_text">Learn More</a>
+          </div>
+          <div class="feature">
+            <a class="img_wrap" href="/products">
+              <img class="photo" src="https://digitalocean.cdn.prismic.io/digitalocean/95c1215227aa7f39f2bd23076de28feb969741c7_cloud.digitalocean.com_projects_63f9252f-652b-4645-9c0c-bee96f2bc503_resources_ic0ce81-2.png" alt="DigitalOcean Cloud Control Panel">
+            </a>
+          </div>
+        </section>
+        <section class="dark">
+          <div class="vlist grow">
+            <a href="https://www.digitalocean.com">
+              <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+                <title>DigitalOcean Homepage</title>
+                <g fill="#0080FF" fill-rule="evenodd">
+                  <path
+                    d="M24.9153 50v-9.661c10.226 0 18.1638-10.1413 14.2372-20.904-1.4406-3.983-4.6327-7.1751-8.6158-8.6158C19.774 6.921 9.6327 14.8305 9.6327 25.0565H0C0 8.7571 15.7627-3.9548 32.8531 1.3842c7.4576 2.3446 13.418 8.2768 15.7345 15.7344C53.9266 34.2373 41.2429 50 24.9153 50">
+                  </path>
+                  <path
+                    d="M15.339 40.3672h9.6045v-9.6045H15.339zM7.9379 47.7684h7.401v-7.4012H7.938zM1.7514 40.3672H7.938v-6.1864H1.7514z">
+                  </path>
+                </g>
+              </svg>
+            </a>
+            <br><br>
+            © <script type="text/javascript">
+              document.write(new Date().getFullYear());
+
+            </script> DigitalOcean, LLC. All rights reserved.
+          </div>
+
+              <div class="vlist">
+                <span class="heading">Company</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/about/">About</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/about/leadership/">Leadership</a>
+                    </li>
+                    <li>
+                      <a href="https://blog.digitalocean.com/">Blog</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/careers/">Careers</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/partners/">Partners</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/referral-program/">Referral Program</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/press/">Press</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/legal/">Legal &amp; Security</a>
+                    </li>
+                </ul>
+              </div>
+              <div class="vlist">
+                <span class="heading">Products</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/">Products Overview</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/pricing/">Pricing</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/droplets/">Droplets</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/kubernetes/">Kubernetes</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/managed-databases/">Managed Databases</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/spaces/">Spaces</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/marketplace/">Marketplace</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/load-balancer/">Load Balancers</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/block-storage/">Block Storage</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/tools-and-integrations/">Tools &amp; Integrations</a>
+                    </li>
+                    <li>
+                      <a href="https://developers.digitalocean.com/documentation/">API</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/docs">Documentation</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/docs/release-notes/">Release Notes</a>
+                    </li>
+                </ul>
+              </div>
+              <div class="vlist">
+                <span class="heading">Community</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/tutorials">Tutorials</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/questions">Q&amp;A</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/tools">Tools and Integrations</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/tags">Tags</a>
+                    </li>
+                    <li>
+                      <a href="https://ideas.digitalocean.com/">Product Ideas</a>
+                    </li>
+                    <li>
+                      <a href="https://www.meetup.com/pro/digitalocean/?utm_source=do_www">Meetups</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/write-for-donations/">Write for DOnations</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/droplets-for-demos/">Droplets for Demos</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/hatch/">Hatch Startup Program</a>
+                    </li>
+                    <li>
+                      <a href="http://store.digitalocean.com/">Shop Swag</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/research/">Research Program</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/currents/">Currents Research</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/open-source/">Open Source</a>
+                    </li>
+                </ul>
+              </div>
+              <div class="vlist">
+                <span class="heading">Contact</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/support/">Support</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/company/contact/sales/">Sales</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/company/contact/#abuse">Report Abuse</a>
+                    </li>
+                    <li>
+                      <a href="https://status.digitalocean.com/">System Status</a>
+                    </li>
+                </ul>
+              </div>
+        </section>
+      </footer>
+
+
+      <div id='sign-in-modal' class='modal fade mini-modal' style="display: none;">
+  <div class='modal-dialog'>
+    <div class='modal-content'>
+      <div class='modal-header'>
+        <h1>Almost there!</h1>
+        <a class='close-button' data-dismiss='modal' aria-label="close"  href=''><span class='icon icon-close-light'></span></a>
+      </div>
+      <div class='modal-body'>
+        <div class='sign-in-message'>Sign into your account, or create a new one, to start interacting.</div>
+
+        <div class='sign-in-modal-actions'>
+          <a class="sign-in-link button blue-button" data-default-url="/community/auth/digitalocean" href="/community/auth/digitalocean">Log In</a>
+          <a class="sign-up-link button blue-button" data-default-url="/community/auth/digitalocean?display=sessionless+register" href="/community/auth/digitalocean?display=sessionless+register">Sign Up</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+      <script>
+    $(function() {
+      window.initHelpfulnessActions(2909);
+    });
+  </script>
+  <script>
+    $(function() {
+      var p, h5, panel, remainingSpace;
+      var lineHeight = 31, clamp = 1;
+
+      var panels = document.querySelectorAll('li .panel-data');
+
+      for (var i = 0, len = panels.length; i < len; i++) {
+        panel = panels[i];
+
+        p = panel.querySelector('p');
+        h5 = panel.querySelector('h5');
+        remainingSpace = panel.offsetHeight - h5.offsetHeight;
+
+        // Clamp text only when the remaining space isn't enought for p content.
+        if (remainingSpace < p.scrollHeight) {
+          clamp = parseInt(p.offsetHeight / lineHeight);
+
+          p.style.cssText = "-webkit-line-clamp:" + clamp +
+            "; display: -webkit-box; -webkit-box-orient: vertical;";
+        }
+      }
+    });
+  </script>
+
+  <script>
+    $(function() {
+      if (!!window.init_sharing) {
+        window.init_sharing();
+      }
+      new window.NewsletterSignup();
+      new window.GrowableMarkdown({ target: '[data-growable-markdown]' });
+    });
+  </script>
+  <script type="application/ld+json">
+    {"@context":"http://schema.org","@type":"Article","name":"Webinar Series: Kubernetes Package Management with Helm and CI/CD with Jenkins X","headline":"Webinar Series: Kubernetes Package Management with Helm and CI/CD with Jenkins X","alternativeHeadline":"Kubernetes Package Management with Helm and CI/CD with Jenkins X","description":"In this second article of the CI/CD with Kubernetes series, you will preview two Kubernetes-specific tools that have been developed to manage cloud native CI/CD: the Helm package manager and the Jenkins X pipeline automation tool. In order to effectively reduce error and organize complexity in application deployment, CI/CD systems must include robust tooling for package management/deployment and the creation of a development pipeline with automated testing.","keywords":"Kubernetes,CI/CD,Deployment","url":"https://www.digitalocean.com/community/tutorials/webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.digitalocean.com/community/tutorials/webinar-series-kubernetes-package-management-with-helm-and-ci-cd-with-jenkins-x"},"dateModified":"2019-02-27T18:01:35Z","inLanguage":"en","accessMode":"textual","accessModeSufficient":"textual","isAccessibleForFree":true,"license":"https://creativecommons.org/licenses/by-nc-sa/4.0/","publishingPrinciples":"https://www.digitalocean.com/community/tutorials/technical-recommendations-and-best-practices-for-digitalocean-s-tutorials","author":[{"@type":"Person","name":"neependrakhare","@id":"https://www.digitalocean.com/community/users/neependrakhare"}],"datePublished":"2019-02-27T18:01:35Z","editor":{"@type":"Person","name":"Timothy Nolan","@id":"tnolan"},"image":{"@type":"ImageObject","url":"https://community-cdn-digitalocean-com.global.ssl.fastly.net/assets/tutorials/images/large/Kubernetes_CI-CD_-_Blog_Header.png?1550789889","height":375,"width":750},"interactionStatistic":[{"@type":"InteractionCounter","interactionType":"http://schema.org/LikeAction","userInteractionCount":"1"},{"@type":"InteractionCounter","interactionType":"http://schema.org/CommentAction","userInteractionCount":"1"}],"sourceOrganization":{"@type":"Organization","name":"DigitalOcean Community","url":"https://www.digitalocean.com/community"},"publisher":{"@type":"Organization","name":"DigitalOcean","url":"https://www.digitalocean.com","logo":{"@type":"ImageObject","url":"https://assets.digitalocean.com/logos/DO_Logo_horizontal_blue.png","width":351,"height":60}}}
+  </script>
+
+
+    
+  </body>
+</html>

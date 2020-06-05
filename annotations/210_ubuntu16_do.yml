@@ -4,7 +4,7 @@ setup:
     host: vagrant@127.0.0.1:2003
     privateKey: id_rsa
 
-../tutorials/210_ubuntu16_do.html:
+../tutorials/docable/210_ubuntu16_do.html:
   steps:
     - run: "To enable these four modules, execute the following commands in succession"
     - run: "To put these changes into effect, restart Apache"

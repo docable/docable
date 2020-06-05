@@ -1,0 +1,1211 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
+	<title>High Availability Using Private Networking on Ubuntu 16.04 With Keepalived - Vultr.com</title>
+		<meta name="keywords" content="Vultr docs, tutorials, how to, vps, server">
+			<meta name="description" content="Deploy high performance SSD VPS on the worldwide Vultr network in 60 seconds. Sign up for free and start hosting virtual servers today!">
+	
+	<!-- Facebook -->
+	<meta property="og:url" content="https://www.vultr.com">
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="High Availability Using Private Networking on Ubuntu 16.04 With Keepalived">
+		<meta property="og:description" content="We are simplifying the cloud. One Login, 9 Countries, 16 Cities, Infinite Possibilities.">
+		<meta property="og:site_name" content="Vultr">
+	<meta property="og:image" content="https://www.vultr.com/media/media_card_1200x630.png">
+	<meta property="og:image:alt" content="Vultr">
+
+	<!-- Twitter -->
+	<meta name="twitter:card" content="summary">
+	<meta name="twitter:site" content="@Vultr">
+	<meta name="twitter:creator" content="@Vultr">
+	<meta name="twitter:title" content="Vultr: High Performance SSD Cloud">
+	<meta name="twitter:description" content="We are simplifying the cloud. One Login, 9 Countries, 16 Cities, Infinite Possibilities.">
+	<meta name="twitter:image" content="https://www.vultr.com/favicon/android-chrome-512x512.png">
+	<meta name="twitter:image:alt" content="Vultr Twitter">
+
+	<!-- Fix chrome language detection -->
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<meta http-equiv="Content-Language" content="en" />
+
+	<!-- Favicons -->
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=1">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png?v=1">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png?v=1">
+<link rel="manifest" href="/favicon/site.webmanifest">
+<meta name="msapplication-config" content="/browserconfig.xml"/>
+<link rel="mask-icon" href="/favicon/safari-pinned-tab.svg?v=1" color="#5bbad5">
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="theme-color" content="#ffffff">
+
+	<!-- Styles -->
+	<link href="/dist/css/style.css?v=515" rel="stylesheet">
+	<link href="/dist/css/custom.css?v=515" rel="stylesheet">
+
+	<noscript>
+		<link href="/dist/css/no-script.css?v=515" rel="stylesheet">
+	</noscript>
+
+	<!--[if lt IE 9]>
+	<script src="/dist/js/selectivizr-min.js"></script>
+	<script src="/dist/js/html5shiv.min.js"></script>
+	<script src="/dist/js/respond.min.js"></script>
+	<![endif]-->
+
+</head>
+<body class="">
+
+	<div class="menu__overlay"></div>
+
+	<div class="site">
+		<div data-site-navbar  class="site-navbar navbar navbar--h navbar--main navbar--main  site-navbar--docs">
+	<div class="container">
+		<button class="navbar__account" data-open-nav="[data-user-menu]">
+			<div class="i-c-3x">
+				<svg class="icon-user" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+	<g transform="translate(-4207 -165)">
+	<path class="icon-user__shape" d="M4198.193,99A12.007,12.007,0,0,1,4195,96.944V96.2a3,3,0,0,1,1.64-2.671,13.987,13.987,0,0,1,12.72,0A3,3,0,0,1,4211,96.2v.746A12.012,12.012,0,0,1,4207.808,99ZM4199,85a4,4,0,1,1,4,4A4,4,0,0,1,4199,85Z" transform="translate(16 89)"/>
+	<g class="icon-user__fill" transform="translate(4207 165)">
+		<circle class="icon-user__circle" cx="12" cy="12" r="12"/>
+		<circle class="icon-user__circle-fill" cx="12" cy="12" r="11"/>
+	</g>
+	</g>
+  </svg>
+			</div>
+		</button>
+		<a class="navbar__brand brand" href="http://www.vultr.com" data-logo>
+			<div class="brand__logo">
+				<svg class="svg-logo" xmlns="http://www.w3.org/2000/svg" width="152" height="36" viewBox="0 0 152 36">
+		<g transform="translate(-10 -10)">
+				<path class="svg-logo__text" d="M148,19.7c2.2-0.9,4-3.2,4-5.7c0-3.3-2.7-6-6-6h-9c-0.6,0-1,0.4-1,1v18c0,0.6,0.4,1,1,1h1c0.6,0,1-0.4,1-1v-7h6l4.3,7.5c0.2,0.3,0.5,0.5,0.9,0.5h0.7c0.6,0,1.1-0.5,1.1-1.1c0-0.2,0-0.4-0.1-0.5L148,19.7z M139,17v-6h6.8c1.7,0,3.2,1.3,3.2,3c0,1.8-1.2,3-3,3H139z M130,8h-15c-0.6,0-1,0.4-1,1v1c0,0.6,0.4,1,1,1h6v16c0,0.6,0.4,1,1,1h1c0.6,0,1-0.4,1-1V11h6c0.6,0,1-0.4,1-1V9C131,8.4,130.6,8,130,8z M114,25h-9V9c0-0.6-0.4-1-1-1c-0.1,0-0.9,0-1,0c-0.6,0-1,0.5-1,1.1v17.8c0,0.6,0.5,1.1,1,1.1H114c0.6,0,1-0.5,1-1.1c0-0.1,0-0.8,0-0.9C115,25.4,114.6,25,114,25z M96,8h-1c-0.6,0-1,0.4-1,1v11c0,2.9-2.1,5-5,5s-5-2.1-5-5V9c0-0.6-0.4-1-1-1h-1c-0.6,0-1,0.4-1,1l0,10.9c0,4.5,3.6,8.1,8,8.1c4.4,0,8-3.6,8-8.1L97,9C97,8.4,96.5,8,96,8z M76.9,8h-0.7c-0.4,0-0.8,0.3-1,0.7L69,24.1L62.8,8.7c-0.2-0.4-0.6-0.7-1-0.7h-0.7C60.5,8,60,8.5,60,9.1c0,0.1,0,0.3,0.1,0.4l7.2,17.9c0.2,0.4,0.6,0.7,1,0.7h1.4c0.4,0,0.8-0.3,1-0.7l7.2-17.9C78,9.3,78,9.2,78,9.1C78,8.5,77.5,8,76.9,8z" transform="translate(9 9)"/>
+				<g>
+				<path class="svg-logo__shape-1" data-logo-dark-blue d="M23.473,9.97C23.105,9.387,22.455,9,21.715,9H11.077C9.929,9,9,9.93,9,11.077C9,11.484,9.117,11.864,9.32,12.185L14.557,20.493000000000002L28.71,18.278000000000002L23.473,9.97Z"/>
+				<path class="svg-logo__shape-2" data-logo-light-blue d="M25.655,13.431C25.287000000000003,12.847999999999999,24.636000000000003,12.460999999999999,23.897000000000002,12.460999999999999H13.259C12.112,12.460999999999999,11.182,13.390999999999998,11.182,14.537999999999998C11.182,14.945999999999998,11.299000000000001,15.325,11.502,15.645999999999999L14.557,20.491999999999997L28.709,18.276999999999997L25.655,13.431Z"/>
+				<path  class="svg-logo__shape-3" fill="#FFFFFF" d="M14.557 20.493c-0.203-0.321-0.32-0.7-0.32-1.108 0-1.147 0.93-2.077 2.077-2.077h10.639c0.74 0 1.389 0.387 1.756 0.97l9.521 15.101c0.203 0.32 0.319 0.7 0.319 1.107 0 0.408-0.116 0.787-0.319 1.107l-5.32 8.438C32.543 44.613 31.893 45 31.154 45c-0.741 0-1.39-0.387-1.758-0.969L14.557 20.493z"/>
+				<path class="svg-logo__shape-3" d="M41.385 25.015c0.367 0.582 1.018 0.969 1.758 0.969s1.39-0.387 1.756-0.969l5.32-8.438c0.203-0.321 0.32-0.701 0.32-1.108 0-0.407-0.117-0.787-0.32-1.107l-2.77-4.392C47.082 9.387 46.432 9 45.691 9H35.055c-1.147 0-2.078 0.93-2.078 2.077 0 0.407 0.117 0.787 0.32 1.108L41.385 25.015z"/>
+				</g>
+		</g>
+</svg>
+			</div>
+			<div class="brand__favicon">
+				<img src="/dist/img/brand/favicon.svg" alt="Vultr">
+			</div>
+		</a>
+		<button class="navbar__burger burger" data-open-nav="[data-main-menu]">
+			<span></span>
+			<span></span>
+			<span></span>
+		</button>
+		<nav class="navbar__menu" data-main-menu>
+			<ul class="navbar__nav nav nav--h nav--main-menu" data-nav data-options="openOn: hover;">
+				<li class="nav__item has-dropdown">
+					<a class="nav__link" href="/products/">
+						<span class="nav__link-text">Products</span>
+						<i class="nav__icon "><svg class="icon-ui icon-ui--18" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px">
+	<path class="stroke" d="M5,7l4,4l4-4"/>
+</svg>
+</i>
+					</a>
+					<div class="nav__dropdown">
+						<ul class="nav__sub">
+							<li class="nav__item">
+								<a href="/products/cloud-compute/" class="nav__link">
+									<div class="nav__item-content">
+										<div class="nav__item-title">
+											Cloud Compute
+										</div>
+										<p class="nav__item-desc">
+											Powerful compute instances.
+										</p>
+										<ul class="nav__item-list">
+											<li data-link-to="/products/cloud-compute">Compute</li>
+											<li data-link-to="/products/high-frequency-compute">High Frequency Compute</li>
+																					</ul>
+									</div>
+									<div class="nav__item-icon">
+										<svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+	viewBox="0 0 48 48">
+	<polygon class="fill-primary" points="17.6,7.3 24.5,11.3 31.4,7.3 24.5,3.3"/>
+	<polygon class="fill-primary" points="17.6,17.1 24.5,21.1 31.4,17.2 24.5,13.2"/>
+	<polygon class="fill-primary" points="26.2,12.2 33.1,16.2 39.9,12.2 33.1,8.3"/>
+	<polygon class="fill-primary" points="9.1,12.2 16,16.2 22.8,12.2 16,8.3"/>
+	<polygon class="fill-gradient" points="3.5,35.7 24.5,47.4 44.5,35.7 37.2,31.3 24.5,38.4 11.9,31.3"/>
+	<path class="fill-primary stroke-primary" d="M3.5,28.2l21,11.7l20-11.7c-0.1-0.1-6-3.7-6.1-3.7c0,0-9.6,5.3-13.9,7.8c0,0-14-7.9-14-7.9C10.5,24.5,3.5,28.2,3.5,28.2z"/>
+	<polyline class="stroke-dark" points="44.5,12.8 44.5,20.3 24.5,32.2 3.5,20.2 3.5,12.8"/>
+	<polygon class="stroke-dark" points="3.8,12.6 24.5,24.5 44.5,12.6 24.5,0.6"/>
+</svg>
+									</div>
+								</a>
+							</li>
+							<li class="nav__item">
+								<a href="/products/bare-metal/" class="nav__link">
+									<div class="nav__item-content">
+										<div class="nav__item-title">
+											Bare Metal
+										</div>
+										<p class="nav__item-desc">
+											Dedicated servers with no virtualization.
+										</p>
+									</div>
+									<div class="nav__item-icon">
+										<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 23.0.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+	 viewBox="0 0 48 48">
+	<!-- Bottom Layer -->
+	<polygon class="fill-gradient" points="2.8,35.1 24.3,47.5 45.7,35.2 38.3,30.9 24.3,39.4 10,31 "/>
+
+	<polygon class="fill-primary stroke-primary" points="45.7,19.9 45.7,26.6 24.3,38.9 2.8,26.5 2.8,19.9 24.3,31.9 "/>
+
+	<polygon class="fill-primary-l stroke-primary-l" points="8.3,16.5 2.8,19.6 24.3,32 45.7,19.7 40,16.4 23.8,25.5 "/>
+
+	<!-- Outline -->
+	<polygon class="stroke-dark" points="2.3,12.8 23.8,25.2 45.2,12.9 23.8,0.5 "/>
+
+	<!-- Top -->
+	<path class="fill-primary stroke-primary" d="M23.9,7.6l5.7,3.4l2.1,1.2c0.1,0,0.1,0.1,0.1,0.2l-0.1,0.1L24,16.9
+	c-0.1,0-0.2,0.1-0.3,0.1c-0.1,0-0.2,0-0.3-0.1l-7.7-4.4c-0.1,0-0.1-0.1-0.1-0.2l0.1-0.1L23.9,7.6z"/>
+
+	<!-- Dot -->
+	<path class="fill-primary stroke-primary" d="M37.6,13.1L37.6,13.1c0.1,0.2,0.4,0.4,0.8,0.5l0,0c0.8,0.1,1.6-0.3,1.3-0.8l0,0
+	c-0.1-0.2-0.4-0.4-0.8-0.5l0,0C38.1,12.2,37.4,12.6,37.6,13.1z"/>
+
+	<!-- Dot -->
+	<path class="fill-primary stroke-primary" d="M7.5,13.1L7.5,13.1c0.1,0.2,0.4,0.4,0.8,0.5l0,0c0.8,0.1,1.6-0.3,1.3-0.8l0,0
+	c-0.1-0.2-0.4-0.4-0.8-0.5l0,0C8,12.2,7.3,12.6,7.5,13.1z"/>
+
+	<!-- Dot -->
+	<path class="fill-primary stroke-primary" d="M22.7,21.5L22.7,21.5c0.1,0.2,0.4,0.4,0.8,0.5l0,0c0.8,0.1,1.6-0.3,1.3-0.8l0,0
+	c-0.1-0.2-0.4-0.4-0.8-0.5l0,0C23.2,20.6,22.5,21,22.7,21.5z"/>
+
+	<!-- Dot -->
+	<path class="fill-primary stroke-primary" d="M22.7,4.2L22.7,4.2c0.1,0.2,0.4,0.4,0.8,0.5l0,0c0.8,0.1,1.6-0.3,1.3-0.8l0,0
+	c-0.1-0.2-0.4-0.4-0.8-0.5l0,0C23.2,3.3,22.5,3.7,22.7,4.2z"/>
+</svg>
+									</div>
+								</a>
+							</li>
+														<li class="nav__item">
+								<a href="/products/object-storage/" class="nav__link">
+									<div class="nav__item-content">
+										<div class="nav__item-title">
+											Object Storage
+										</div>
+										<p class="nav__item-desc">
+											Flexible, scalable storage
+										</p>
+									</div>
+
+									<div class="nav__item-icon">
+										
+<svg
+    version="1.1"
+    class="icon-sm"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    x="0px"
+    y="0px"
+    viewBox="0 0 48 48"
+    style="enable-background:new 0 0 48 48;"
+    xml:space="preserve"
+>
+    <linearGradient
+        id="object-storage-nav-gradient-1"
+        gradientUnits="userSpaceOnUse"
+        x1="2.55"
+        y1="489.03"
+        x2="44.5"
+        y2="489.03"
+        gradientTransform="matrix(1 0 0 1 -5.000000e-02 -449.73)"
+    >
+        <stop offset="0" style="stop-color:#B2CFFD" />
+        <stop offset="1" style="stop-color:#D3E3FE" />
+    </linearGradient>
+    <linearGradient
+        id="object-storage-nav-gradient-2"
+        gradientUnits="userSpaceOnUse"
+        x1="2.05"
+        y1="489.03"
+        x2="45"
+        y2="489.03"
+        gradientTransform="matrix(1 0 0 1 -5.000000e-02 -449.73)"
+    >
+        <stop offset="0" style="stop-color:#B2CFFD" />
+        <stop offset="1" style="stop-color:#D3E3FE" />
+    </linearGradient>
+    <path
+        class="st0"
+        style="fill: url(#object-storage-nav-gradient-1); stroke: url(#object-storage-nav-gradient-2);"
+        d="M2.5,35.2l21,12.1l21-12.2l-6.6-3.8c0,0-10.1,5.9-14.4,8.4L9.4,31.9L2.5,35.2z"
+    />
+    <path
+        class="st1"
+        style="fill: #007cfc; stroke: #007cfc;"
+        d="M2.6,28.1l21.1,12.5l20.7-12.4l-6.1-3.5c0,0-12.5,7.7-14.5,8.9l-15.3-9L2.6,28.1z"
+    />
+    <polygon
+        class="st2"
+        style="fill:none;stroke:#007CFC;"
+        points="44.5,12.6 23.5,0.7 2.5,13.1 2.5,28.2 23.6,40.5 44.5,28.1 "
+    />
+    <polyline
+        style="stroke: #393d45; fill: none"
+        points="40.5,16.3 40.5,22.8 23.5,33.2 5.5,22.8 5.5,16.3 "
+    />
+    <polygon style="stroke: #393d45; fill: none" points="5.5,16.2 23.5,26.5 40.5,16.2 23.5,5.8 " />
+    <path
+        style="fill: #007cfc"
+        d="M19.3,20v-3.8l7.6,0.3l0.3-2.4l3.9,0.3l2.9,1.5l-10.7,6.2L19.3,20z"
+    />
+    <ellipse style="fill: #007cfc" cx="21.9" cy="11.4" rx="1.5" ry="0.9" />
+</svg>
+									</div>
+								</a>
+							</li>
+														<li class="nav__item">
+								<a href="/products/block-storage" class="nav__link">
+									<div class="nav__item-content">
+										<div class="nav__item-title">
+											Block Storage
+										</div>
+										<p class="nav__item-desc">
+											Fast SSD-backed storage.
+										</p>
+									</div>
+
+									<div class="nav__item-icon">
+										<svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+	viewBox="0 0 48 48">
+	<polygon class="fill-gradient" points="3.5,35.5 24,47.5 44.5,35.5 37.1,31 24,38.3 11,30.9 "/>
+	<polygon class="fill-primary stroke-primary" points="44.5,29.9 24,41.9 3.5,29.9 3.5,23.3 8.5,24.4 23.5,32.4 39.5,24.4 44.5,23.3 "/>
+	<polygon class="fill-primary-l stroke-primary-l" points="3.5,23.2 24,35.2 44.5,23.2 41.5,21.3 24,31.3 6.6,21.2 "/>
+	<polyline class="stroke-dark" points="44.5,12.7 44.5,19.3 24,31.3 3.5,19.3 3.5,12.7 "/>
+	<polygon class="stroke-dark" points="3.5,12.5 24,24.6 44.5,12.5 24,0.5 "/>
+	<path class="fill-primary-l stroke-primary-l stroke-primary stroke-0-2" d="M18.1,11c0.3-0.2,0.4-0.3,0.3-0.5c0-0.2-0.2-0.5-0.5-0.8c-0.3-0.3-0.5-0.6-0.6-0.9c-0.2-0.5,0-0.9,0.6-1.3C18.4,7.1,19,7,19.7,7.1c0.7,0,1.4,0.2,2,0.6c0.3,0.2,0.6,0.4,0.9,0.8c0.2,0.2,0.2,0.5,0.1,0.8c-0.1,0.3-0.3,0.5-0.7,0.7l-1-0.6c0.3-0.2,0.5-0.4,0.5-0.6c0-0.2-0.2-0.4-0.6-0.6c-0.3-0.2-0.6-0.3-1-0.3c-0.3,0-0.6,0-0.9,0.2c-0.2,0.1-0.3,0.3-0.3,0.5c0,0.2,0.2,0.5,0.5,0.8c0.3,0.3,0.5,0.6,0.6,0.9c0.1,0.2,0.1,0.5,0,0.7c-0.1,0.3-0.4,0.5-0.6,0.6c-0.5,0.3-1.2,0.4-1.8,0.4c-0.7,0-1.4-0.3-2-0.6c-0.4-0.2-0.7-0.5-0.9-0.8c-0.2-0.3-0.2-0.6-0.2-0.9c0.1-0.3,0.3-0.5,0.7-0.8l1,0.6c-0.3,0.2-0.5,0.4-0.5,0.7c0,0.2,0.3,0.5,0.7,0.7c0.3,0.2,0.7,0.3,1,0.3C17.6,11.2,17.9,11.1,18.1,11z M23.1,13.8c0.3-0.2,0.4-0.3,0.3-0.5s-0.2-0.5-0.5-0.8c-0.3-0.3-0.5-0.6-0.6-0.9c-0.2-0.5,0-0.9,0.6-1.3c0.5-0.3,1.1-0.4,1.8-0.4c0.7,0,1.4,0.2,2,0.6c0.3,0.2,0.6,0.4,0.9,0.8c0.2,0.2,0.2,0.5,0.1,0.8c-0.1,0.3-0.3,0.5-0.7,0.7l-1-0.6c0.3-0.2,0.5-0.4,0.5-0.6c0-0.2-0.2-0.4-0.6-0.6c-0.3-0.2-0.6-0.3-1-0.3c-0.3,0-0.6,0-0.9,0.2c-0.2,0.1-0.3,0.3-0.3,0.5c0,0.2,0.2,0.5,0.5,0.8c0.3,0.3,0.5,0.6,0.6,0.9c0.1,0.2,0.1,0.5,0,0.7c-0.1,0.3-0.4,0.5-0.6,0.6c-0.5,0.3-1.2,0.4-1.8,0.4c-0.7,0-1.4-0.3-2-0.6c-0.4-0.2-0.7-0.5-0.9-0.8c-0.2-0.3-0.2-0.6-0.2-0.9c0.1-0.3,0.3-0.5,0.7-0.8l1,0.6c-0.3,0.2-0.5,0.4-0.5,0.7s0.3,0.5,0.7,0.7c0.3,0.2,0.7,0.3,1,0.3C22.5,14,22.8,14,23.1,13.8L23.1,13.8z M23.4,15.8l6.1-3.5l1.7,1c0.5,0.3,0.9,0.6,1,1c0.2,0.4,0.1,0.8-0.1,1.1c-0.2,0.4-0.6,0.7-1.2,1.1l-0.3,0.2c-0.6,0.3-1.2,0.6-1.9,0.7c-0.6,0.1-1.3,0.1-2,0c-0.6-0.1-1.2-0.3-1.8-0.6L23.4,15.8z M29.7,13.4l-4.4,2.5l0.7,0.4c0.5,0.3,1.1,0.4,1.8,0.4c0.7-0.1,1.3-0.3,1.9-0.6l0.3-0.2c0.7-0.4,1-0.8,1.1-1.1c0.1-0.4-0.2-0.7-0.7-1L29.7,13.4z"/>
+	<line class="st1" x1="13.3" y1="21.7" x2="5.8" y2="17.4"/>
+</svg>
+									</div>
+								</a>
+							</li>
+							<li class="nav__item">
+								<a href="/products/dedicated-cloud/" class="nav__link">
+									<div class="nav__item-content">
+										<div class="nav__item-title">
+											Dedicated Cloud
+										</div>
+										<p class="nav__item-desc">
+											No noisy neighbors.
+										</p>
+									</div>
+									<div class="nav__item-icon">
+										<svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 48 48">
+	<polygon class="fill-gradient" points="2.5,35.2 24,47.5 45.5,35.2 38.6,31.3 24,39.6 9.6,31.2"/>
+	<polygon class="fill-primary stroke-primary" points="39.2,23.5 45.5,27 24,39.3 2.5,27 8.8,23.4 24,32.1"/>
+	<polyline class="stroke-dark" points="45.5,13 45.5,19.7 24,31.9 2.5,19.6 2.5,13"/>
+	<polygon class="stroke-dark" points="2.5,12.8 24,25.1 45.5,12.8 24,0.5 "/>
+	<path class="fill-primary" d="M29.8,16.6c1.6-0.9,1.6-2.4,0.1-3.3c-0.5-0.3-1-0.4-1.5-0.5c1.2-0.9,1.1-2.2-0.3-3.1c-1.6-0.9-4.1-0.9-5.7,0l0,0c-0.1-0.1-0.3-0.2-0.5-0.3c-1.4-0.8-3.6-0.8-5.1,0c-1.4,0.8-1.4,2-0.2,2.8l0,0l7.7,4.4l0,0C25.8,17.5,28.2,17.5,29.8,16.6z"/>
+</svg>
+									</div>
+								</a>
+							</li>
+						</ul>
+					</div>
+				</li>
+				<li class="nav__item has-dropdown">
+					<a class="nav__link" href="/features/">
+						<span class="nav__link-text">Features</span>
+						<i class="nav__icon "><svg class="icon-ui icon-ui--18" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px">
+	<path class="stroke" d="M5,7l4,4l4-4"/>
+</svg>
+</i>
+					</a>
+					<div class="nav__dropdown">
+						<ul class="nav__sub">
+							<li class="nav__item">
+								<a href="/features/datacenter-locations/" class="nav__link">
+									<div class="nav__item-content">
+										<div class="nav__item-title">
+											Data Center Locations
+										</div>
+										<p class="nav__item-desc">
+											16 server locations worldwide.
+										</p>
+									</div>
+									<div class="nav__item-icon">
+										<svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 48 48">
+	<polygon class="fill-gradient" points="24,47.5 3.7,35.4 24,23.3 44.3,35.4 "/>
+	<path class="fill-primary stroke-primary" d="M19.5,1.9C14,5.1,9.4,12.9,9.4,19.4c0,10.3,9.2,17.2,9.6,17.5c0.1,0.1,0.3,0.1,0.5,0c0.2-0.1,0.4-0.3,0.5-0.5c0.4-0.8,9.6-18.6,9.6-28.6C29.6,1.3,25.1-1.3,19.5,1.9z M19.5,9.9c2.1-1.2,3.8-0.2,3.8,2.2s-1.7,5.4-3.8,6.6s-3.8,0.2-3.8-2.2S17.4,11.1,19.5,9.9z"/>
+	<path class="fill-white stroke-dark" d="M25,5c-5.6,3.2-10.1,11.1-10.1,17.5c0,10.3,9.2,17.2,9.6,17.5c0.1,0.1,3.8,2.4,3.9,2.2c0.4-0.8,6.7-21.3,6.7-31.4c0-1.3,1.4-3.9,0.7-4.4c-1.1-0.7-3.1-1.8-3.7-2.2C30.3,3.3,27.8,3.4,25,5zM25,13c2.1-1.2,3.8-0.2,3.8,2.2s-1.7,5.4-3.8,6.6s-3.8,0.2-3.8-2.2S22.9,14.3,25,13z"/>
+	<path class="fill-white stroke-dark" d="M28.7,7.2c-5.6,3.2-10.1,11.1-10.1,17.5c0,10.3,9.2,17.2,9.6,17.5c0.1,0.1,0.3,0.1,0.5,0c0.2-0.1,0.4-0.3,0.5-0.5c0.4-0.8,9.6-18.6,9.6-28.6C38.8,6.6,34.2,4,28.7,7.2z M28.7,15.2c2.1-1.2,3.8-0.2,3.8,2.2s-1.7,5.4-3.8,6.6c-2.1,1.2-3.8,0.2-3.8-2.2S26.6,16.4,28.7,15.2z"/>
+</svg>
+									</div>
+								</a>
+							</li>
+							<li class="nav__item">
+								<a href="/features/advanced-networking/" class="nav__link">
+									<div class="nav__item-content">
+										<div class="nav__item-title">
+											Advanced Network
+										</div>
+										<p class="nav__item-desc">
+											High speed public and private networking.
+										</p>
+									</div>
+									<div class="nav__item-icon">
+										<svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 48 48">
+	<polygon class="fill-gradient" points="1.5,34.6 24,47.5 46.5,34.6 38,29.8 24,37.6 10.1,29.7			"/>
+	<polygon class="fill-primary stroke-primary" points="46.5,26.2 24,39.1 1.5,26.1 1.5,19.2 9.1,19.2 24,27.7 39.2,19.2 46.5,19.2		"/>
+	<polygon class="fill-primary-l stroke-primary-l" points="1.5,19.2 24,31.9 46.5,19.2 41.8,16.4 24,26.3 6.3,16.3"/>
+	<polygon class="stroke-dark" points="1.5,13.4 24,26.3 46.4,13.4 24,0.5"/>
+	<path class="fill-primary" d="M22.1,10.8c-0.1-0.6-0.4-1.1-1-1.4c-0.9-0.5-1.8-0.7-2.8-0.7c-0.5,0-1,0.1-1.5,0.2c-1,0.4-1.7,1-1.7,1.8c0,0.9,1,1.7,2.5,2c1.2,0.2,2.4-0.1,3.5-0.6C21.7,11.8,22.1,11.3,22.1,10.8z"/>
+	<path class="fill-primary" d="M32.5,10.8c-0.1-0.6-0.4-1.1-1-1.4c-0.9-0.5-1.8-0.7-2.8-0.7c-0.5,0-1,0.1-1.5,0.2c-1,0.4-1.6,1-1.6,1.8c0,0.9,1,1.7,2.5,2c1.2,0.2,2.4-0.1,3.5-0.6C32,11.8,32.4,11.3,32.5,10.8z"/>
+	<path class="fill-primary" d="M28.7,17.3c-0.1-0.6-0.4-1.1-1-1.4c-0.9-0.4-1.8-0.7-2.8-0.6c-0.5,0-1,0.1-1.6,0.2c-1,0.4-1.6,1-1.6,1.8c0,0.9,1,1.7,2.5,2c1.2,0.2,2.4-0.1,3.5-0.6C28.3,18.4,28.6,17.9,28.7,17.3z"/>
+	<polyline class="stroke-primary stroke-1-5" points="19.7,10.6 29.1,10.6 25.4,17.2"/>
+</svg>
+									</div>
+								</a>
+							</li>
+							<li class="nav__item">
+								<a href="/features/control-panel/" class="nav__link">
+									<div class="nav__item-content">
+										<div class="nav__item-title">
+											Control Panel
+										</div>
+										<p class="nav__item-desc">
+											Expand and manage your infrastructure.
+										</p>
+									</div>
+									<div class="nav__item-icon">
+										<svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 48 48">
+	<path class="stroke-primary stroke-1-5" d="M29.3,10l1.7,7.1l-8.8-0.3l1.1,4.7 M26.9,11.4l-0.2,0.2l2.2-2.1l3.7,1.2"/>
+	<polygon class="fill-gradient" points="0.5,33.7 24.5,47.1 47.3,33.8 39,28.8 24.5,36.8 10.1,28.7"/>
+	<path class="fill-primary stroke-primary" d="M0.5,24.2l24,13.4l22.9-13.4c-0.1-0.1-6.9-4.2-7-4.2c0,0-11,6.1-15.8,8.9c0,0-16-9-16-9C8.5,19.9,0.6,24.1,0.5,24.2z"/>
+	<polygon class="stroke-dark" points="0.7,14.6 24.5,28.4 47.5,14.7 24.5,0.9 "/>
+	<g>
+		<path class="fill-primary" d="M12.2,13.8c0.6,0.3,0.5,0.9-0.2,1.3c-0.7,0.4-1.6,0.4-2.2,0.1c-0.6-0.3-0.5-0.9,0.2-1.3S11.6,13.4,12.2,13.8z"/>
+		<path class="fill-primary" d="M15.5,11.8c0.6,0.3,0.5,0.9-0.2,1.3c-0.7,0.4-1.6,0.4-2.2,0.1s-0.5-0.9,0.2-1.3C14,11.5,15,11.5,15.5,11.8z"/>
+		<path class="fill-primary" d="M18.9,9.8c0.6,0.3,0.5,0.9-0.2,1.3c-0.7,0.4-1.6,0.4-2.2,0.1c-0.6-0.3-0.5-0.9,0.2-1.3C17.4,9.6,18.4,9.5,18.9,9.8z"/>
+	</g>
+</svg>
+									</div>
+								</a>
+							</li>
+							<li class="nav__item">
+								<a href="/features/operating-systems/" class="nav__link">
+									<div class="nav__item-content">
+										<div class="nav__item-title">
+											Operating Systems
+										</div>
+										<p class="nav__item-desc">
+											Deploy instance with preferred OS.
+										</p>
+									</div>
+									<div class="nav__item-icon">
+										<svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 48 48">
+	<polygon class="fill-gradient" points="2.5,41 7.4,37.9 7.5,17.5 26.4,6.5 26.5,0.5 2.5,14.4"/>
+	<polygon class="fill-primary stroke-primary" points="7.4,44.1 13.3,40.6 13.6,20.9 31.5,10.3 31.5,3.6 7.5,17.5"/>
+	<polygon class="stroke-dark" points="13.5,47.5 37.5,33.5 37.5,7 13.6,20.9 "/>
+	<path class="fill-primary" d="M21.5,23.1L20,24.9l0.4,1.4c-0.1,0.2-0.2,0.4-0.3,0.7l-1.4,0.5l-0.6,2.2l1.2,0.2c0,0.2,0,0.4,0,0.7l-1.1,1.6l0.7,1.5l1.3-1.2c0.1,0.1,0.3,0.2,0.4,0.2l-0.2,1.8l1.6-0.2l0.7-1.8c0.2-0.1,0.4-0.2,0.6-0.4l0.8,0.9l1.5-1.7l-0.4-1.5c0.1-0.2,0.3-0.5,0.4-0.7l1.4-0.5l0.6-2.3l-1.2-0.1c0-0.2,0-0.4,0-0.6l1.1-1.6l-0.7-1.5l-1.3,1.2c-0.1-0.1-0.3-0.2-0.4-0.2l0.2-1.8l-1.6,0.2l-0.7,1.8c-0.2,0.1-0.4,0.2-0.6,0.3L21.5,23.1z M22.7,26.3c0.8-0.5,1.5-0.2,1.5,0.8c0,0.9-0.6,2.1-1.4,2.6s-1.5,0.2-1.5-0.8C21.3,27.9,21.9,26.8,22.7,26.3z"/>
+	<path class="fill-primary " d="M30,17.9l-1.1,1.2l0.3,1c-0.1,0.1-0.2,0.3-0.2,0.5l-1,0.4l-0.4,1.6l0.9,0.1c0,0.2,0,0.3,0,0.5l-0.8,1.2l0.5,1.1l0.9-0.8c0.1,0.1,0.2,0.1,0.3,0.2L29.2,26l1.1-0.2l0.5-1.3c0.1-0.1,0.3-0.2,0.4-0.3l0.6,0.7l1.1-1.2l-0.3-1.1c0.1-0.2,0.2-0.3,0.3-0.5l1-0.3l0.4-1.6L33.4,20c0-0.2,0-0.3,0-0.5l0.8-1.2l-0.5-1.1l-1,0.9c-0.1-0.1-0.2-0.1-0.3-0.2l0.2-1.3L31.5,17L31,18.3c-0.1,0.1-0.3,0.2-0.4,0.2L30,17.9z M30.9,20.1c0.6-0.4,1.1-0.1,1.1,0.6c0,0.7-0.4,1.5-1,1.9c-0.6,0.4-1.1,0.1-1.1-0.6C29.8,21.3,30.3,20.5,30.9,20.1z"/>
+	<g>
+		<path class="fill-primary stroke-primary" d="M40.9,38l-9.4,5.6C29,45,27,43.8,27,40.8l0-1.5c0-2.9,1.9-6.5,4.4-7.9l9.4-5.6c2.4-1.4,4.5-0.2,4.5,2.7l0,1.5C45.3,33,43.3,36.5,40.9,38z"/>
+		<path class="fill-white" d="M39.4,34.5c0-0.2,0-0.3-0.2-0.4c-0.2,0-0.4,0-0.7,0c-0.3,0.1-0.5,0.1-0.8,0.1c-0.5,0.1-0.9-0.3-1-0.7c0-0.1,0-0.2,0-0.2c0-0.3,0.1-0.7,0.2-1c0.2-0.4,0.4-0.7,0.7-1c0.3-0.3,0.6-0.6,1-0.8c0.3-0.2,0.6-0.3,1-0.3c0.3,0,0.5,0.1,0.7,0.3c0.2,0.2,0.3,0.5,0.2,0.8L39.4,32c0-0.2,0-0.3-0.2-0.4c-0.2-0.1-0.4,0-0.5,0.1c-0.2,0.1-0.4,0.3-0.5,0.5c-0.1,0.2-0.2,0.3-0.2,0.5c0,0.1,0.1,0.3,0.2,0.3c0.2,0,0.5,0,0.7,0c0.3-0.1,0.6-0.1,0.9-0.1c0.5,0.1,0.8,0.4,0.8,1c0,0.5-0.2,1.1-0.5,1.5c-0.4,0.5-0.8,0.9-1.4,1.2c-0.3,0.2-0.7,0.3-1.1,0.4c-0.3,0-0.6-0.1-0.7-0.3c-0.2-0.3-0.3-0.6-0.3-0.9l1.2-0.7c0,0.2,0,0.4,0.2,0.6c0.2,0,0.5,0,0.7-0.2c0.2-0.1,0.4-0.2,0.5-0.4C39.3,34.9,39.4,34.7,39.4,34.5L39.4,34.5z M35.8,35.3c0,0.6-0.1,1.1-0.3,1.7c-0.2,0.5-0.4,1-0.8,1.5c-0.3,0.4-0.7,0.8-1.1,1c-0.3,0.2-0.7,0.3-1.1,0.3c-0.3,0-0.6-0.2-0.8-0.5c-0.2-0.4-0.3-0.8-0.3-1.3v-0.3c0-0.6,0.1-1.1,0.3-1.7c0.2-0.5,0.4-1,0.8-1.5c0.3-0.4,0.7-0.8,1.2-1c0.3-0.2,0.7-0.3,1.1-0.3c0.3,0,0.6,0.3,0.8,0.6c0.2,0.4,0.3,0.9,0.3,1.3L35.8,35.3L35.8,35.3z M34.6,35.8c0-0.4,0-0.8-0.3-1.2c-0.2-0.2-0.5-0.2-0.7,0c0,0,0,0,0,0c-0.6,0.4-0.9,1.1-1,2.2l0,0.4c0,0.4,0,0.8,0.2,1.2c0.2,0.2,0.4,0.2,0.7,0c0.3-0.2,0.6-0.5,0.7-0.9c0.2-0.5,0.3-1,0.3-1.5L34.6,35.8L34.6,35.8z"/>
+	</g>
+</svg>
+									</div>
+								</a>
+							</li>
+							<li class="nav__item">
+								<a href="/features/one-click-apps/" class="nav__link">
+									<div class="nav__item-content">
+										<div class="nav__item-title">
+											One-Click Apps
+										</div>
+										<p class="nav__item-desc">
+											Deploy popular applications and games.
+										</p>
+									</div>
+									<div class="nav__item-icon">
+										<svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 48 48">
+	<polygon class="fill-gradient" points="3.4,35.7 24.5,47.5 44.6,35.7 37.3,31.4 24.5,38.5 11.8,31.3"/>
+	<path class="fill-primary stroke-primary" d="M3.4,28.2L24.5,40l20.1-11.8c-0.1-0.1-6.1-3.7-6.2-3.7c0,0-9.7,5.4-13.9,7.9c0,0-14-7.9-14-7.9C10.4,24.5,3.5,28.2,3.4,28.2z"/>
+	<polyline class="stroke-dark" points="44.6,12.7 44.6,20.3 24.5,32.3 3.4,20.2 3.4,12.7"/>
+	<polygon class="stroke-dark" points="3.7,12.5 24.5,24.5 44.6,12.5 24.5,0.5 "/>
+	<path class="fill-primary" d="M19.4,18.3C19.4,18.3,19.4,18.3,19.4,18.3c-0.1-0.1-0.1-0.2-0.1-0.2l1.9-2.8l-3.5-0.1c-0.1,0-0.2,0-0.3-0.1c-0.1-0.1,0-0.2,0.1-0.2l8.2-4.7c0.1-0.1,0.3-0.1,0.4,0c0.1,0,0.2,0.1,0.2,0.2l0.4,6.7c0,0.1-0.1,0.2-0.2,0.2c-0.1,0-0.3,0-0.4,0l-2.8-1.3l-1.8,2.8c0,0.1-0.1,0.1-0.2,0.1c-0.1,0-0.2,0-0.3,0l-1.6-0.3C19.5,18.4,19.5,18.4,19.4,18.3z"/>
+	<path class="stroke-primary stroke-1-5" d="M29.4,13.4c2.7-1.5,2.7-4.1,0-5.6l0,0c-2.7-1.5-7-1.6-9.7,0c-1.8,1-2.4,2.5-1.8,3.9"/>
+</svg>
+									</div>
+								</a>
+							</li>
+							<li class="nav__item">
+								<a href="/features/upload-iso/" class="nav__link">
+									<div class="nav__item-content">
+										<div class="nav__item-title">
+											Upload ISO
+										</div>
+										<p class="nav__item-desc">
+											Upload your own operating system.
+										</p>
+									</div>
+									<div class="nav__item-icon">
+										<svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"	 viewBox="0 0 48 48">
+	<path class="fill-gradient" d="M14.3,14.6c-3.1,5.2-4.1,6.2-6.1,13.3C7,32.2,7.5,37,9.7,40.9c-1.4-0.1-2.8-0.5-4.1-1C2.4,38.2,1,34.4,1,29.9c0.2-5.4,1.7-10.8,4.4-15.4c2.7-4.7,6.4-8.7,11.1-11.5c3.9-2.3,8-2.9,11-1.1c1.1,0.6,2,1.5,2.7,2.5c-2.3,0.3-4.5,1-6.5,2.1C20.8,7.8,17.4,9.3,14.3,14.6z"/>
+	<path class="fill-primary stroke-primary" d="M25.1,10.4c-7.2,5.1-9.9,11.4-12.2,17.5c-3.7,12.3,1.1,16.2,1.1,16.2s0.2,0.1,0,0.1c-1-0.2-2-0.6-2.9-1C8,41.4,6.6,37.8,6.6,33.1c0.1-5.4,1.7-10.7,4.4-15.3c2.7-4.7,6.4-8.7,11.1-11.5c3.9-2.3,7.9-2.9,11-1.1c0.8,0.5,1.6,1.1,2.2,1.9C34.9,7.4,31.8,5.3,25.1,10.4z"/>
+	<path class="stroke-dark" d="M38.2,33.4c-2.7,4.7-6.4,8.8-11,11.6c-3.9,2.3-8,2.9-11,1.1s-4.5-5.4-4.5-10.1c0.2-5.4,1.8-10.7,4.5-15.3c2.7-4.7,6.4-8.7,11.1-11.5c3.9-2.3,8-2.9,11-1.1s4.9,5.5,4.9,10.1C43.2,24.4,41.3,28.2,38.2,33.4z"/>
+	<path class="fill-primary stroke-primary" d="M29.5,28.4c-0.6,1-1.4,1.9-2.4,2.5c-0.7,0.5-1.6,0.6-2.4,0.2c-0.7-0.5-1.1-1.3-1-2.2c0.1-2.4,1.4-4.4,3.4-5.7c0.7-0.5,1.6-0.6,2.4-0.3c0.7,0.5,1.1,1.3,1,2.2C30.5,26.3,30.2,27.4,29.5,28.4z"/>
+	<path class="fill-primary stroke-primary" d="M42.7,37.7l-9.3,5.5c-2.4,1.5-4.4,0.3-4.4-2.7v-1.5c0.1-3.2,1.7-6,4.3-7.8l9.3-5.5c2.5-1.5,4.4-0.3,4.4,2.7v1.5C46.8,32.9,45.3,35.9,42.7,37.7z"/>
+	<path class="fill-white" d="M34.1,39.4l-1.2,0.7v-5.8l1.2-0.7V39.4z M37.8,35.8c0-0.2,0-0.3-0.2-0.4s-0.4-0.1-0.7,0c-0.3,0-0.5,0.1-0.8,0.1c-0.5,0.1-0.9-0.2-1-0.7l0,0c0-0.1,0-0.2,0-0.3c0-0.3,0.1-0.7,0.3-1c0.2-0.4,0.4-0.7,0.7-1c0.3-0.3,0.6-0.6,1-0.8c0.3-0.2,0.6-0.3,1-0.3c0.2,0,0.5,0.1,0.7,0.3c0.2,0.2,0.3,0.5,0.2,0.8l-1.2,0.7c0-0.2,0-0.4-0.2-0.5
+c-0.2-0.1-0.4,0-0.5,0.1c-0.2,0.1-0.4,0.3-0.5,0.5c-0.1,0.2-0.2,0.3-0.2,0.5c0,0.1,0.1,0.3,0.2,0.3c0.2,0.1,0.5,0.1,0.7,0c0.3-0.1,0.6-0.1,0.9-0.1c0.5,0.1,0.8,0.4,0.8,1c0,0.5-0.2,1.1-0.5,1.5c-0.4,0.5-0.8,0.9-1.4,1.3c-0.3,0.2-0.7,0.3-1.1,0.4c-0.3,0-0.6-0.1-0.7-0.3c-0.2-0.3-0.3-0.6-0.3-0.9l1.2-0.7c0,0.2,0,0.4,0.2,0.6c0.2,0.1,0.5,0,0.7-0.2c0.2-0.1,0.4-0.2,0.5-0.4
+C37.7,36.2,37.8,36,37.8,35.8L37.8,35.8z M44.1,30.9c0,0.6-0.1,1.2-0.3,1.7c-0.2,0.5-0.4,1-0.8,1.5c-0.3,0.4-0.7,0.7-1.1,1c-0.3,0.2-0.7,0.3-1.1,0.3c-0.3,0-0.6-0.2-0.8-0.5c-0.2-0.4-0.3-0.8-0.3-1.3v-0.3c0-0.6,0.1-1.1,0.3-1.7c0.2-0.5,0.4-1,0.8-1.5c0.3-0.4,0.7-0.7,1.2-1c0.3-0.2,0.7-0.3,1.1-0.3c0.3,0,0.6,0.3,0.8,0.6c0.2,0.4,0.3,0.9,0.3,1.3L44.1,30.9L44.1,30.9z M42.9,31.4
+c0-0.4,0-0.8-0.3-1.2c-0.2-0.2-0.5-0.2-0.7,0l0,0c-0.7,0.5-1.1,1.3-1,2.1v0.4c0,0.4,0,0.8,0.3,1.2c0.2,0.2,0.4,0.2,0.7,0c0.3-0.2,0.6-0.5,0.7-0.9c0.2-0.5,0.3-1,0.3-1.4V31.4z"/>
+</svg>
+									</div>
+								</a>
+							</li>
+						</ul>
+					</div>
+				</li>
+				<li class="nav__item">
+					<a class="nav__link" href="/resources/">
+						<span class="nav__link-text">Resources</span>
+					</a>
+				</li>
+				<li class="nav__item has-dropdown">
+					<a class="nav__link" href="/company/">
+						<span class="nav__link-text">Company</span>
+						<i class="nav__icon "><svg class="icon-ui icon-ui--18" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px">
+	<path class="stroke" d="M5,7l4,4l4-4"/>
+</svg>
+</i>
+					</a>
+					<div class="nav__dropdown">
+						<ul class="nav__sub">
+							<li class="nav__item">
+								<a href="/company/about-us/" class="nav__link">
+									<div class="nav__item-content">
+										<div class="nav__item-title">
+											About Us
+										</div>
+										<p class="nav__item-desc">
+											We are simplifying infrastructure!
+										</p>
+									</div>
+									<div class="nav__item-icon">
+										<svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 48 48">
+	<polygon class="fill-gradient" points="3,35.4 24,47.5 45,35.4 36.6,30.5 24,38.2 11.6,30.4 "/>
+	<polygon class="fill-primary stroke-primary" points="3,30.8 24,43 45,30.8 36.6,26 36.5,29.9 23.4,37.1 11.5,29.7 11.3,26 "/>
+	<g>
+		<polyline class="stroke-dark" points="11.5,7.6 11.5,29.7 23.5,36.8 36.4,29.7 36.4,7.6"/>
+		<g>
+			<polygon class="stroke-dark" points="23.5,14.8 11.5,7.6 24.1,0.5 36.4,7.6"/>
+		</g>
+	</g>
+	<g>
+		<polygon class="fill-primary" points="29.4,15.2 26.2,17 26.2,21 29.4,19.1 29.4,15.2"/>
+		<polygon class="fill-primary" points="33.9,12.7 30.8,14.5 30.8,18.5 34,16.6 34,12.7"/>
+		<polygon class="fill-primary" points="29.4,21.5 26.2,23.4 26.2,27.3 29.4,25.5 29.4,21.5"/>
+		<polygon class="fill-primary" points="33.9,19 30.8,20.9 30.8,24.8 34,23 34,19"/>
+	</g>
+	<line class="fill-white stroke-dark" x1="23.5" y1="14.8" x2="23.5" y2="36.4"/>
+</svg>
+									</div>
+								</a>
+							</li>
+							<li class="nav__item">
+								<a href="/company/our-team/" class="nav__link">
+									<div class="nav__item-content">
+										<div class="nav__item-title">
+											Our Team
+										</div>
+										<p class="nav__item-desc">
+											Meet the team behind our services.
+										</p>
+									</div>
+									<div class="nav__item-icon">
+										<svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 48 48">
+	<polyline class="fill-gradient" points="10,28.8 22.7,36 24,36.3 25,35.9 37.8,28.8 47.5,34.1 24,46.6 0.5,33.9 10,28.8"/>
+	<g>
+		<path class="fill-primary stroke-primary" d="M13.6,16.2c2-2,4-2.5,4-2.5c0.4,0,1.1-0.6,1-1c-1-1-0.9-1.6-1.3-1.7c-0.8-0.1-2.1-0.4-2.9-0.4C7.7,10.7,2.3,16,2.1,22.6c0,0.1,0.1,1,0.6,1.3l6.5,3.9c0,0-0.6-2.1,0.4-5.1C9.6,22.7,11.6,18.2,13.6,16.2z"/>
+		<path class="fill-primary stroke-primary" d="M18.4,3.3c0.1,0.1,0.2,0.2,0.3,0.3c-1.2,1.1-0.7,1.1-1.7,3.1c-1,3,0.9,4.8,0.7,5c-2.2,1.6-5.3,1.5-7.3-0.5c-2.2-2.2-2.2-5.7,0-7.9S16.2,1.1,18.4,3.3z"/>
+	</g>
+	<g>
+		<path class="fill-primary stroke-primary" d="M38.6,27.7l6.6-3.8c0.5-0.3,0.8-0.7,0.8-1h0c0-6.8-5.5-12.4-12.4-12.4c-1.3,0-2.5,0.2-3.6,0.5c-0.5,0.5-0.5,1.8-1.5,2.3c0,0.1,2-0.5,6,3.5c1.4,1.4,4.1,4.7,4,6.7L38.6,27.7z"/>
+		<path class="fill-primary stroke-primary" d="M37.7,3c2.2,2.2,2.2,5.7,0,7.9c-2.1,2.1-5.5,2.2-7.7,0.2c-0.1-0.1,2.6-3.6-0.8-7.3c0.2-0.3,0.4-0.5,0.6-0.8C32,0.8,35.5,0.8,37.7,3z"/>
+	</g>
+	<path class="stroke-dark" d="M19,13.3c-5.7,1.9-9.8,7.2-10,13.5c0,0.1,0.1,1.2,0.7,1.6l12,6.6c1,0.6,3.9,0.5,5.1-0.2l10.8-6.2c0.6-0.4,0.9-0.8,1-1.3h0c0-6.5-4.2-12-10-14"/>
+	<circle class="stroke-dark" cx="23.8" cy="8.3" r="6.7"/>
+</svg>
+									</div>
+								</a>
+							</li>
+							<li class="nav__item">
+								<a href="/company/careers/" class="nav__link">
+									<div class="nav__item-content">
+										<div class="nav__item-title">
+											Careers
+										</div>
+										<p class="nav__item-desc">
+											Join our team of professionals.
+										</p>
+									</div>
+									<div class="nav__item-icon">
+										<svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+	viewBox="0 0 48 48">
+	<path class="fill-gradient" d="M22.4,47.1L4.1,37.2c-2-1.1-2-2.9,0-4L10,30c0,0-0.7,2-0.3,2.8c1.5,3.1,12.1,7.3,12.1,7.3c2.8,0.4,3.3,0.3,4.9-0.1c0,0,10.3-5.7,11.3-6.7s0.2-3.1,0.2-3.1l5.7,3.1c2,1.1,2,2.9,0,4l-18.2,9.7C24.7,47.6,23.4,47.6,22.4,47.1z"/>
+	<path class="fill-primary stroke-primary" d="M22.4,40.4L4.1,30.5c-2-1.1-2-2.9,0-4l5.5-3c0,0-0.4,1.9,0.3,2.5c2.3,1.8,11.7,6.7,11.7,6.7c2.8,0.4,3.4,0.5,4.9,0.1c0,0,10.3-5.7,11.3-6.7s0.5-2.4,0.5-2.4l5.4,2.9c2,1.1,2,2.9,0,4l-18.2,9.7C24.7,41,23.4,41,22.4,40.4z"/>
+	<path id="Kształt_8_kopia_19_" class="fill-primary" d="M30.4,26.4c0,0.1-0.1,0.1-0.2,0.1l-1.8-0.3c-0.1,0-0.1-0.1-0.1-0.2l-1.8-10.4l-2.9-1.7c-0.1,0,1.2-0.3,2.4-1c0.8-0.5,1.8-0.7,1.8-0.6l-0.3,2.9l3.7,7.8c0,0.1,0,0.2,0,0.3l-0.7,2.9C30.5,26.3,30.5,26.3,30.4,26.4z"/>
+	<path class="stroke-dark" d="M19.5,11.7c-5.5,1.9-9.5,6.9-9.7,13c0,0.1,0.1,1.2,0.7,1.5l10.7,6.4c1,0.6,4.6,0.5,5.8-0.2l10.4-6c0.6-0.3,0.9-0.8,0.9-1.2h0c0-6.3-4.1-11.7-9.8-13.5"/>
+	<circle class="stroke-dark" cx="24.1" cy="6.9" r="6.4"/>
+</svg>
+									</div>
+								</a>
+							</li>
+							<li class="nav__item">
+								<a href="/news/" class="nav__link">
+									<div class="nav__item-content">
+										<div class="nav__item-title">
+											News
+										</div>
+										<p class="nav__item-desc">
+											What's new?
+										</p>
+									</div>
+									<div class="nav__item-icon">
+										<svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 48 48">
+	<polygon class="fill-gradient" points="2.1,34.5 24.6,47.4 46.9,34.5 39.1,30 24.6,38.6 9.6,30.2 "/>
+	<polygon class="fill-primary stroke-primary" points="2.1,26.5 24.6,39.4 46.9,26.5 38.6,21.7 20.8,31.4 6.9,23.7"/>
+	<path class="stroke-dark" d="M2,11.9"/>
+	<polygon class="stroke-dark" points="2.1,13.5 24.6,26.4 46.9,13.5 24.6,0.6 "/>
+	<polygon class="fill-primary" points="17.7,9 22.5,11.8 27.3,9 22.5,6.2 "/>
+	<path class="stroke-dark" d="M2.1,13.5c-0.5,0.5-2,2.9,0,6.4c0.8,1.3,2.1,2,3.1,2.6l8.5,4.8l6.2,3.6c0.5,0.3,1,0.4,1.4,0.1c0.4-0.2,0.6-0.7,0.6-1.3c0.2-1.4-0.8-2.4-2.9-3.4L8.6,20.3l2.1-1.2l0.5-0.3"/>
+	<path class="stroke-dark" d="M21.3,31.1c0,0,18.7-10.6,23.7-13.4c1.2-0.6,1.4-2.3,0.2-3.2"/>
+	<path class="fill-primary stroke-primary stroke-1-5" d="M21.6,6.8"/>
+	<line class="fill-primary stroke-primary stroke-1-5" x1="35.5" y1="14.8" x2="28.6" y2="10.8"/>
+	<line class="fill-primary stroke-primary stroke-1-5" x1="31.9" y1="16.8" x2="25" y2="12.9"/>
+	<line class="fill-primary stroke-primary stroke-1-5" x1="28.3" y1="19" x2="14.4" y2="11"/>
+</svg>
+									</div>
+								</a>
+							</li>
+							<li class="nav__item">
+								<a href="/sla/" class="nav__link">
+									<div class="nav__item-content">
+										<div class="nav__item-title">
+											SLA
+										</div>
+										<p class="nav__item-desc">
+											Enterprise-class stability and performance.
+										</p>
+									</div>
+									<div class="nav__item-icon">
+										<svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 48 48">
+	<path class="fill-gradient" d="M18.6,0.5l4.1,2.3c0,0-9.4,6.3-12.3,8.3c-1.8,1.2-2,3-2,4.9L7.9,40.4l-1.8,1c-0.5,0.3-1.2,0.4-1.8,0.2c-0.7-0.3-0.9-1-0.8-1.7V12.1c0.1-1.7,0.9-3.3,2.4-4.3l11.3-6.6L18.6,0.5z"/>
+	<path class="fill-primary stroke-primary" d="M13.5,16.5c-0.2,1-0.3,26.8-0.3,26.8l-1.8,1c-0.6,0.3-1.2,0.4-1.8,0.2c-0.7-0.3-1.2-1-1.2-1.8V14.1c0.2-1.8,1.2-3.4,2.7-4.4L22.8,3l0.6,0.3l4.3,2.5c0,0-6.5,3.7-12.7,7.8C14.3,14,13.6,15.9,13.5,16.5z"/>
+	<path class="stroke-dark" d="M28.4,6.1l7,4.1v23.1c0,1.7-0.3,3.2-1.8,4.2l-17.2,9.7c-0.5,0.3-1.2,0.4-1.8,0.2c-0.7-0.3-1.2-1-1.1-1.7V17.5c0.2-1.8,1.2-3.4,2.7-4.3l11.5-6.6L28.4,6.1z"/>
+	<path class="stroke-dark" d="M35.4,10.2l-3.7,3.3c-1.4,0.3-2.9-0.9-2.9-1.9L28.4,6L35.4,10.2z"/>
+	<path class="fill-primary stroke-primary" d="M39.7,39.5l-10.5,6.2c-2.7,1.6-5,0.3-5-3V41c0.1-3.6,1.9-6.9,4.9-8.9L39.6,26c2.7-1.6,5-0.3,5,3v1.7C44.4,34.2,42.6,37.5,39.7,39.5z"/>
+	<path class="fill-primary" d="M28.9,20L28.9,20c-0.5-0.2-1.1,0.3-1.5,1l-4.2,7.8l-1.8-1.4c-0.4-0.3-1.1,0-1.5,0.7l0,0c-0.5,0.7-0.5,1.5-0.1,1.8l2.6,2l0,0c0,0,0.1,0.1,0.2,0.1l0,0c0.5,0.2,1.1-0.3,1.5-1l5.1-9.4C29.4,20.9,29.4,20.2,28.9,20z"/>
+	<path class="fill-white" d="M31.4,39.5c0-0.3-0.1-0.5-0.3-0.5c-0.3-0.1-0.6,0-0.9,0c-0.3,0.1-0.7,0.1-1.1,0.1c-0.5-0.1-0.8-0.4-0.8-1s0.2-1.2,0.5-1.6c0.4-0.5,0.8-1,1.4-1.3c0.3-0.2,0.6-0.3,1-0.3c0.3,0,0.5,0.1,0.7,0.3c0.2,0.3,0.3,0.6,0.3,0.9l-1,0.5c0-0.3-0.1-0.6-0.3-0.7s-0.4,0-0.8,0.2c-0.3,0.2-0.5,0.4-0.7,0.7c-0.2,0.2-0.3,0.5-0.3,0.8c0,0.2,0.1,0.4,0.3,0.5c0.3,0,0.6,0,0.9-0.1s0.7-0.1,1-0.1c0.2,0,0.4,0.1,0.6,0.3c0.1,0.2,0.2,0.5,0.2,0.8c0,0.6-0.1,1.1-0.4,1.6c-0.4,0.5-0.9,1-1.4,1.3c-0.3,0.2-0.7,0.3-1.1,0.4c-0.3,0-0.6-0.1-0.8-0.3c-0.2-0.3-0.3-0.6-0.3-0.9l1-0.5c0,0.4,0.1,0.6,0.3,0.7c0.3,0.1,0.6,0,0.9-0.2s0.6-0.4,0.8-0.7C31.4,40,31.5,39.7,31.4,39.5z M34.2,38.7l2.5-1.4v0.9l-3.5,2v-6.6l1-0.5V38.7z M40.6,34.3l-2.1,1.2L38,37.4L37,38l2.1-7.8l0.9-0.5l2,5.3l-1,0.6L40.6,34.3z M38.7,34.5l1.6-0.9l-0.8-2.3L38.7,34.5z"/>
+</svg>
+									</div>
+								</a>
+							</li>
+							<li class="nav__item">
+								<a href="/company/contact/" class="nav__link">
+									<div class="nav__item-content">
+										<div class="nav__item-title">
+											Contact
+										</div>
+										<p class="nav__item-desc">
+											Have questions? Reach out to us.
+										</p>
+									</div>
+									<div class="nav__item-icon">
+										<svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 48 48">
+	<polygon class="fill-gradient" points="24,46.2 0.5,33.4 9.3,28.7 24,35.9 38.4,28.7 47.5,33.6 "/>
+	<polygon class="fill-primary stroke-primary" points="24,36.9 0.5,24.1 8.8,19.7 25.6,29.3 40.5,20.5 47.5,24.3 "/>
+	<line class="fill-primary stroke-primary stroke-1-5" x1="26.3" y1="7.2" x2="37.4" y2="13.6"/>
+	<line class="fill-primary stroke-primary stroke-1-5" x1="23" y1="9.1" x2="34.1" y2="15.5"/>
+	<g>
+		<line class="stroke-dark" x1="40.3" y1="20.5" x2="39.4" y2="18.7"/>
+		<line class="stroke-dark" x1="18.2" y1="6.5" x2="15.1" y2="6"/>
+		<polyline class="stroke-dark" points="18.2,6.5 16,7.9 26.6,1.8 47.5,13.9 36.9,20.1"/>
+		<polyline class="stroke-dark" points="25.7,29 40.2,20.6 20.6,17.3"/>
+		<polyline class="stroke-dark" points="20.6,17.3 15,6.1 0.5,14.4"/>
+		<polyline class="stroke-dark" points="0.5,14.4 13.1,21.7 25.7,29"/>
+		<line class="stroke-dark" x1="5.8" y1="13.8" x2="17.8" y2="15.8"/>
+		<line class="stroke-dark" x1="26.9" y1="26" x2="23.5" y2="19.1"/>
+	</g>
+</svg>
+									</div>
+								</a>
+							</li>
+						</ul>
+					</div>
+				</li>
+									<li class="nav__item is-hidden-md-down">
+						<a class="btn btn--sm btn--light-overlay btn--outline" href="https://my.vultr.com">
+							<span class="btn__text">Sign in</span>
+						</a>
+					</li>
+					<li class="nav__item is-hidden-md-down">
+						<a class="btn btn--sm btn--primary" href="/register/">
+							<span class="btn__text">Sign up</span>
+						</a>
+					</li>
+							</ul>
+		</nav>
+		<div class="navbar__menu navbar__menu--user-menu  is-hidden-lg-up" data-user-menu>
+			<ul class="navbar__nav nav nav--h nav--main-menu">
+									<li class="nav__item">
+						<a class="nav__link" href="https://my.vultr.com">
+							<span class="nav__link-text">Sign In</span>
+						</a>
+					</li>
+					<li class="nav__item">
+						<a class="nav__link" href="/register/">
+							<span class="nav__link-text">Sign Up</span>
+						</a>
+					</li>
+							</ul>
+		</div>
+	</div>
+</div>
+
+		  	<div class="resources">
+		 <div class="
+ 		resources__navbar
+ 		 		 		 		"
+ data-resources-navbar>
+	<div class="resources__navbar-inner">
+		<div class="container">
+			<a href="/" class="resources__brand">
+				<svg class="svg-logo" xmlns="http://www.w3.org/2000/svg" width="152" height="36" viewBox="0 0 152 36">
+		<g transform="translate(-10 -10)">
+				<path class="svg-logo__text" d="M148,19.7c2.2-0.9,4-3.2,4-5.7c0-3.3-2.7-6-6-6h-9c-0.6,0-1,0.4-1,1v18c0,0.6,0.4,1,1,1h1c0.6,0,1-0.4,1-1v-7h6l4.3,7.5c0.2,0.3,0.5,0.5,0.9,0.5h0.7c0.6,0,1.1-0.5,1.1-1.1c0-0.2,0-0.4-0.1-0.5L148,19.7z M139,17v-6h6.8c1.7,0,3.2,1.3,3.2,3c0,1.8-1.2,3-3,3H139z M130,8h-15c-0.6,0-1,0.4-1,1v1c0,0.6,0.4,1,1,1h6v16c0,0.6,0.4,1,1,1h1c0.6,0,1-0.4,1-1V11h6c0.6,0,1-0.4,1-1V9C131,8.4,130.6,8,130,8z M114,25h-9V9c0-0.6-0.4-1-1-1c-0.1,0-0.9,0-1,0c-0.6,0-1,0.5-1,1.1v17.8c0,0.6,0.5,1.1,1,1.1H114c0.6,0,1-0.5,1-1.1c0-0.1,0-0.8,0-0.9C115,25.4,114.6,25,114,25z M96,8h-1c-0.6,0-1,0.4-1,1v11c0,2.9-2.1,5-5,5s-5-2.1-5-5V9c0-0.6-0.4-1-1-1h-1c-0.6,0-1,0.4-1,1l0,10.9c0,4.5,3.6,8.1,8,8.1c4.4,0,8-3.6,8-8.1L97,9C97,8.4,96.5,8,96,8z M76.9,8h-0.7c-0.4,0-0.8,0.3-1,0.7L69,24.1L62.8,8.7c-0.2-0.4-0.6-0.7-1-0.7h-0.7C60.5,8,60,8.5,60,9.1c0,0.1,0,0.3,0.1,0.4l7.2,17.9c0.2,0.4,0.6,0.7,1,0.7h1.4c0.4,0,0.8-0.3,1-0.7l7.2-17.9C78,9.3,78,9.2,78,9.1C78,8.5,77.5,8,76.9,8z" transform="translate(9 9)"/>
+				<g>
+				<path class="svg-logo__shape-1" data-logo-dark-blue d="M23.473,9.97C23.105,9.387,22.455,9,21.715,9H11.077C9.929,9,9,9.93,9,11.077C9,11.484,9.117,11.864,9.32,12.185L14.557,20.493000000000002L28.71,18.278000000000002L23.473,9.97Z"/>
+				<path class="svg-logo__shape-2" data-logo-light-blue d="M25.655,13.431C25.287000000000003,12.847999999999999,24.636000000000003,12.460999999999999,23.897000000000002,12.460999999999999H13.259C12.112,12.460999999999999,11.182,13.390999999999998,11.182,14.537999999999998C11.182,14.945999999999998,11.299000000000001,15.325,11.502,15.645999999999999L14.557,20.491999999999997L28.709,18.276999999999997L25.655,13.431Z"/>
+				<path  class="svg-logo__shape-3" fill="#FFFFFF" d="M14.557 20.493c-0.203-0.321-0.32-0.7-0.32-1.108 0-1.147 0.93-2.077 2.077-2.077h10.639c0.74 0 1.389 0.387 1.756 0.97l9.521 15.101c0.203 0.32 0.319 0.7 0.319 1.107 0 0.408-0.116 0.787-0.319 1.107l-5.32 8.438C32.543 44.613 31.893 45 31.154 45c-0.741 0-1.39-0.387-1.758-0.969L14.557 20.493z"/>
+				<path class="svg-logo__shape-3" d="M41.385 25.015c0.367 0.582 1.018 0.969 1.758 0.969s1.39-0.387 1.756-0.969l5.32-8.438c0.203-0.321 0.32-0.701 0.32-1.108 0-0.407-0.117-0.787-0.32-1.107l-2.77-4.392C47.082 9.387 46.432 9 45.691 9H35.055c-1.147 0-2.078 0.93-2.078 2.077 0 0.407 0.117 0.787 0.32 1.108L41.385 25.015z"/>
+				</g>
+		</g>
+</svg>
+			</a>
+
+			<div class="resources__nav nav nav--h">
+								<ul class="breadcrumb breadcrumb--sm">
+						<li class="breadcrumb__item">
+													<button data-open-nav="[data-resources-sidebar]" class="resources__burger burger">
+								<span></span>
+								<span></span>
+								<span></span>
+							</button>
+												</li>
+											<li class="breadcrumb__item	 ">
+														<a class="breadcrumb__link" href="/docs/">Categories</a>
+																					<i class="breadcrumb__icon"><svg class="icon-ui icon-ui--18 " xmlns="http://www.w3.org/2000/svg" x="0px" y="0px">
+	<path class="fill" d="M14.8,8.7l-2.5-2.5C12.2,6.1,12.1,6,12,6h-0.5C11.2,6,11,6.2,11,6.5V8H3.5C3.2,8,3,8.2,3,8.5v1C3,9.8,3.2,10,3.5,10H11v1.5c0,0.3,0.2,0.5,0.5,0.5H12c0.1,0,0.3-0.1,0.3-0.2l2.5-2.5C15,9.2,15,8.9,14.8,8.7L14.8,8.7z"/>
+</svg>
+</i>
+													</li>
+											<li class="breadcrumb__item	 ">
+														<a class="breadcrumb__link" href="/docs/category/linux-guides/">Linux Guides</a>
+																					<i class="breadcrumb__icon"><svg class="icon-ui icon-ui--18 " xmlns="http://www.w3.org/2000/svg" x="0px" y="0px">
+	<path class="fill" d="M14.8,8.7l-2.5-2.5C12.2,6.1,12.1,6,12,6h-0.5C11.2,6,11,6.2,11,6.5V8H3.5C3.2,8,3,8.2,3,8.5v1C3,9.8,3.2,10,3.5,10H11v1.5c0,0.3,0.2,0.5,0.5,0.5H12c0.1,0,0.3-0.1,0.3-0.2l2.5-2.5C15,9.2,15,8.9,14.8,8.7L14.8,8.7z"/>
+</svg>
+</i>
+													</li>
+											<li class="breadcrumb__item	 is-active">
+														<span class="breadcrumb__link is-active">High Availability Using Private Networking on Ubuntu 16.04 With Keepalived</span>
+																				</li>
+					
+									</ul>
+							</div>
+					</div>
+	</div>
+</div>
+		 <div class="resources__main">
+			<div class="container">
+								<div class="resources__sidebar" data-resources-sidebar>
+					<div class="resources__sidebar-inner" id="resources-nav">
+						<div class="resources__mobile-top top is-hidden-lg-up">
+							<h3 class="h6 top__title m-b-0x">
+								Article
+							</h3>
+							<div class="top__toolbar">
+								<button data-nav-close class="btn btn--xs btn--icon btn--link">
+									<i class="btn__icon">
+										<svg class="icon-ui icon-ui--18 icon-ui--primary" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px">
+	<path class="stroke" d="M1.7,1.7l14.5,14.5"/>
+	<path class="stroke" d="M16.3,1.7L1.7,16.3"/>
+</svg>
+									</i>
+								</button>
+							</div>
+						</div>
+
+						<div class="resources__sidebar-sticky" data-sticky data-options="topOffset: 56px">
+							<div class="resources__sidebar-scrollbar" data-custom-scrollbar>
+								<div class="resources__sidebar-header">
+									Table of Contents
+								</div>
+								<ul class="resources__sidebar-nav resources__sidebar-nav--toc nav nav--xs">
+																			<li class="nav__item">
+											<a class="nav__link" href="#Prerequisites">
+												Prerequisites
+											</a>
+										</li>
+																			<li class="nav__item">
+											<a class="nav__link" href="#Preparing_the_system">
+												Preparing the system
+											</a>
+										</li>
+																			<li class="nav__item">
+											<a class="nav__link" href="#Installing_Keepalived">
+												Installing Keepalived
+											</a>
+										</li>
+																			<li class="nav__item">
+											<a class="nav__link" href="#Master_server">
+												Master server
+											</a>
+										</li>
+																			<li class="nav__item">
+											<a class="nav__link" href="#Backup_server">
+												Backup server
+											</a>
+										</li>
+																			<li class="nav__item">
+											<a class="nav__link" href="#Usage_and_testing">
+												Usage and testing
+											</a>
+										</li>
+																			<li class="nav__item">
+											<a class="nav__link" href="#Conclusion">
+												Conclusion
+											</a>
+										</li>
+																	</ul>
+
+								<div class="feature feature--boxed feature--shadow feature--dismiss m-t-2x" data-cookie data-cookie-name="try_vultr" data-cookie-exp-time="365">
+									<button class="close btn btn--xs btn--icon btn--link"><i data-close><svg class="icon-ui icon-ui--12" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px">
+	<path class="fill" d="M14.5,8H7V6.5C7,6.2,6.8,6,6.5,6H6C5.9,6,5.7,6.1,5.6,6.2L3.2,8.7C3,8.8,3,9.1,3.1,9.3l0,0l2.5,2.5C5.7,11.9,5.9,12,6,12h0.5C6.8,12,7,11.8,7,11.5V10h7.5c0.3,0,0.5-0.2,0.5-0.5v-1C15,8.2,14.7,8,14.5,8z"/>
+</svg>
+</i></button>
+									<div class="feature__body">
+										<div class="feature__desc">
+											Try Vultr Today with
+											<p class="p-1 text-primary m-b-0x"><strong>$50 Free</strong> on Us!</p>
+										</div>
+										<div class="feature__actions m-b-0x">
+											<a href="/promo/try50/" class="btn btn--primary btn--sm btn--block">
+												<span class="btn__text">
+													Get started now!
+												</span>
+											</a>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+					</div>
+				</div>
+				 				<div class="resources__content article article--sm">
+					<div class="resources__header top">
+						<div class="top__content">
+														<h1 class="top__title">High Availability Using Private Networking on Ubuntu 16.04 With Keepalived</h1>
+							<div class="top__desc">
+								<span class="date">Published on: Fri, Mar 9, 2018 at 6:06 pm EST</span>
+								<div class="tags-list">
+																			<span class="tags-list__item label" data-link-to="/docs/category/linux-guides/">Linux Guides</span>
+																			<span class="tags-list__item label" data-link-to="/docs/category/scaling/">Scaling</span>
+																			<span class="tags-list__item label" data-link-to="/docs/category/system-admin/">System Admin</span>
+																			<span class="tags-list__item label" data-link-to="/docs/category/ubuntu/">Ubuntu</span>
+																	</div>
+							</div>
+						</div>
+					</div>
+					
+					<div class="resources__section" id="article_content">
+												<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<?xml encoding="utf-8" ?><html><body><p>Some high availability architectures require a floating IP address. This functionality is available on the Vultr platform once private networking has been enabled. Vultr offers an IP range in each private network: <em>"You can use any IPs you like on the private network. We assign one IP by default, but you can ignore it and use other ones if you like."</em>. Therefore, we can use any virtual IP within the private IP range. This example features a passive/active setup. The master server will claim the floating IP unless the server goes down. If the master server is down, the floating IP will be claimed by the backup server. </p>
+
+<h2 id="Prerequisites">Prerequisites</h2>
+
+<ul><li>Two Ubuntu 16.04 LTS x64 server instances (master and backup server). </li>
+<li>A <a href="https://www.vultr.com/docs/how-to-use-sudo-on-debian-centos-and-freebsd">sudo (or root account) user</a>.</li>
+</ul><h2 id="Preparing_the_system">Preparing the system</h2>
+
+<p>Start by enabling the private network on each VPS. This feature has been <a href="https://www.vultr.com/docs/configuring-private-network">well documented</a>.</p>
+
+<p>Log into each system as a <code>sudo</code> user, and update the system and its packages:</p>
+
+<pre><code>apt-get update &amp;&amp; apt-get upgrade 
+</code></pre>
+
+<p>Once this is done, we are ready to start with installing and configuring Keepalived.</p>
+
+<h2 id="Installing_Keepalived">Installing Keepalived</h2>
+
+<p>Now that each system is up-to-date and has a private IP, you can install Keepalived on both of them.</p>
+
+<pre><code>apt-get install keepalived
+</code></pre>
+
+<p>This will install the high availability daemon. Keepalived is a program that provides high availability and load balancing functionality based on the Virtual Router Redundancy Protocol (VRRP).</p>
+
+<h2 id="Master_server">Master server</h2>
+
+<p>On the master server, edit the Keepalived configuration file.</p>
+
+<pre><code>nano /etc/keepalived/keepalived.conf
+</code></pre>
+
+<p>The <code>virtual_ipaddress</code> is the IP we will be floating between servers. The <code>priority</code> defines who will own the IP. For the master, we will use a priority of <code>200</code>.
+We will be using the <code>10.99.0.200</code> as our floating virtual IP.</p>
+
+<pre><code>vrrp_instance VI_1 {
+    state MASTER
+    interface ens7
+    virtual_router_id 51
+    priority 200
+    advert_int 1
+    authentication {
+        auth_type PASS
+        auth_pass thisismysupersecretpassword
+    }
+    virtual_ipaddress {
+        10.99.0.200
+    }
+}
+</code></pre>
+
+<h2 id="Backup_server">Backup server</h2>
+
+<p>On the backup server, edit the Keepalived configuration file.</p>
+
+<pre><code>nano /etc/keepalived/keepalived.conf
+</code></pre>
+
+<p>Here we will define the <code>virtual_ipaddress</code> just like on the master server. The difference here is that the priority of this server is lower, so it will only claim the IP when the master is not online.</p>
+
+<pre><code>vrrp_instance VI_1 {
+    state BACKUP
+    interface ens7
+    virtual_router_id 51
+    priority 100
+    advert_int 1
+    authentication {
+        auth_type PASS
+        auth_pass thisismysupersecretpassword
+    }
+    virtual_ipaddress {
+        10.99.0.200
+    }
+}
+</code></pre>
+
+<h2 id="Usage_and_testing">Usage and testing</h2>
+
+<p>Once both Keepalived services are configured, start each service and enable it at boot.</p>
+
+<pre><code>systemctl start keepalived
+systemctl enable keepalived
+</code></pre>
+
+<p>On a third server (or on the backup server) start by pinging our shared IP:</p>
+
+<pre><code>ping 10.99.0.200
+</code></pre>
+
+<p>Now reboot the master server and watch the IP move to the backup server. This is usually indicated by a small increase in ping latency.</p>
+
+<pre><code>64 bytes from 10.99.0.200: icmp_seq=80 ttl=64 time=0.384 ms
+64 bytes from 10.99.0.200: icmp_seq=81 ttl=64 time=1.33 ms    &lt;&lt;&lt; failover has happened
+64 bytes from 10.99.0.200: icmp_seq=82 ttl=64 time=0.388 ms
+64 bytes from 10.99.0.200: icmp_seq=83 ttl=64 time=0.339 ms
+64 bytes from 10.99.0.200: icmp_seq=84 ttl=64 time=0.570 ms
+</code></pre>
+
+<h2 id="Conclusion">Conclusion</h2>
+
+<p>Keepalived works without issues on Vultr, and is ready for all of your high availability architecture designs.</p></body></html>
+
+						 						<div class="box box--contribute">
+							<div class="box__body">
+								<h2>Want to contribute ?</h2>
+								<p class="h4 m-b-0x">You could earn up to <strong>$300</strong> by adding new articles</p>
+							</div>
+							<div class="box__actions">
+								<a class="btn btn--sm btn--light-overlay btn--plain" href="/docs/submit/"><span class="btn__text">Submit your article</span></a>
+																	<a class="btn btn--sm btn--light-overlay btn--outline" href="/docs/suggest/?title=high-availability-using-private-networking-on-ubuntu-16-04-with-keepalived"><span class="btn__text">Suggest an update</span></a>
+																<a class="btn btn--sm btn--light-overlay btn--outline" href="/docs/request/"><span class="btn__text">Request an article</span></a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+		
+
+<footer class="site-footer footer">
+	<div class="container">
+		<div class="footer__site-map">
+			<div class="row">
+				<div class="footer__column col-md-3">
+					<h3 class="footer__title h6" data-toggle="footer-column">
+						Products
+					</h3>
+					<ul class="footer__nav nav">
+						<li class="nav__item">
+							<a class="nav__link" href="/products/cloud-compute/">Cloud Compute</a>
+						</li>
+						<li class="nav__item">
+							<a class="nav__link" href="/products/high-frequency-compute/">High Frequency Compute</a>
+						</li>
+						<li class="nav__item">
+							<a class="nav__link" href="/products/bare-metal/">Bare Metal</a>
+						</li>
+												<li class="nav__item">
+							<a class="nav__link" href="/products/object-storage/">Object Storage</a>
+						</li>
+												<li class="nav__item">
+							<a class="nav__link" href="/products/block-storage/">Block Storage</a>
+						</li>
+						<li class="nav__item">
+							<a class="nav__link" href="/products/dedicated-cloud/">Dedicated Instances</a>
+						</li>
+						<li class="nav__item">
+							<a class="nav__link" href="/products/ddos-protection/">DDoS Protection</a>
+						</li>
+						<li class="nav__item">
+							<a class="nav__link" href="/products/direct-connect/">Direct Connect</a>
+						</li>
+					</ul>
+				</div>
+
+				<div class="footer__column col-md-3">
+					<h3 class="footer__title h6" data-toggle="footer-column">
+						Features
+					</h3>
+					<ul class="footer__nav nav">
+						<li class="nav__item">
+							<a class="nav__link" href="/features/datacenter-locations/">Data Center Locations</a>
+						</li>
+						<li class="nav__item">
+							<a class="nav__link" href="/features/advanced-networking/">Advanced Network</a>
+						</li>
+						<li class="nav__item">
+							<a class="nav__link" href="/features/control-panel/">Control Panel</a>
+						</li>
+						<li class="nav__item">
+							<a class="nav__link" href="/features/operating-systems/">Operating Systems</a>
+						</li>
+						<li class="nav__item">
+							<a class="nav__link" href="/features/upload-iso/">Upload ISO</a>
+						</li>
+						<li class="nav__item">
+							<a class="nav__link" href="/features/one-click-apps/">One-click Apps</a>
+						</li>
+						<li class="nav__item">
+							<a class="nav__link" href="/features/bgp/">Bring your IP space</a>
+						</li>
+					</ul>
+				</div>
+				<div class="footer__column col-md-3">
+					<h3 class="footer__title h6" data-toggle="footer-column" data-url="/resources">
+						Resources
+					</h3>
+					<ul class="footer__nav nav">
+						<li class="nav__item">
+							<a class="nav__link" href="/resources/faq/">FAQ</a>
+						</li>
+						<li class="nav__item">
+							<a class="nav__link" href="/resources/developers/">Developers / APIs</a>
+						</li>
+						<li class="nav__item">
+							<a class="nav__link" href="/docs/">Vultr Docs</a>
+						</li>
+						<li class="nav__item">
+							<a class="nav__link" href="/resources/benchmarks/">Benchmarks</a>
+						</li>
+						<li class="nav__item">
+							<a class="nav__link" href="https://status.vultr.com/">Server Status</a>
+						</li>
+						<li class="nav__item">
+							<a class="nav__link" href="/bug-bounty/">Bug Bounty</a>
+						</li>
+						<li class="nav__item">
+							<a class="nav__link" href="/coupons/">Coupons</a>
+						</li>
+					</ul>
+				</div>
+				<div class="footer__column col-md-3">
+					<h3 class="footer__title h6" data-toggle="footer-column">
+						Company
+					</h3>
+					<ul class="footer__nav nav">
+						<li class="nav__item">
+							<a class="nav__link" href="/company/our-team/">Our Team</a>
+						</li>
+						<li class="nav__item">
+							<a class="nav__link" href="/news/">News</a>
+						</li>
+						<li class="nav__item">
+							<a class="nav__link" href="/company/brand-assets/">Brand Assets</a>
+						</li>
+						<li class="nav__item">
+							<a class="nav__link" href="/company/careers"/>Careers</a>
+						</li>
+						<li class="nav__item">
+							<a class="nav__link" href="/sla/">SLA</a>
+						</li>
+						<li class="nav__item">
+							<a class="nav__link" href="/legal/tos/">Legal</a>
+						</li>
+						<li class="nav__item">
+							<a class="nav__link" href="/company/contact/">Contact</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="container">
+		<div class="footer__social-nav rail rail--space-between">
+			<p>Over <span class="is-hidden-md-down" data-animation="26791247" data-animation-options="type:numberAnimation; offset: 0;"></span> <span class="is-hidden-lg-up">26,791,247</span> Cloud Servers Launched</p>
+			<div>
+				<a class="btn btn--icon btn--sm btn--light-overlay btn--outline" href="https://www.twitter.com/vultr/">TW</a>
+			</div>
+		</div>
+	</div>
+	<div class="footer__bottom">
+		<div class="container">
+			<div class="footer__brand brand brand--footer">
+				<a href="http://www.vultr.com" class="brand__logo" data-logo>
+					<svg class="svg-logo" xmlns="http://www.w3.org/2000/svg" width="152" height="36" viewBox="0 0 152 36">
+		<g transform="translate(-10 -10)">
+				<path class="svg-logo__text" d="M148,19.7c2.2-0.9,4-3.2,4-5.7c0-3.3-2.7-6-6-6h-9c-0.6,0-1,0.4-1,1v18c0,0.6,0.4,1,1,1h1c0.6,0,1-0.4,1-1v-7h6l4.3,7.5c0.2,0.3,0.5,0.5,0.9,0.5h0.7c0.6,0,1.1-0.5,1.1-1.1c0-0.2,0-0.4-0.1-0.5L148,19.7z M139,17v-6h6.8c1.7,0,3.2,1.3,3.2,3c0,1.8-1.2,3-3,3H139z M130,8h-15c-0.6,0-1,0.4-1,1v1c0,0.6,0.4,1,1,1h6v16c0,0.6,0.4,1,1,1h1c0.6,0,1-0.4,1-1V11h6c0.6,0,1-0.4,1-1V9C131,8.4,130.6,8,130,8z M114,25h-9V9c0-0.6-0.4-1-1-1c-0.1,0-0.9,0-1,0c-0.6,0-1,0.5-1,1.1v17.8c0,0.6,0.5,1.1,1,1.1H114c0.6,0,1-0.5,1-1.1c0-0.1,0-0.8,0-0.9C115,25.4,114.6,25,114,25z M96,8h-1c-0.6,0-1,0.4-1,1v11c0,2.9-2.1,5-5,5s-5-2.1-5-5V9c0-0.6-0.4-1-1-1h-1c-0.6,0-1,0.4-1,1l0,10.9c0,4.5,3.6,8.1,8,8.1c4.4,0,8-3.6,8-8.1L97,9C97,8.4,96.5,8,96,8z M76.9,8h-0.7c-0.4,0-0.8,0.3-1,0.7L69,24.1L62.8,8.7c-0.2-0.4-0.6-0.7-1-0.7h-0.7C60.5,8,60,8.5,60,9.1c0,0.1,0,0.3,0.1,0.4l7.2,17.9c0.2,0.4,0.6,0.7,1,0.7h1.4c0.4,0,0.8-0.3,1-0.7l7.2-17.9C78,9.3,78,9.2,78,9.1C78,8.5,77.5,8,76.9,8z" transform="translate(9 9)"/>
+				<g>
+				<path class="svg-logo__shape-1" data-logo-dark-blue d="M23.473,9.97C23.105,9.387,22.455,9,21.715,9H11.077C9.929,9,9,9.93,9,11.077C9,11.484,9.117,11.864,9.32,12.185L14.557,20.493000000000002L28.71,18.278000000000002L23.473,9.97Z"/>
+				<path class="svg-logo__shape-2" data-logo-light-blue d="M25.655,13.431C25.287000000000003,12.847999999999999,24.636000000000003,12.460999999999999,23.897000000000002,12.460999999999999H13.259C12.112,12.460999999999999,11.182,13.390999999999998,11.182,14.537999999999998C11.182,14.945999999999998,11.299000000000001,15.325,11.502,15.645999999999999L14.557,20.491999999999997L28.709,18.276999999999997L25.655,13.431Z"/>
+				<path  class="svg-logo__shape-3" fill="#FFFFFF" d="M14.557 20.493c-0.203-0.321-0.32-0.7-0.32-1.108 0-1.147 0.93-2.077 2.077-2.077h10.639c0.74 0 1.389 0.387 1.756 0.97l9.521 15.101c0.203 0.32 0.319 0.7 0.319 1.107 0 0.408-0.116 0.787-0.319 1.107l-5.32 8.438C32.543 44.613 31.893 45 31.154 45c-0.741 0-1.39-0.387-1.758-0.969L14.557 20.493z"/>
+				<path class="svg-logo__shape-3" d="M41.385 25.015c0.367 0.582 1.018 0.969 1.758 0.969s1.39-0.387 1.756-0.969l5.32-8.438c0.203-0.321 0.32-0.701 0.32-1.108 0-0.407-0.117-0.787-0.32-1.107l-2.77-4.392C47.082 9.387 46.432 9 45.691 9H35.055c-1.147 0-2.078 0.93-2.078 2.077 0 0.407 0.117 0.787 0.32 1.108L41.385 25.015z"/>
+				</g>
+		</g>
+</svg>
+				</a>
+				<div class="brand__content">
+					<div class="brand__title">
+						&copy; Vultr 2019
+					</div>
+					<p class="brand__desc">
+						VULTR is a registered trademark of Vultr Holdings Corporation.
+					</p>
+				</div>
+			</div>
+			<div class="footer__bottom-nav nav nav--h">
+				<li class="nav__item">
+					<a class="nav__link" href="/legal/tos/">Terms of Service</a>
+				</li>
+				<li class="nav__item">
+					<a class="nav__link" href="/legal/use_policy/">AUP/DMCA</a>
+				</li>
+				<li class="nav__item">
+					<a class="nav__link" href="/legal/privacy/">Privacy Policy</a>
+				</li>
+				<li class="nav__item">
+					<a class="nav__link" href="/legal/cookie_policy/">Cookie Policy</a>
+				</li>
+			</div>
+		</div>
+	</div>
+</footer>
+
+			</div>
+
+	<!-- Scripts -->
+	<script src="/dist/js/jquery-3.4.1.min.js?v=515"></script>
+<script src="/dist/js/vendor.js?v=515"></script>
+<script src="/dist/js/main.js?v=515"></script>
+<script src="/dist/js/lazyload.min.js?v=515"></script>
+
+		<script src="/dist/js/resources.js?v=515"></script>
+
+	<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-1366737-18', 'auto');
+ga('send', 'pageview');
+</script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var google_conversion_id = 858656304;
+var google_custom_params = window.google_tag_params;
+var google_remarketing_only = true;
+/* ]]> */
+</script>
+<script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js">
+</script>
+<noscript>
+<div style="display:inline;">
+<img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/858656304/?guid=ON&amp;script=0"/>
+</div>
+</noscript>
+<script type="text/javascript">
+	adroll_adv_id = "DUKHAKVYIJASHDUBG4V7RE";
+	adroll_pix_id = "E23RMKDBEFAEXMXLWK3IWO";
+	(function () {
+		var _onload = function(){
+			if (document.readyState && !/loaded|complete/.test(document.readyState)){setTimeout(_onload, 10);return}
+			if (!window.__adroll_loaded){__adroll_loaded=true;setTimeout(_onload, 50);return}
+			var scr = document.createElement("script");
+			var host = (("https:" == document.location.protocol) ? "https://s.adroll.com" : "http://a.adroll.com");
+			scr.setAttribute('async', 'true');
+			scr.type = "text/javascript";
+			scr.src = host + "/j/roundtrip.js";
+			((document.getElementsByTagName('head') || [null])[0] ||
+				document.getElementsByTagName('script')[0].parentNode).appendChild(scr);
+		};
+		if (window.addEventListener) {window.addEventListener('load', _onload, false);}
+		else {window.attachEvent('onload', _onload)}
+	}());
+</script>
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '828098694004178');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=828098694004178&ev=PageView&noscript=1"/></noscript>
+<script>
+!function(e,n,u,a){e.twq||(a=e.twq=function(){a.exe?a.exe.apply(a,arguments):
+a.queue.push(arguments);},a.version='1',a.queue=[],t=n.createElement(u),
+t.async=!0,t.src='//static.ads-twitter.com/uwt.js',s=n.getElementsByTagName(u)[0],
+s.parentNode.insertBefore(t,s))}(window,document,'script');
+// Insert Twitter Pixel ID and Standard Event data below
+twq('init','nuyim');
+twq('track','PageView');
+</script>
+<script>(function(w,d,t,r,u){var f,n,i;w[u]=w[u]||[],f=function(){var o={ti:"5624299"};o.q=w[u],w[u]=new UET(o),w[u].push("pageLoad")},n=d.createElement(t),n.src=r,n.async=1,n.onload=n.onreadystatechange=function(){var s=this.readyState;s&&s!=="loaded"&&s!=="complete"||(f(),n.onload=n.onreadystatechange=null)},i=d.getElementsByTagName(t)[0],i.parentNode.insertBefore(n,i)})(window,document,"script","//bat.bing.com/bat.js","uetq");</script><noscript><img src="//bat.bing.com/action/0?ti=5624299&Ver=2" height="0" width="0" style="display:none; visibility: hidden;" /></noscript>
+
+		<script>
+		$(function(){
+			lazyload();
+			$('.full-width-slider__nav button, .full-width-slider__nav li').on('click', function(){
+				lazyload();
+			});
+		});
+		// Object storage pricing.
+		var plan_disk_gb_price = 0.02;
+		var plan_bw_tx_gb_price = 0.01;
+	</script>
+</body>
+</html>

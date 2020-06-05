@@ -1,0 +1,1641 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>How To Use LVM To Manage Storage Devices on Ubuntu 16.04 | DigitalOcean</title>
+
+<meta name="description" content="LVM, or Logical Volume Management, is a storage device management technology that gives users the power to pool and abstract the physical layout of component storage devices for easier and flexible administration. Utilizing the device mapper Linux ker">
+<meta name="keywords" content="Storage System Tools Linux Basics">
+
+<meta name="og:title" content="How To Use LVM To Manage Storage Devices on Ubuntu 16.04 | DigitalOcean">
+<meta name="og:description" content="LVM, or Logical Volume Management, is a storage device management technology that gives users the power to pool and abstract the physical layout of component storage devices for easier and flexible administration. Utilizing the device mapper Linux ker">
+<meta name="og:site_name" content="DigitalOcean">
+<meta name="og:type" content="article">
+<meta name="og:image" content="https://www.digitalocean.com/assets/community/illustrations/DigitalOcean_Community-02cc36407e7a978ed4fc9ed98f3ed87c.jpg">
+
+<meta name="twitter:site" content="DigitalOcean">
+<meta name="twitter:title" content="How To Use LVM To Manage Storage Devices on Ubuntu 16.04 | DigitalOcean">
+<meta name="twitter:description" content="LVM, or Logical Volume Management, is a storage device management technology that gives users the power to pool and abstract the physical layout of component storage devices for easier and flexible administration. Utilizing the device mapper Linux ker">
+<meta name="twitter:creator" content="DigitalOcean">
+<meta name="twitter:card" content="photo" />
+<meta name="twitter:url" content="https://www.digitalocean.com/community/tutorials/how-to-use-lvm-to-manage-storage-devices-on-ubuntu-16-04"/>
+<meta name="twitter:image" content="https://www.digitalocean.com/assets/community/illustrations/DigitalOcean_Community-02cc36407e7a978ed4fc9ed98f3ed87c.jpg">
+
+  <link rel='canonical' href='https://www.digitalocean.com/community/tutorials/how-to-use-lvm-to-manage-storage-devices-on-ubuntu-16-04'>
+
+<link rel="preconnect" href="https://digitalocean.cdn.prismic.io">
+<link rel="preconnect" href="https://hello.myfonts.net">
+
+
+    <link rel="stylesheet" media="all" href="/assets/community/application-b828e623bec3c41208f9f701850222a0.css" />
+
+    
+    <meta name="csrf-param" content="authenticity_token" />
+<meta name="csrf-token" content="hPAW7P1yQJcHDYoCQsDbD3vAHmLobuZr6MKCSGmEJie2yu8N7zeKwW2RBxzkN16vORWHVrfT9To5mY1tl3efvg==" />
+    <script src="/assets/community/prerequisites-9a51dfaadf0d3629cc636286133a958d.js"></script>
+    <script>
+//<![CDATA[
+
+  window.cookieDomain = '.digitalocean.com';
+
+//]]>
+</script><script src="https://assets.digitalocean.com/cookieConsent/cookieConsent.js"></script>
+<link rel="stylesheet" href="https://assets.digitalocean.com/cookieConsent/cookieConsent.css">
+
+    <script type="text/javascript">
+  if(window.analytics=window.analytics||[],window.analytics.included)window.console&&console.error&&console.error("analytics.js included twice");else{window.analytics.included=!0,window.analytics.methods=["identify","group","track","page","pageview","alias","ready","on","once","off","trackLink","trackForm","trackClick","trackSubmit"],window.analytics.factory=function(a){return function(){var n=Array.prototype.slice.call(arguments);return n.unshift(a),window.analytics.push(n),window.analytics}};for(var i=0;i<window.analytics.methods.length;i++){var key=window.analytics.methods[i];window.analytics[key]=window.analytics.factory(key)}window.analytics.load=function(a){var n=document.createElement("script");n.type="text/javascript",n.async=!0,n.src=("https:"===document.location.protocol?"https://":"http://")+"cdn.segment.com/analytics.js/v1/"+a+"/analytics.min.js";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(n,t)},window.analytics.SNIPPET_VERSION="2.0.9",window.analytics.load("puo3uv968t")}
+  window.analytics.page();
+</script>
+
+<!-- Google Tag Manager -->
+<script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-KHWBBT');
+</script>
+<!-- End Google Tag Manager -->
+
+<script src="/assets/community/internalCookies-d2a3579f6b37d00c8045b16853b90462.js"></script>
+
+      <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="/community/tutorials/feed">
+    <script>
+      window.comApp = {
+        prefix: '/community',
+        svgIconPath: 'https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg',
+        railsEnv: 'production',
+        rootUrl: 'https://www.digitalocean.com/community',
+        algolia_application_id: '6ZHEUVKJ88',
+        algolia_api_key: 'c5470567eae7fa1177d43222e18ba086'
+      };
+    </script>
+      <script src="https://go.digitalocean.com/js/forms2/js/forms2.min.js"></script>
+
+    <script src="/assets/community/application-dd2f12c7d68945c016e67a784d8785fc.js"></script>
+  </head>
+  <body class="feature-filter-bar feature-upvotes tutorials-controller tutorial-single" data-env="production" data-prefix="/community" data-user-id="" data-facebook-app-id="694818843983011"   data-completed-tutorial-id="" data-tutorial-id="2041" data-js="tutorial"
+  data-upvote="null"
+  data-flagged=""
+>
+    
+
+    <div class='outside_viewport'>
+        <div id="contents-modal" class="modal fade mini-modal" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1>Contents</h1>
+          <button class="close-button icon icon-close-light" data-dismiss="modal" aria-label="close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="table-of-contents-modal"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="share-modal" class="modal fade mini-modal" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1>Share</h1>
+        <button type="button" class="close-button icon icon-close-light" aria-label="close" data-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="social-sharing social-sharing-container">
+          <ul class="top ">
+            <li class="shareBtn" id="sbTwitter">
+              <a href="http://twitter.com/share?text=How To Use LVM To Manage Storage Devices on Ubuntu 16.04&amp;url=https://www.digitalocean.com/community/tutorials/how-to-use-lvm-to-manage-storage-devices-on-ubuntu-16-04?utm_content=how-to-use-lvm-to-manage-storage-devices-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=twshare" class="share-icon share-popup" title="Share on Twitter" target="_blank">
+                <span class="sIcon icon-bird"></span>
+              </a>
+              <a href="http://twitter.com/share?text=How To Use LVM To Manage Storage Devices on Ubuntu 16.04&amp;url=https://www.digitalocean.com/community/tutorials/how-to-use-lvm-to-manage-storage-devices-on-ubuntu-16-04?utm_content=how-to-use-lvm-to-manage-storage-devices-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=twshare" class="share-link share-popup" title="Share on Twitter" target="_blank">
+                Twitter
+              </a>
+            </li>
+            <li class="shareBtn" id="sbFacebook">
+              <a class="share-icon share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/how-to-use-lvm-to-manage-storage-devices-on-ubuntu-16-04?utm_content=how-to-use-lvm-to-manage-storage-devices-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+                <span class="sIcon icon-facebook-B"></span>
+              </a>
+
+              <a class="share-link share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/how-to-use-lvm-to-manage-storage-devices-on-ubuntu-16-04?utm_content=how-to-use-lvm-to-manage-storage-devices-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+                Facebook
+              </a>
+            </li>
+            <li class="shareBtn" id="sbYC">
+              <a href="https://news.ycombinator.com/submitlink?t=How To Use LVM To Manage Storage Devices on Ubuntu 16.04&amp;u=https://www.digitalocean.com/community/tutorials/how-to-use-lvm-to-manage-storage-devices-on-ubuntu-16-04?utm_content=how-to-use-lvm-to-manage-storage-devices-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=hnshare" class="share-icon share-popup" target="_blank" title="Submit to Hacker News">
+                <span class="sIcon icon-hacker-news"></span>
+              </a>
+              <a href="https://news.ycombinator.com/submitlink?t=How To Use LVM To Manage Storage Devices on Ubuntu 16.04&amp;u=https://www.digitalocean.com/community/tutorials/how-to-use-lvm-to-manage-storage-devices-on-ubuntu-16-04?utm_content=how-to-use-lvm-to-manage-storage-devices-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=hnshare" class="share-link share-popup" target="_blank" title="Submit to Hacker News">
+                Hacker News
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <div class="table-of-contents">
+    <div data-js="tableOfContentsDesktop"></div>
+  </div>
+  
+  
+  
+  <div id="share-modal" class="modal fade mini-modal" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1>Share</h1>
+        <button type="button" class="close-button icon icon-close-light" aria-label="close" data-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="social-sharing social-sharing-container">
+          <ul class="bottom ">
+            <li class="shareBtn" id="sbTwitter">
+              <a href="http://twitter.com/share?text=How To Use LVM To Manage Storage Devices on Ubuntu 16.04&amp;url=https://www.digitalocean.com/community/tutorials/how-to-use-lvm-to-manage-storage-devices-on-ubuntu-16-04?utm_content=how-to-use-lvm-to-manage-storage-devices-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=twshare" class="share-icon share-popup" title="Share on Twitter" target="_blank">
+                <span class="sIcon icon-bird"></span>
+              </a>
+              <a href="http://twitter.com/share?text=How To Use LVM To Manage Storage Devices on Ubuntu 16.04&amp;url=https://www.digitalocean.com/community/tutorials/how-to-use-lvm-to-manage-storage-devices-on-ubuntu-16-04?utm_content=how-to-use-lvm-to-manage-storage-devices-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=twshare" class="share-link share-popup" title="Share on Twitter" target="_blank">
+                Twitter
+              </a>
+            </li>
+            <li class="shareBtn" id="sbFacebook">
+              <a class="share-icon share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/how-to-use-lvm-to-manage-storage-devices-on-ubuntu-16-04?utm_content=how-to-use-lvm-to-manage-storage-devices-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+                <span class="sIcon icon-facebook-B"></span>
+              </a>
+
+              <a class="share-link share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/how-to-use-lvm-to-manage-storage-devices-on-ubuntu-16-04?utm_content=how-to-use-lvm-to-manage-storage-devices-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+                Facebook
+              </a>
+            </li>
+            <li class="shareBtn" id="sbYC">
+              <a href="https://news.ycombinator.com/submitlink?t=How To Use LVM To Manage Storage Devices on Ubuntu 16.04&amp;u=https://www.digitalocean.com/community/tutorials/how-to-use-lvm-to-manage-storage-devices-on-ubuntu-16-04?utm_content=how-to-use-lvm-to-manage-storage-devices-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=hnshare" class="share-icon share-popup" target="_blank" title="Submit to Hacker News">
+                <span class="sIcon icon-hacker-news"></span>
+              </a>
+              <a href="https://news.ycombinator.com/submitlink?t=How To Use LVM To Manage Storage Devices on Ubuntu 16.04&amp;u=https://www.digitalocean.com/community/tutorials/how-to-use-lvm-to-manage-storage-devices-on-ubuntu-16-04?utm_content=how-to-use-lvm-to-manage-storage-devices-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=hnshare" class="share-link share-popup" target="_blank" title="Submit to Hacker News">
+                Hacker News
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div id="newsletter-signup-dialog" class="newsletter-signups-dialog" data-newsletter-signup-dialog data-article-target=".content-body">
+  <div class="form-message">
+  <div class="pull-right">
+    <a href="javascript:;" class="newsletter-signups-dialog-dismiss" data-newsletter-signup-dismiss>&times;</a>
+
+  </div>
+  <h4 class="newsletter-signups-dialog-title">
+    Sign up for our newsletter.
+  </h4>
+  <p class="newsletter-signups-dialog-description">
+    Get the latest tutorials on SysAdmin and open source topics.
+  </p>
+  <form class="newsletter-signup" id="new_newsletter_signup" data-newsletter-signup="true" action="/community/newsletter" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="&#x2713;" />
+
+  <input data-newsletter-signup-field="url" type="hidden" name="newsletter_signup[url]" id="newsletter_signup_url" />
+  <input data-newsletter-signup-field="title" type="hidden" name="newsletter_signup[title]" id="newsletter_signup_title" />
+
+  <div class="newsletter-signup-ajax-error" data-newsletter-signup-ajax-error></div>
+
+
+  <div class="form-group">
+    <input placeholder="Enter your email address" required="required" class="field" type="email" name="newsletter_signup[email]" id="newsletter_signup_email" />
+  </div>
+
+  <button data-disable-with="Sign Up" class="button blue-button">
+    Sign Up
+  </button>
+
+</form>
+
+</div>
+
+<div class="thanks-message hidden" data-newsletter-signup-successful> 
+  <div class='pull-right'> 
+    <a href='javascript:;' class='newsletter-signups-dialog-dismiss icon icon-close-light' data-newsletter-signup-dismiss></a> 
+  </div> 
+
+  <span class='newsletter-signups-dialog-success'> 
+    Thanks for signing up! 
+  </span> 
+</div>
+
+</div>
+
+
+      
+    </div>
+
+      
+      
+<div style="display: none;">
+  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <symbol id="do_nav-logo" xmlns="http://www.w3.org/2000/svg"> <title>DigitalOcean home</title> <g fill="currentColor" fill-rule="evenodd"> <path d="M14.4942 29v-5.5674c5.9572 0 10.5633-5.8478 8.2892-12.059-.8425-2.3006-2.693-4.1355-5.0126-4.9706-6.262-2.2534-12.1564 2.3135-12.1573 8.2207 0 0-.0006.0014-.0014.0014H0C0 5.2123 9.1687-2.1167 19.1138.9624c4.3459 1.3457 7.7993 4.7708 9.1561 9.081C31.3742 19.9068 23.985 29 14.4942 29"></path> <path d="M14.507 23.4468H8.9103v-5.549s.0005-.0011.0011-.0011h5.5949c.0006 0 .0009.0006.0009.0006v5.5495M8.9093 27.7118H4.6105l-.0012-.0012v-4.2638h4.3009v4.2638l-.0009.0012M4.6125 23.4468H1.0088c-.0015 0-.0026-.0012-.0026-.0012v-3.5724s.0011-.0025.0026-.0025h3.601c.0015 0 .0027.0011.0027.0011v3.575M43.2806 9.6357h1.649c1.8346 0 3.345.358 4.49 1.0647 1.2714.7603 1.9164 2.2069 1.9164 4.2991 0 2.1554-.6465 3.6671-1.9207 4.4942h-.0008c-1.0971.7196-2.5981 1.0846-4.462 1.0846h-1.6719V9.6357zm8.324-1.0736c-1.6598-1.142-3.7252-1.721-6.1387-1.721h-5.2537V23.373h5.2537c2.4074 0 4.4737-.6113 6.1407-1.8157.907-.6382 1.6197-1.5304 2.1185-2.651.4962-1.1144.7479-2.4288.7479-3.9067 0-1.4605-.2517-2.758-.7482-3.857-.4988-1.104-1.212-1.972-2.1202-2.5804zM58.1303 6.6376c-.5051 0-.9403.1777-1.2906.5254-.3546.335-.5346.7597-.5346 1.2618 0 .501.1791.9322.532 1.2825.3529.35.788.528 1.2932.528.5042 0 .9394-.178 1.2928-.528.3535-.3508.5324-.7821.5324-1.2825 0-.5015-.18-.926-.5324-1.2592-.3534-.3503-.7886-.528-1.2928-.528M56.6247 23.3729h2.9538V11.7294h-2.9538zM69.5321 19.5787c-.5162.5814-1.1793.8635-2.0264.8635-.8471 0-1.5064-.282-2.015-.863-.5065-.5777-.7637-1.3439-.7637-2.2773 0-.9479.2572-1.7238.764-2.3058.502-.576 1.1796-.8683 2.0147-.8683.8465 0 1.5096.284 2.0262.8695.5142.582.7751 1.3573.7751 2.3046 0 .9328-.2609 1.6988-.7749 2.2768zm.775-6.8767c-.8908-.7858-1.8858-1.2444-2.9614-1.2444-1.6305 0-2.9859.5598-4.0276 1.662-1.0555 1.0932-1.5907 2.5006-1.5907 4.1823 0 1.644.5269 3.0464 1.568 4.1709 1.0498 1.088 2.4123 1.6396 4.0503 1.6396 1.139 0 2.1182-.3144 2.9157-.9356v.268c0 .9662-.2608 1.7176-.7751 2.234-.5137.5154-1.226.7764-2.1173.7764-1.3637 0-2.2183-.5314-3.2589-1.9262l-2.0115 1.917.0542.0754c.4346.605 1.1 1.197 1.9785 1.7594.8787.5603 1.9832.8447 3.2832.8447 1.7536 0 3.1726-.5363 4.2172-1.5933 1.0506-1.0628 1.5835-2.486 1.5835-4.2286V11.7294H70.307v.9726zM75.7434 23.3729h2.9541V11.7294h-2.9541zM77.249 6.6376c-.5052 0-.94.1777-1.2906.5254-.3547.335-.5344.7597-.5344 1.2618 0 .501.1789.9322.532 1.2825.353.35.7878.528 1.293.528.5045 0 .9396-.178 1.2928-.528.3535-.3508.5323-.7821.5323-1.2825 0-.5015-.1797-.926-.5323-1.2592-.3532-.3503-.7883-.528-1.2929-.528M85.1724 8.5831h-2.9082v3.1463h-1.6888v2.6702h1.6888v4.8365c0 1.5134.3047 2.5964.9064 3.2181.6031.6247 1.6741.9414 3.1831.9414.48 0 .963-.0156 1.4354-.0463l.133-.0088v-2.6683l-1.013.0526c-.7033 0-1.1728-.1226-1.3961-.3637-.226-.245-.3406-.7636-.3406-1.5404v-4.421h2.7497v-2.6703h-2.7497V8.583M101.7735 23.3729h2.9544V6.8412h-2.9544zM134.5728 19.2094c-.5286.5874-1.0693 1.0966-1.4855 1.3613v.0005c-.4085.2599-.924.3918-1.532.3918-.8703 0-1.5703-.3144-2.1405-.9621-.567-.644-.8545-1.4716-.8545-2.4613s.2838-1.8162.8436-2.4556c.5625-.6434 1.2588-.9562 2.1285-.9562.9515 0 1.9548.5869 2.8145 1.5947l1.9525-1.8568c-1.273-1.6433-2.897-2.4081-4.8352-2.4081-1.622 0-3.028.5862-4.1788 1.7411-1.1446 1.147-1.7251 2.6074-1.7251 4.3409 0 1.7335.58 3.1977 1.7234 4.352 1.1447 1.1557 2.5514 1.7417 4.1805 1.7417 2.139 0 3.8651-.9158 5.029-2.5935l-1.9204-1.8304M140.2405 16.0973c.1422-.5567.401-1.0207.7714-1.381.4005-.3906.9214-.5885 1.5489-.5885.716 0 1.2702.2019 1.6474.6014.3495.3696.5467.8296.588 1.368h-4.5557zm6.4569-2.7414c-.4191-.5788-.9896-1.0448-1.6965-1.3854-.7047-.3404-1.526-.513-2.441-.513-1.6489 0-2.9982.6037-4.0113 1.7946-.9836 1.182-1.4818 2.651-1.4818 4.3665 0 1.7648.547 3.2253 1.6254 4.341 1.0727 1.1105 2.5083 1.6737 4.267 1.6737 1.992 0 3.627-.799 4.8587-2.3752l.0666-.0847-1.9273-1.837c-.1789.2139-.4317.4561-.6628.6722-.2918.273-.5659.4842-.8588.6289-.4415.218-.9369.3255-1.4907.3255-.8187 0-1.4964-.2388-2.0147-.71-.4847-.4403-.768-1.0345-.843-1.7683h7.8265l.0264-1.0693c0-.7569-.1038-1.4862-.3088-2.1677a6.312 6.312 0 0 0-.934-1.8918zM152.797 18.9234c.3352-.2318.8085-.3483 1.4073-.3483.7112 0 1.4654.1413 2.2426.421v1.1421c-.6421.592-1.4996.8922-2.5499.8922-.5114 0-.909-.1126-1.1822-.3355-.2683-.218-.3985-.4955-.3985-.847 0-.3994.1571-.7022.4808-.9245zm5.2452-6.3229h-.0003c-.8952-.758-2.1328-1.143-3.678-1.143-.9829 0-1.902.2144-2.7336.6324-.7691.387-1.5245 1.0275-2.0043 1.8662l.0298.0358 1.8917 1.796c.7791-1.2322 1.6454-1.66 2.7941-1.66.6172 0 1.1298.1643 1.5234.4881.3916.3216.5819.7304.5819 1.249v.5652c-.7324-.221-1.4629-.333-2.1738-.333-1.47 0-2.6663.3432-3.555 1.0193-.9.6852-1.3562 1.665-1.3562 2.9125 0 1.094.3847 1.9829 1.1461 2.6433.7677.6372 1.7275.961 2.8524.961 1.1246 0 2.177-.4495 3.132-1.2191v.9587h2.9089v-7.4852c0-1.4173-.4572-2.523-1.3591-3.2872zM170.7656 12.8285c-.8227-.9092-1.9791-1.371-3.4371-1.371-1.172 0-2.1236.3338-2.8357.9926v-.7207h-2.897v11.6435h2.954v-6.4215c0-.8823.2119-1.5828.6293-2.0826.4162-.4987.989-.741 1.75-.741.6691 0 1.1765.2167 1.5506.662.3759.4474.5662 1.0638.5662 1.8335v6.7496H172v-6.7496c0-1.6127-.415-2.889-1.2344-3.7948M92.8158 18.9234c.3351-.2318.8087-.3483 1.4075-.3483.7112 0 1.4652.1413 2.2426.421v1.1421c-.6421.592-1.4998.8922-2.5502.8922-.5114 0-.9087-.1126-1.1819-.3355-.2683-.218-.3988-.4955-.3988-.847 0-.3994.1574-.7022.4808-.9245zm5.2451-6.3229h-.0003c-.8952-.758-2.1328-1.143-3.6776-1.143-.983 0-1.902.2144-2.7337.6324-.7694.387-1.5247 1.0275-2.0043 1.8662l.0295.0358 1.8917 1.796c.7792-1.2322 1.6458-1.66 2.7941-1.66.6172 0 1.1298.1643 1.5234.4881.3916.3216.5822.7304.5822 1.249v.5652c-.7327-.221-1.4631-.333-2.174-.333-1.47 0-2.6664.3432-3.555 1.0193-.8999.6852-1.3562 1.665-1.3562 2.9125 0 1.094.3847 1.9829 1.1463 2.6433.7677.6372 1.7272.961 2.8524.961 1.1246 0 2.1766-.4495 3.1318-1.2191v.9587H99.42v-7.4852c0-1.4173-.457-2.523-1.359-3.2872zM115.4464 9.5808c-3.0682 0-5.5645 2.4755-5.5645 5.5188s2.4963 5.5188 5.5645 5.5188c3.0682 0 5.5645-2.4755 5.5645-5.5188s-2.4963-5.5188-5.5645-5.5188zm0 14.0408c-4.7383 0-8.5928-3.8228-8.5928-8.522 0-4.6994 3.8545-8.5223 8.5928-8.5223 4.738 0 8.5925 3.8229 8.5925 8.5223 0 4.6992-3.8545 8.522-8.5925 8.522z"></path> </g> </symbol>
+    <symbol id="do_nav-community_logo" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 532.2 99.8" fill="currentColor"> <path class="st0" d="M98.5,23c15.5,0,27.7,12.1,27.7,28.2c0,16.1-12.3,28.1-27.7,28.1c-15.6,0-27.7-11.9-27.7-28.1 C70.8,35.1,82.9,23,98.5,23z M98.5,67.9c8.7,0,14.9-7,14.9-16.8c0-9.8-6.2-16.8-14.9-16.8c-8.8,0-15,7-15,16.8 C83.5,60.9,89.7,67.9,98.5,67.9z"/> <path class="st0" d="M166.8,45.9c0-7-3.5-11.6-9.9-11.6c-7.2,0-11.1,5.3-11.1,13.1V78h-12.5V24.3h12.3V29c2.4-2.8,7-6,13.9-6 c7.3,0,12.2,3.1,15,7c4.4-4.9,10-7,16.8-7c14.4,0,21.4,8.5,21.4,23.8V78h-12.5V45.9c0-7-3.5-11.6-9.9-11.6 c-7.2,0-11.2,5.3-11.2,13.1V78h-12.4V45.9z"/> <path class="st0" d="M255.5,45.9c0-7-3.5-11.6-9.9-11.6c-7.2,0-11.1,5.3-11.1,13.1V78h-12.5V24.3h12.3V29c2.4-2.8,7-6,13.9-6 c7.3,0,12.2,3.1,15,7c4.4-4.9,10-7,16.8-7c14.4,0,21.4,8.5,21.4,23.8V78h-12.5V45.9c0-7-3.5-11.6-9.9-11.6 c-7.2,0-11.2,5.3-11.2,13.1V78h-12.4V45.9z"/> <path class="st0" d="M322.5,56.4c0,7,3.6,11.6,10.1,11.6c7.2,0,11.2-5.6,11.2-13.5V24.3h12.5V78h-12.3v-4.4 c-3.4,3.7-8.1,5.6-13.9,5.6c-11.9,0-20.1-8.4-20.1-23.7V24.3h12.5V56.4z"/> <path class="st0" d="M378.2,78h-12.5V24.3h12.3v4.4c2.7-3.1,7.7-5.7,13.9-5.7c13.1,0,21.3,8.5,21.3,23.8V78h-12.5V46.8 c0-7.5-3.7-12.5-10.6-12.5c-7.8,0-11.8,5.6-11.8,14V78z"/> <path class="st0" d="M427.8,0.2c4.4,0,7.9,3.4,7.9,7.8s-3.5,7.9-7.9,7.9c-4.4,0-7.9-3.5-7.9-7.9S423.4,0.2,427.8,0.2z M421.4,24.3 h12.5V78h-12.5V24.3z"/> <path class="st0" d="M446.7,59.1V35.5h-6.5V24.3h6.5v-15H459v15h12.2v11.2H459v21.7c0,7.8,1.8,9.8,8.8,9.8c1.2,0,4.1-0.2,4.1-0.2 v11.2c0,0-2.4,0.2-6.7,0.2C451.2,78.1,446.7,72.7,446.7,59.1z"/> <path class="st0" d="M497.3,78.7l-21.3-54.4h14.2l14,38.8l14.2-38.8h13.6l-24.1,60.2c-3.7,9.4-7.2,15.3-21.3,15.3 c-2.5,0-4.8-0.1-4.8-0.1V88c0,0,1.5,0.1,2.8,0.1c7.6,0,9.8-2.3,11.8-7.8L497.3,78.7z"/> <path class="st0" d="M62.4,55.9c-5.3,7-12.2,11.4-22.1,11.4c-15.6,0-27-11.7-27-27.5c0-16.1,11.4-27.8,26.5-27.8 c10,0,16.8,4.8,21.3,11.3l8.4-8.8C63.1,5.7,53.3,0,39.7,0C17.1,0,0,15.9,0,39.8c0,23.4,17.1,39.4,40.1,39.4c13.1,0,22-4.9,28.6-12.2 L62.4,55.9z"/> </symbol>
+    <symbol id="do_nav-control_panel_icon" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M19.6875 23.4862C19.6885 23.9722 19.4965 24.4388 19.1537 24.7833C18.8109 25.1279 18.3454 25.3222 17.8594 25.3237H3.23438C2.99366 25.3232 2.75539 25.2753 2.53321 25.1827C2.31102 25.09 2.10927 24.9545 1.93949 24.7839C1.7697 24.6132 1.63522 24.4108 1.54373 24.1881C1.45223 23.9655 1.40552 23.727 1.40626 23.4862V3.25498C1.40577 3.01417 1.45271 2.77562 1.54441 2.55295C1.63611 2.33028 1.77077 2.12785 1.9407 1.95722C2.11063 1.7866 2.31251 1.65111 2.5348 1.5585C2.75709 1.46589 2.99545 1.41797 3.23626 1.41748L17.8613 1.44186C18.347 1.44384 18.812 1.63843 19.1544 1.98292C19.4968 2.32741 19.6885 2.79366 19.6875 3.27936V23.4862Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M43.5863 12.27C43.5828 12.7516 43.3883 13.212 43.0456 13.5503C42.7028 13.8885 42.2397 14.0768 41.7582 14.0738H27.1332C26.8947 14.0755 26.6582 14.0302 26.4372 13.9405C26.2162 13.8507 26.015 13.7183 25.8453 13.5508C25.6755 13.3833 25.5404 13.1839 25.4477 12.9642C25.355 12.7444 25.3065 12.5085 25.3051 12.27V3.24565C25.308 2.76461 25.5019 2.30442 25.8439 1.96621C26.186 1.62799 26.6484 1.43941 27.1294 1.4419L41.7544 1.41753C42.2365 1.41403 42.7002 1.60205 43.0437 1.94027C43.3872 2.27849 43.5823 2.73924 43.5863 3.22128V12.27Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M19.6875 41.7956C19.686 42.0347 19.6375 42.2712 19.5446 42.4915C19.4518 42.7118 19.3164 42.9117 19.1463 43.0797C18.9762 43.2477 18.7747 43.3806 18.5532 43.4707C18.3318 43.5609 18.0947 43.6065 17.8556 43.605L3.23063 43.5806C2.74908 43.5826 2.28644 43.3934 1.94436 43.0545C1.60228 42.7155 1.40873 42.2547 1.40625 41.7731V32.7563C1.40748 32.5175 1.45575 32.2813 1.54831 32.0612C1.64087 31.8412 1.7759 31.6415 1.94569 31.4736C2.11547 31.3057 2.31667 31.173 2.53779 31.0829C2.75892 30.9929 2.99562 30.9473 3.23438 30.9488H17.8594C18.3414 30.9463 18.8047 31.1352 19.1475 31.4742C19.4903 31.8131 19.6845 32.2742 19.6875 32.7563V41.7956Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M27.1349 43.605C26.894 43.6045 26.6555 43.5565 26.433 43.4638C26.2106 43.3711 26.0087 43.2354 25.8387 43.0646C25.6688 42.8937 25.5341 42.6911 25.4426 42.4682C25.351 42.2453 25.3042 42.0066 25.3049 41.7656V21.5381C25.3042 21.2973 25.3509 21.0587 25.4424 20.8359C25.5338 20.6132 25.6683 20.4106 25.8381 20.2398C26.0078 20.069 26.2095 19.9333 26.4317 19.8405C26.6539 19.7476 26.8923 19.6995 27.1331 19.6987H41.7581C41.9989 19.6995 42.2372 19.7476 42.4594 19.8405C42.6816 19.9333 42.8833 20.069 43.0531 20.2398C43.2228 20.4106 43.3573 20.6132 43.4488 20.8359C43.5402 21.0587 43.5869 21.2973 43.5862 21.5381V41.7412C43.5872 42.2271 43.3955 42.6935 43.0532 43.0383C42.7109 43.3831 42.2458 43.5781 41.7599 43.5806L27.1349 43.605Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+    <symbol id="do_nav-community_icon" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#clip0)"> <path d="M12.6562 10.5469C12.6562 9.85155 12.8624 9.17184 13.2487 8.5937C13.635 8.01556 14.1841 7.56495 14.8265 7.29886C15.4689 7.03277 16.1758 6.96315 16.8577 7.0988C17.5397 7.23445 18.1661 7.56929 18.6578 8.06095C19.1495 8.55262 19.4843 9.17905 19.6199 9.86101C19.7556 10.543 19.686 11.2499 19.4199 11.8922C19.1538 12.5346 18.7032 13.0837 18.1251 13.47C17.5469 13.8563 16.8672 14.0625 16.1719 14.0625" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M16.1719 18.2812C16.0328 18.2812 15.8969 18.3225 15.7812 18.3997C15.6656 18.477 15.5755 18.5868 15.5223 18.7153C15.4691 18.8438 15.4551 18.9852 15.4823 19.1215C15.5094 19.2579 15.5764 19.3832 15.6747 19.4816C15.773 19.5799 15.8983 19.6469 16.0347 19.674C16.1711 19.7011 16.3125 19.6872 16.4409 19.634C16.5694 19.5808 16.6792 19.4906 16.7565 19.375C16.8338 19.2594 16.875 19.1234 16.875 18.9844C16.875 18.7979 16.8009 18.6191 16.6691 18.4872C16.5372 18.3553 16.3584 18.2812 16.1719 18.2812Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M32.3438 4.21875V12.6562" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M29.5312 1.40625C30.2772 1.40625 30.9925 1.70257 31.52 2.23001C32.0474 2.75746 32.3438 3.47283 32.3438 4.21875" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M4.21875 1.40625H29.5312" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M1.40625 4.21875C1.40625 3.47283 1.70257 2.75746 2.23001 2.23001C2.75746 1.70257 3.47283 1.40625 4.21875 1.40625" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M1.40625 23.9062V4.21875" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M4.21875 26.7188C3.47283 26.7187 2.75746 26.4224 2.23001 25.895C1.70257 25.3675 1.40625 24.6522 1.40625 23.9062" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M9.84375 26.7188H4.21875" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M9.84375 35.1562V26.7188" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M15.4688 30.9375L9.84375 35.1562" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M43.5938 35.1562H37.9688V43.5938L29.5312 35.1562H21.0938V18.2812H43.5938V35.1562Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M32.3438 23.9062V29.5312" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </g> <defs> <clipPath id="clip0"> <rect width="45" height="45" fill="white"/> </clipPath> </defs> </symbol>
+    <symbol id="do_nav-search" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M15.7 13.3l-3.81-3.83A5.93 5.93 0 0 0 13 6c0-3.31-2.69-6-6-6S1 2.69 1 6s2.69 6 6 6c1.3 0 2.48-.41 3.47-1.11l3.83 3.81c.19.2.45.3.7.3.25 0 .52-.09.7-.3a.996.996 0 0 0 0-1.41v.01zM7 10.7c-2.59 0-4.7-2.11-4.7-4.7 0-2.59 2.11-4.7 4.7-4.7 2.59 0 4.7 2.11 4.7 4.7 0 2.59-2.11 4.7-4.7 4.7z"></path></symbol>
+    <symbol id="do_nav-logomark" x="0px" y="0px" viewBox="65.2 173.5 180 180" fill="currentColor"><path d="M155.2,351.7v-34.2c36.2,0,64.3-35.9,50.4-74c-5.1-14.1-16.4-25.4-30.5-30.5c-38.1-13.8-74,14.2-74,50.4l0,0H67c0-57.7,55.8-102.7,116.3-83.8c26.4,8.3,47.5,29.3,55.7,55.7C257.9,295.9,213,351.7,155.2,351.7z"/> <polygon points="155.3,317.6 121.3,317.6 121.3,283.6 121.3,283.6 155.3,283.6 155.3,283.6"/> <polygon points="121.3,343.8 95.1,343.8 95.1,343.8 95.1,317.6 121.3,317.6"/> <path d="M95.1,317.6H73.2l0,0v-21.9l0,0h21.9l0,0V317.6z"/></symbol>
+    <symbol id="do_nav-write4do" viewBox="0 0 30 30" fill="none" stroke="currentColor"> <path d="M16.3063 17.67L11.6663 18.3338L12.3288 13.6925L24.2613 1.76002C24.7887 1.23257 25.5041 0.936249 26.25 0.936249C26.6194 0.936249 26.9851 1.009 27.3263 1.15034C27.6675 1.29168 27.9776 1.49885 28.2388 1.76002C28.4999 2.02118 28.7071 2.33123 28.8484 2.67246C28.9898 3.01369 29.0625 3.37942 29.0625 3.74877C29.0625 4.11811 28.9898 4.48384 28.8484 4.82507C28.7071 5.1663 28.4999 5.47635 28.2388 5.73752L16.3063 17.67Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M22.935 3.08624L26.9125 7.06374"  stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M23.4375 17.8125V27.1875C23.4375 27.6848 23.24 28.1617 22.8883 28.5133C22.5367 28.865 22.0598 29.0625 21.5625 29.0625H2.8125C2.31522 29.0625 1.83831 28.865 1.48667 28.5133C1.13504 28.1617 0.9375 27.6848 0.9375 27.1875V8.4375C0.9375 7.94022 1.13504 7.46331 1.48667 7.11167C1.83831 6.76004 2.31522 6.5625 2.8125 6.5625H12.1875" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+    <symbol id="do_nav-meetups" viewBox="0 0 30 30" fill="none" stroke="currentColor"> <path d="M27.1901 4.6875H2.81506C1.77953 4.6875 0.940063 5.52697 0.940063 6.5625V27.1875C0.940063 28.223 1.77953 29.0625 2.81506 29.0625H27.1901C28.2256 29.0625 29.0651 28.223 29.0651 27.1875V6.5625C29.0651 5.52697 28.2256 4.6875 27.1901 4.6875Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M0.940063 12.1875H29.0651" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M8.44006 7.5V0.9375" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M21.5651 7.5V0.9375" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+    <symbol id="do_nav-hacktoberfest" viewBox="0 0 30 30" fill="none" stroke="currentColor"> <path d="M19.2063 24.9918L16.5714 22.3569V14.4854L13.986 17.0708V23.5755L12.5615 25L11.1371 23.5591V8.44175L10.7419 8.04652L8.93042 9.8662L8 8.94401L11.9358 5.00823L11.944 5.01647L12.1005 5.16468L13.9778 7.04199V13.8431L16.5632 11.2577V8.42528L15.2705 7.12433L17.3948 5L19.4286 7.03376V20.9572L20.4249 21.9535L21.6352 20.7431L22.5492 21.6571L19.2063 24.9918Z" fill="currentcolor"/> <rect x="0.75" y="0.75" width="28.5" height="28.5" rx="2.25" stroke-width="1.5" stroke="currentColor"/> </symbol>
+    <symbol id="do_nav-build" viewBox="0 0 16 16" fill="none" stroke="currentColor"> <path d="M1.5 14.5C1.23478 14.5 0.98043 14.3946 0.792893 14.2071C0.605357 14.0196 0.5 13.7652 0.5 13.5V2.57667C0.500879 2.29139 0.614596 2.01804 0.81632 1.81632C1.01804 1.6146 1.29139 1.50088 1.57667 1.5H14.4287C14.7125 1.50088 14.9845 1.61403 15.1852 1.81476C15.386 2.01548 15.4991 2.28747 15.5 2.57133V13.4233C15.4991 13.7086 15.3854 13.982 15.1837 14.1837C14.982 14.3854 14.7086 14.4991 14.4233 14.5H1.5Z" stroke-linecap="round" stroke-linejoin="round"/> <path d="M15.5 4.5H0.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M11 7.5L13 9.5L11 11.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M5 7.5L3 9.5L5 11.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M9 7.5L7 11.5" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+  </svg>
+</div>
+
+<nav class="do_nav" role="navigation" aria-label="Navigation">
+  <ul role="menubar" class="utility">
+    <li role="banner" data-flex="grow" data-show="always">
+    </li>
+    <li role="menuitem">
+      <a href="/products/">Products</a>
+    </li>
+    <li role="menuitem">
+      <a href="/pricing/">Pricing</a>
+    </li>
+    <li role="menuitem" aria-haspopup="true" tabindex="0">
+      <span class="expander">Docs</span>
+      <div class="mini" aria-expanded="false">
+        <ul role="menu">
+          <li role="menuitem">
+            <a href="/docs/">Product Docs</a>
+          </li>
+          <li role="menuitem">
+            <a href="https://developers.digitalocean.com/documentation/">API Docs</a>
+          </li>
+        </ul>
+      </div>
+    </li>
+      <li role="menuitem" aria-haspopup="true" tabindex="0">
+      <span class="expander">Log in</span>
+        <div class="mini" aria-expanded="false">
+          <header>Log in to</header>
+          <ul role="menu">
+            <li role="menuitem">
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <use xlink:href="#do_nav-community_icon"></use>
+              </svg>
+              <a id="log-in" href="/community/auth/digitalocean">Community</a>
+            </li>
+            <li role="menuitem">
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <use xlink:href="#do_nav-control_panel_icon"></use>
+              </svg>
+              <a href="https://cloud.digitalocean.com/registrations/new">Control Panel</a>
+            </li>
+          </ul>
+        </div>
+      </li>
+  </ul>
+
+  <ul role="menubar" class="primary">
+    <li role="menuitem" data-show="always">
+      <a href="https://www.digitalocean.com/">
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" shape-rendering="auto">
+          <use xlink:href="#do_nav-logomark"></use>
+        </svg>
+      </a>
+    </li>
+    <li role="menuitem" data-show="always">
+      <a role="home" title="DigitalOcean Community Home" href="/community">
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="120px" height="24px"
+             shape-rendering="auto">
+          <use xlink:href="#do_nav-community_logo"></use>
+        </svg>
+</a>    </li>
+    <li role="menuitem">
+      <a data-activatable="true" href="/community/tutorials">Tutorials</a>
+    </li>
+    <li role="menuitem">
+      <a data-activatable="true" href="/community/questions">Questions</a>
+    </li>
+    <li role="menuitem" aria-haspopup="true" class="mega_parent" tabindex="0">
+      <span class="expander">Get Involved</span>
+      <div class="mega" aria-expanded="false">
+        <div class="section column">
+          <header>Participate</header>
+          <ul role="menu">
+            <li role="menuitem">
+              <a href="https://www.digitalocean.com/write-for-donations/" class="with_image">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <use xlink:href="#do_nav-write4do"></use>
+                </svg>
+                <p>
+                  <strong>Write for DigitalOcean</strong>
+                  You get paid, we donate to tech non-profits.
+                </p>
+              </a>
+            </li>
+            <li role="menuitem">
+              <a href="https://www.meetup.com/pro/digitalocean" class="with_image">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <use xlink:href="#do_nav-meetups"></use>
+                </svg>
+                <p>
+                  <strong>DigitalOcean Meetups</strong>
+                  Find and meet other developers in your city.
+                </p>
+              </a>
+            </li>
+            <li role="menuitem">
+              <a href="https://hacktoberfest.digitalocean.com" class="with_image">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <use xlink:href="#do_nav-hacktoberfest"></use>
+                </svg>
+                <p>
+                  <strong>Hacktoberfest</strong>
+                  Contribute to Open Source
+                </p>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="section column">
+          <header>
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+              <use xlink:href="#do_nav-build"></use>
+            </svg>
+            Build with DigitalOcean
+          </header>
+          <ul role="menu" class="indent">
+            <li role="menuitem">
+              <a title="Community-built tools and integrations that use the DigitalOcean API" href="/community/tools">Community Tools and Integrations</a>
+            </li>
+            <li role="menuitem"><a href="https://www.digitalocean.com/hatch/" title="Build your startup on DigitalOcean.">Hatch Startup Program</a></li>
+            <li role="menuitem"><a href="https://marketplace.digitalocean.com/vendors/" title="List your open source One-Click Application in the DigitalOcean Marketplace">Marketplace Partner Program</a></li>
+            <li role="menuitem"><a href="https://www.digitalocean.com/droplets-for-demos/" title="DigitalOcean credits to fund research for conference and meetup presentations">Presentation Grants</a></li>
+            <li role="menuitem"><a href="https://github.com/digitalocean">DigitalOcean on GitHub</a></li>
+          </ul>
+        </div>
+      </div>
+    </li>
+    <li role="menuitem" data-show="mobile" data-flex="grow" class="right">
+      <a href="javascript:void(0);" data-js="modal_toggle">
+        <span class="icon-menu-thin"></span>
+      </a>
+    </li>
+    <li role="menuitem" aria-haspopup="true" data-flex="grow">
+      <form name="do_nav-search" method="GET" action="https://www.digitalocean.com/community/search">
+        <label for="q">
+          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" shape-rendering="auto"
+               width="14px" height="14px">
+            <use xlink:href="#do_nav-search"></use>
+          </svg>
+        </label>
+        <input type="text" name="q" id="q" title="Search" placeholder="Search DigitalOcean" autocomplete="off" spellcheck="false" class="search" />
+        </form>
+        <div class="mini search-results-dropdown" aria-expanded="false">
+            <div class="header-search-results-list"></div>
+            <div id="btn-wrap">
+              <a class="more-search-results" data-search-path="/community/search" href="/community/search">
+                View All Results
+              </a>
+            </div>
+        </div>
+        <script type='text/template' id='autocomplete-hits-template'>
+          <div class="inner-search">
+            <ul>
+              <li class="section">
+                <p>{{section}}</p>
+              </li>
+
+              {{#hits}}
+                <li>
+                  <span class='icon icon-{{css_name}}'></span>
+                  <a href='{{url}}'>{{title}}</a>
+                </li>
+              {{/hits}}
+            </ul>
+
+            {{#hasMoreResults}}
+              <a href="/community/search?q={{query}}">View All Results</a>
+            {{/hasMoreResults}}
+          </div>
+        </script>
+    </li>
+    <li role="menuitem">
+      <a class="button primary" href="/community/auth/digitalocean?display=sessionless+register">Sign Up</a>
+    </li>
+  </ul>
+
+  <div class="mobile_nav_bg" data-js="modal_toggle"></div>
+  <div class="mobile_nav">
+    <a data-dismiss='modal' aria-label="close" href="javascript:void(0);" data-js="modal_toggle"><span class="icon-close"></span></a>
+    <div class="mobile_nav_content">
+      <header>Community</header>
+      <ul role="menu">
+        <li role="menuitem">
+          <a data-activatable="true" href="/community/tutorials">Tutorials</a>
+        </li>
+        <li role="menuitem">
+          <a data-activatable="true" href="/community/questions">Questions</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.meetup.com/pro/digitalocean">Meetups</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/write-for-donations/">Write for us</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://hacktoberfest.digitalocean.com">Hacktoberfest</a>
+        </li>
+        <li role="menuitem">
+          <a href="/community/tools">Community Projects</a>
+        </li>
+      </ul>
+      <header>Products</header>
+      <ul role="menu">
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/">Homepage</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/pricing">Pricing</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/products">Product Overview</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://marketplace.digitalocean.com/">Marketplace</a>
+        </li>
+      </ul>
+      <header>Customers</header>
+      <ul role="menu">
+        <li role="menuitem">
+          <a href="https://cloud.digitalocean.com/login">Control panel</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/docs/">Documentation</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/company/contact/#support">Contact Support</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/company/contact/sales/">Contact Sales</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<header>
+  <div class="legacy-header ">
+    <div class="flash-container">
+      
+    </div>
+
+    <div class="wrapper">
+      
+    </div>
+  </div>
+</header>
+
+
+
+      
+
+      <div class='wrapper layout-wrapper'>
+
+        
+
+
+
+
+
+
+
+
+
+
+<div class="section-content section-content-growable content Tutorial-content">
+  <div class='postable-info-bar-container'>
+  <div class='postable-info-bar'>
+    <div class="author-byline">
+      
+    </div>
+
+    <div class='right-section'>
+      
+
+
+        <div class='section-item table-of-contents-triggers'><div class="toc-trigger-mobile" data-toggle="modal" data-target="#contents-modal">
+  <a href="javascript:void(0);">
+    <span class="icon icon-contents"></span>
+    <span class="title">Contents</span>
+    <span class="icon icon-arrow-down"></span>
+  </a>
+</div>
+
+</div>
+
+    </div>
+  </div>
+</div>
+
+
+
+  <div class="container tutorial-header">
+    
+
+      <div class="featured-items-right-bar">
+        <h3>Related</h3>
+          <a href="/community/tutorials/how-to-sync-and-share-your-files-with-seafile-on-debian-10">
+            <div class="featured-item-regular">
+                  How To Sync and Share Your Files with Seafile on Debian 10
+                  <span class="featured-item-category">
+                    <img width="14" height="14" alt="Tutorial" src="/assets/community/tutorials/featured-item-tutorial-icon-2150ccbef202144a53cea261312af267.png" />
+                    Tutorial
+                  </span>
+                </div>
+</a>          <a href="/community/tutorials/how-to-set-up-ssh-keys-on-debian-10">
+            <div class="featured-item-regular">
+                  How to Set Up SSH Keys on Debian 10
+                  <span class="featured-item-category">
+                    <img width="14" height="14" alt="Tutorial" src="/assets/community/tutorials/featured-item-tutorial-icon-2150ccbef202144a53cea261312af267.png" />
+                    Tutorial
+                  </span>
+                </div>
+</a>      </div>
+
+
+
+    <h1 class="content-title Tutorial-header">How To Use LVM To Manage Storage Devices on Ubuntu 16.04</h1>
+
+    <span class="meta-section timestamp"><span class="tutorial-date-text">Posted</span><span class="tutorial-date">September 14, 2016</span></span>
+
+    <span class="meta-section pageviews"><span class="icon icon-eye v-mid"></span><span class="views-count v-mid">156.7k</span><span class="sr-only"> views</span></span>
+
+    <span class="meta-section tags">
+      <a class="tag" href="/community/tags/system-tools?type=tutorials">System Tools</a> <a class="tag" href="/community/tags/storage?type=tutorials">Storage</a> <a class="tag" href="/community/tags/linux-basics?type=tutorials">Linux Basics</a>
+      <a class="tag" href="/community/tags/ubuntu?type=tutorials">Ubuntu</a> <a class="tag" href="/community/tags/ubuntu-16-04?type=tutorials">Ubuntu 16.04</a>
+    </span>
+  </div>
+
+  <div class="tutorial-authors">
+    <div class="component-collaborators-container">
+  <ul class="component-collaborators-content">
+        <li class="collaborator-byline-avatar">
+          <a href="/community/users/jellingwood">
+            <img alt="jellingwood" class="avatar avatar-large" src="https://secure.gravatar.com/avatar/60d901f61a6146e14a3e989bc1f4ef11?secure=true&d=identicon" width="80" height="80" />
+</a>        </li>
+
+    <li class="collaborators-byline-data">
+        <p class="names">By <a href="/community/users/jellingwood">Justin Ellingwood</a></p>
+
+      <p>
+          <a class="advice" href="https://www.digitalocean.com/community/write-for-digitalocean">Become an author</a>
+      </p>
+    </li>
+  </ul>
+</div>
+
+  </div>
+
+    <div class="container versioned-tutorial-group-navigation" data-versioned-tutorial-group-navigation>
+
+  <div class="versioned-tutorial-group-navigation__header" data-versioned-tutorial-group-navigation-header>
+    <h5 class="versioned-tutorial-group-navigation__heading">
+        Not using <strong>Ubuntu 16.04</strong>? Choose a different version:
+    </h5>
+    <span class="versioned-tutorial-group-navigation__arrow">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 105.565 60.872"><path d="M2.526 46.087c-3.37 3.382-3.37 8.868 0 12.246 3.37 3.386 8.832 3.386 12.202 0l43.384-43.547c3.37-3.382 3.37-8.87 0-12.246-3.37-3.386-8.833-3.386-12.202 0L2.526 46.087z" fill="#fff"></path><path d="M90.835 58.333c3.37 3.386 8.833 3.386 12.202 0 3.37-3.378 3.37-8.864 0-12.246L59.654 2.54c-3.37-3.386-8.832-3.386-12.202 0-3.37 3.377-3.37 8.864 0 12.246l43.383 43.547z" fill="#fff"></path></svg>
+
+    </span>
+  </div>
+  
+  <div class="versioned-tutorial-group-navigation__body" data-versioned-tutorial-group-navigation-body>
+    <ul class="versioned-tutorial-group-navigation__list">
+      <li class="versioned-tutorial-group-navigation__list-item">
+  <a class="versioned-tutorial-group-navigation__link" title="Ubuntu 18.04" href="/community/tutorials/how-to-use-lvm-to-manage-storage-devices-on-ubuntu-18-04">
+    <span class="text">Ubuntu 18.04</span>
+    <span class="icon-arrow-down versioned-tutorial-group-navigation__link-arrow"></span>
+</a></li>
+
+      <li class="versioned-tutorial-group-navigation__list-item">
+  <a data-tutorial-request data-distribution-version-id="12" data-versioned-tutorial-group-id="55" href="javascript:;" class="versioned-tutorial-group-navigation__link versioned-tutorial-group-navigation__link--unavailable" title="Automated: Docker">
+    <span class="text">Automated: Docker</span>
+    <small class="versioned-tutorial-group-navigation__request" data-tutorial-request-status-indicator>request</small>
+  </a>
+</li>
+<li class="versioned-tutorial-group-navigation__list-item">
+  <a data-tutorial-request data-distribution-version-id="14" data-versioned-tutorial-group-id="55" href="javascript:;" class="versioned-tutorial-group-navigation__link versioned-tutorial-group-navigation__link--unavailable" title="Automated: Bash">
+    <span class="text">Automated: Bash</span>
+    <small class="versioned-tutorial-group-navigation__request" data-tutorial-request-status-indicator>request</small>
+  </a>
+</li>
+<li class="versioned-tutorial-group-navigation__list-item">
+  <a data-tutorial-request data-distribution-version-id="13" data-versioned-tutorial-group-id="55" href="javascript:;" class="versioned-tutorial-group-navigation__link versioned-tutorial-group-navigation__link--unavailable" title="Automated: Ansible">
+    <span class="text">Automated: Ansible</span>
+    <small class="versioned-tutorial-group-navigation__request" data-tutorial-request-status-indicator>request</small>
+  </a>
+</li>
+<li class="versioned-tutorial-group-navigation__list-item">
+  <a data-tutorial-request data-distribution-version-id="5" data-versioned-tutorial-group-id="55" href="javascript:;" class="versioned-tutorial-group-navigation__link versioned-tutorial-group-navigation__link--unavailable" title="CentOS 7">
+    <span class="text">CentOS 7</span>
+    <small class="versioned-tutorial-group-navigation__request" data-tutorial-request-status-indicator>request</small>
+  </a>
+</li>
+<li class="versioned-tutorial-group-navigation__list-item">
+  <a data-tutorial-request data-distribution-version-id="6" data-versioned-tutorial-group-id="55" href="javascript:;" class="versioned-tutorial-group-navigation__link versioned-tutorial-group-navigation__link--unavailable" title="Debian 9">
+    <span class="text">Debian 9</span>
+    <small class="versioned-tutorial-group-navigation__request" data-tutorial-request-status-indicator>request</small>
+  </a>
+</li>
+<li class="versioned-tutorial-group-navigation__list-item">
+  <a data-tutorial-request data-distribution-version-id="7" data-versioned-tutorial-group-id="55" href="javascript:;" class="versioned-tutorial-group-navigation__link versioned-tutorial-group-navigation__link--unavailable" title="Debian 8">
+    <span class="text">Debian 8</span>
+    <small class="versioned-tutorial-group-navigation__request" data-tutorial-request-status-indicator>request</small>
+  </a>
+</li>
+<li class="versioned-tutorial-group-navigation__list-item">
+  <a data-tutorial-request data-distribution-version-id="18" data-versioned-tutorial-group-id="55" href="javascript:;" class="versioned-tutorial-group-navigation__link versioned-tutorial-group-navigation__link--unavailable" title="Debian 10">
+    <span class="text">Debian 10</span>
+    <small class="versioned-tutorial-group-navigation__request" data-tutorial-request-status-indicator>request</small>
+  </a>
+</li>
+<li class="versioned-tutorial-group-navigation__list-item">
+  <a data-tutorial-request data-distribution-version-id="2" data-versioned-tutorial-group-id="55" href="javascript:;" class="versioned-tutorial-group-navigation__link versioned-tutorial-group-navigation__link--unavailable" title="Ubuntu 14.04">
+    <span class="text">Ubuntu 14.04</span>
+    <small class="versioned-tutorial-group-navigation__request" data-tutorial-request-status-indicator>request</small>
+  </a>
+</li>
+
+
+      <li class="versioned-tutorial-group-navigation__list-item">
+        <a class="versioned-tutorial-group-navigation__link" title="Using LVM to Manage Storage" href="/community/tutorial_collections/55">
+          <span class="text">View All</span>
+          <span class="icon-arrow-down versioned-tutorial-group-navigation__link-arrow"></span>
+</a>      </li>
+
+    </ul>
+  </div>
+</div>
+
+
+
+    <div class="content-body tutorial-content" data-growable-markdown>
+      
+      <h3 id="introduction">Introduction</h3>
+
+<p><strong>LVM</strong>, or Logical Volume Management, is a storage device management technology that gives users the power to pool and abstract the physical layout of component storage devices for easier and flexible administration.  Utilizing the device mapper Linux kernel framework, the current iteration, LVM2, can be used to gather existing storage devices into groups and allocate logical units from the combined space as needed.</p>
+
+<p>In this guide, we will cover how to manage your storage devices with LVM.  We will show you how to display information about volumes and potential targets, how to create and destroy volumes of various types, and how to modify existing volumes through resizing or transformation.  We will be using an Ubuntu 16.04 server to demonstrate these operations.</p>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<p>In order to follow along, you should have access to an Ubuntu 16.04 server.  You will need to have a non-root user with <code>sudo</code> privileges configured for administrative tasks.  You can follow our <a href="https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-16-04">Ubuntu 16.04 initial server setup guide</a> to create the necessary account.</p>
+
+<p>To get familiar with LVM components and concepts and to test out a basic LVM configuration, follow our <a href="https://www.digitalocean.com/community/tutorials/an-introduction-to-lvm-concepts-terminology-and-operations#">introduction to LVM guide</a> prior to starting on this tutorial.</p>
+
+<p>When you are ready, log into your server with your <code>sudo</code> user.</p>
+
+<h2 id="display-information-about-physical-volumes-volume-groups-and-logical-volumes">Display Information about Physical Volumes, Volume Groups, and Logical Volumes</h2>
+
+<p>It is important to be able to get information about the various LVM components in your system easily.  Fortunately, the LVM tool suite provides an abundant amount of tools for displaying information about every layer in the LVM stack.</p>
+
+<h3 id="displaying-information-about-all-lvm-compatible-block-storage-devices">Displaying Information about All LVM Compatible Block Storage Devices</h3>
+
+<p>To display all of the available block storage devices that LVM can potentially manage, use the <code>lvmdiskscan</code> command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo lvmdiskscan
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>  /dev/ram0  [      64.00 MiB] 
+  <span class="highlight">/dev/sda   [     200.00 GiB] </span>
+  /dev/ram1  [      64.00 MiB] 
+
+  . . .
+
+  /dev/ram15 [      64.00 MiB] 
+  <span class="highlight">/dev/sdb   [     100.00 GiB] </span>
+  <span class="highlight">2 disks</span>
+  17 partitions
+  0 LVM physical volume whole disks
+  0 LVM physical volumes
+</code></pre>
+<p>Ignoring the <code>/dev/ram*</code> devices (part of the Linux ram disk implementation), we can see the devices that can potentially be used as physical volumes for LVM.</p>
+
+<p>This will likely be your first step when adding new storage devices to use with LVM.</p>
+
+<h3 id="displaying-information-about-physical-volumes">Displaying Information about Physical Volumes</h3>
+
+<p>A header is written to storage devices to mark them as free to use as LVM components.  Devices with these headers are called <strong>physical volumes</strong>.</p>
+
+<p>You can display all of the physical devices on your system by using <code>lvmdiskscan</code> with the <code>-l</code> option, which will only return physical volumes:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo lvmdiskscan -l
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>  WARNING: only considering LVM devices
+  /dev/sda                   [     200.00 GiB] LVM physical volume
+  /dev/sdb                   [     100.00 GiB] LVM physical volume
+  2 LVM physical volume whole disks
+  0 LVM physical volumes
+</code></pre>
+<p>The <code>pvscan</code> command is fairly similar to the above, in that it searches all available devices for LVM physical volumes.  The output format is a bit different and it include a small amount of additional information:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo pvscan
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>  PV /dev/sda   VG LVMVolGroup     lvm2 [200.00 GiB / 0    free]
+  PV /dev/sdb   VG LVMVolGroup     lvm2 [100.00 GiB / 10.00 GiB free]
+  Total: 2 [299.99 GiB] / in use: 2 [299.99 GiB] / in no VG: 0 [0   ]
+</code></pre>
+<p>If you need more detail, the <code>pvs</code> and <code>pvdisplay</code> commands are better options.</p>
+
+<p>The <code>pvs</code> command is highly configurable and can display information in many different formats.  Because its output can be tightly controlled, it is frequently used in when scripting or automation is needed.  Its basic output provides a useful at-a-glance summary similar to the earlier commands:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo pvs
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>  PV         VG          Fmt  Attr PSize   PFree 
+  /dev/sda   LVMVolGroup lvm2 a--  200.00g     0 
+  /dev/sdb   LVMVolGroup lvm2 a--  100.00g 10.00g
+</code></pre>
+<p>For more verbose, human-readable output, the <code>pvdisplay</code> command is usually a better option:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo pvdisplay
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>  --- Physical volume ---
+  PV Name               /dev/sda
+  VG Name               LVMVolGroup
+  PV Size               200.00 GiB / not usable 4.00 MiB
+  Allocatable           yes (but full)
+  PE Size               4.00 MiB
+  Total PE              51199
+  Free PE               0
+  Allocated PE          51199
+  PV UUID               kRUOyU-0ib4-ujPh-kAJP-eeQv-ztRL-4EkaDQ
+
+  --- Physical volume ---
+  PV Name               /dev/sdb
+  VG Name               LVMVolGroup
+  PV Size               100.00 GiB / not usable 4.00 MiB
+  Allocatable           yes 
+  PE Size               4.00 MiB
+  Total PE              25599
+  Free PE               2560
+  Allocated PE          23039
+  PV UUID               udcuRJ-jCDC-26nD-ro9u-QQNd-D6VL-GEIlD7
+</code></pre>
+<p>As you can see the <code>pvdisplay</code> command is often the easiest command for getting detailed information about physical volumes.</p>
+
+<p>To discover the logical extents that have been mapped to each volume, pass in the <code>-m</code> option to <code>pvdisplay</code>:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo pvdisplay -m
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>  --- Physical volume ---
+  PV Name               /dev/sda
+  VG Name               LVMVolGroup
+  PV Size               200.00 GiB / not usable 4.00 MiB
+  Allocatable           yes 
+  PE Size               4.00 MiB
+  Total PE              51199
+  Free PE               38395
+  Allocated PE          12804
+  PV UUID               kRUOyU-0ib4-ujPh-kAJP-eeQv-ztRL-4EkaDQ
+
+  --- Physical Segments ---
+  Physical extent 0 to 0:
+    Logical volume  /dev/LVMVolGroup/db_rmeta_0
+    Logical extents 0 to 0
+  Physical extent 1 to 5120:
+    Logical volume  /dev/LVMVolGroup/db_rimage_0
+    Logical extents 0 to 5119
+
+   . . .
+</code></pre>
+<p>This can be very useful when trying to determine which data is held on which physical disk for management purposes.</p>
+
+<h3 id="displaying-information-about-volume-groups">Displaying Information about Volume Groups</h3>
+
+<p>LVM also has plenty of tools to display information about volume groups.</p>
+
+<p>The <code>vgscan</code> command can be used to scan the system for available volume groups.  It also rebuilds the cache file when necessary.  It is a good command to use when you are importing a volume group into a new system:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo vgscan
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>  Reading all physical volumes.  This may take a while&hellip;
+  Found volume group "LVMVolGroup" using metadata type lvm2
+</code></pre>
+<p>The command does not output very much information, but it should be able to find every available volume group on the system.  To display more information, the <code>vgs</code> and <code>vgdisplay</code> commands are available.</p>
+
+<p>Like its physical volume counterpart, the <code>vgs</code> command is versatile and can display a large amount of information in a variety of formats.  Because its output can be manipulated easily, it is frequently used in when scripting or automation is needed.  For example, some helpful output modifications are to show the physical devices and the logical volume path:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo vgs -o +devices,lv_path
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>  VG          #PV #LV #SN Attr   VSize   VFree  Devices        Path                      
+  LVMVolGroup   2   4   0 wz--n- 299.99g 10.00g /dev/sda(0)    /dev/LVMVolGroup/projects 
+  LVMVolGroup   2   4   0 wz--n- 299.99g 10.00g /dev/sda(2560) /dev/LVMVolGroup/www      
+  LVMVolGroup   2   4   0 wz--n- 299.99g 10.00g /dev/sda(3840) /dev/LVMVolGroup/db       
+  LVMVolGroup   2   4   0 wz--n- 299.99g 10.00g /dev/sda(8960) /dev/LVMVolGroup/workspace
+  LVMVolGroup   2   4   0 wz--n- 299.99g 10.00g /dev/sdb(0)    /dev/LVMVolGroup/workspace
+</code></pre>
+<p>For more verbose, human-readable output, the <code>vgdisplay</code> command is a usually the best choice.  Adding the <code>-v</code> flag also provides information about the physical volumes the volume group is built upon, and the logical volumes that were created using the volume group:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo vgdisplay -v
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>    Using volume group(s) on command line.
+  --- Volume group ---
+  VG Name               LVMVolGroup
+  . . .
+
+  --- Logical volume ---
+  LV Path                /dev/LVMVolGroup/projects
+  . . .
+
+  --- Logical volume ---
+  LV Path                /dev/LVMVolGroup/www
+  . . .
+
+  --- Logical volume ---
+  LV Path                /dev/LVMVolGroup/db
+  . . .
+
+  --- Logical volume ---
+  LV Path                /dev/LVMVolGroup/workspace
+  . . .
+
+  --- Physical volumes ---
+  PV Name               /dev/sda     
+  . . .
+
+  PV Name               /dev/sdb     
+  . . .
+</code></pre>
+<p>The <code>vgdisplay</code> command is useful because it can tie together information about many different elements of the LVM stack.</p>
+
+<h3 id="displaying-information-about-logical-volumes">Displaying Information about Logical Volumes</h3>
+
+<p>To display information about logical volumes, LVM has a related set of tools.</p>
+
+<p>As with the other LVM components, the <code>lvscan</code> option scans the system and outputs minimal information about the logical volumes it finds:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo lvscan
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>  ACTIVE            '/dev/LVMVolGroup/projects' [10.00 GiB] inherit
+  ACTIVE            '/dev/LVMVolGroup/www' [5.00 GiB] inherit
+  ACTIVE            '/dev/LVMVolGroup/db' [20.00 GiB] inherit
+  ACTIVE            '/dev/LVMVolGroup/workspace' [254.99 GiB] inherit
+</code></pre>
+<p>For more complete information, the <code>lvs</code> command is flexible, powerful, and easy to use in in scripts:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo lvs
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>  LV        VG          Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  db        LVMVolGroup -wi-ao----  20.00g                                                    
+  projects  LVMVolGroup -wi-ao----  10.00g                                                    
+  workspace LVMVolGroup -wi-ao---- 254.99g                                                    
+  www       LVMVolGroup -wi-ao----   5.00g
+</code></pre>
+<p>To find out about the number of stripes and the logical volume type, use the <code>--segments</code> option:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo lvs --segments
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>  LV           VG          Attr       #Str Type    SSize 
+  db           LVMVolGroup rwi-a-r---    2 raid1   20.00g
+  mirrored_vol LVMVolGroup rwi-a-r---    3 raid1   10.00g
+  test         LVMVolGroup rwi-a-r---    3 raid5   10.00g
+  test2        LVMVolGroup -wi-a-----    2 striped 10.00g
+  test3        LVMVolGroup rwi-a-r---    2 raid1   10.00g
+</code></pre>
+<p>The most human-readable output is produced by the <code>lvdisplay</code> command.</p>
+
+<p>When the <code>-m</code> flag is added, the tool will also display information about how the logical volume is broken down and distributed:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo lvdisplay -m
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>  --- Logical volume ---
+  LV Path                /dev/LVMVolGroup/projects
+  LV Name                projects
+  VG Name                LVMVolGroup
+  LV UUID                IN4GZm-ePJU-zAAn-DRO3-1f2w-qSN8-ahisNK
+  LV Write Access        read/write
+  LV Creation host, time lvmtest, 2016-09-09 21:00:03 +0000
+  LV Status              available
+  # open                 1
+  LV Size                10.00 GiB
+  Current LE             2560
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     256
+  Block device           252:0
+
+  --- Segments ---
+  Logical extents 0 to 2559:
+    Type        linear
+    Physical volume /dev/sda
+    Physical extents    0 to 2559
+
+
+  . . .
+</code></pre>
+<p>As you can see from the output towards the bottom, the <code>/dev/LVMVolGroup/projects</code> logical volume is contained entirely within the <code>/dev/sda</code> physical volume in this example.  This information is useful if you need to remove that underlying device and wish to move the data off to specific locations.</p>
+
+<h2 id="create-or-extend-lvm-components">Create or Extend LVM Components</h2>
+
+<p>This section will discuss how to create and expand physical volumes, volume groups, and logical volumes.</p>
+
+<h3 id="creating-physical-volumes-from-raw-storage-devices">Creating Physical Volumes From Raw Storage Devices</h3>
+
+<p>In order to use storage devices with LVM, they must first be marked as a physical volume.  This specifies that LVM can use the device within a volume group.</p>
+
+<p>First, use the <code>lvmdiskscan</code> command to find all block devices that LVM can see and use:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo lvmdiskscan
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>  /dev/ram0  [      64.00 MiB] 
+  <span class="highlight">/dev/sda   [     200.00 GiB] </span>
+  /dev/ram1  [      64.00 MiB] 
+
+  . . .
+
+  /dev/ram15 [      64.00 MiB] 
+  <span class="highlight">/dev/sdb   [     100.00 GiB] </span>
+  <span class="highlight">2 disks</span>
+  17 partitions
+  0 LVM physical volume whole disks
+  0 LVM physical volumes
+</code></pre>
+<p>Here, ignoring the <code>/dev/ram*</code> devices, we can see the devices that are suitable to be turned in physical volumes for LVM.</p>
+
+<p><span class='warning'><strong>Warning</strong>: Make sure that you double-check that the devices you intend to use with LVM do not have any important data already written to them.  Using these devices within LVM will overwrite the current contents.  If you already have important data on your server, make backups before proceeding.<br></span></p>
+
+<p>To mark the storage devices as LVM physical volumes, use <code>pvcreate</code>.  You can pass in multiple devices at once:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo pvcreate /dev/<span class="highlight">sda</span> /dev/<span class="highlight">sdb</span>
+</li></ul></code></pre>
+<p>This should write an LVM header on all of the target devices to mark them as LVM physical volumes.</p>
+
+<h3 id="creating-a-new-volume-group-from-physical-volumes">Creating a New Volume Group from Physical Volumes</h3>
+
+<p>To create a new volume group from LVM physical volumes, use the <code>vgcreate</code> command.  You will have to provide a volume group name, followed by at least one LVM physical volume:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo vgcreate <span class="highlight">volume_group_name</span> /dev/<span class="highlight">sda</span>
+</li></ul></code></pre>
+<p>This example will create your volume group with a single initial physical volume.  You can pass in more than one physical volume at creation if you&rsquo;d like:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo vgcreate <span class="highlight">volume_group_name</span> /dev/<span class="highlight">sda</span> /dev/<span class="highlight">sdb</span> /dev/<span class="highlight">sdc</span>
+</li></ul></code></pre>
+<p>Usually you will only need a single volume group per server.  All LVM-managed storage can be added to that pool and then logical volumes can be allocated from that.</p>
+
+<p>One reason you may wish to have more than one volume group is if you feel you need to use different extent sizes for different volumes.  Usually you will not have to set the extent size (the default size of 4M is adequate for most uses), but if you need to, you can do so upon volume group creation by passing the <code>-s</code> option:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">suod vgcreate -s <span class="highlight">8M</span> <span class="highlight">volume_group_name</span> /dev/<span class="highlight">sda</span>
+</li></ul></code></pre>
+<p>This will create a new volume group with an 8M extent size.</p>
+
+<h3 id="adding-a-physical-volume-to-an-existing-volume-group">Adding a Physical Volume to an Existing Volume Group</h3>
+
+<p>To expand a volume group by adding additional physical volumes, use the <code>vgextend</code> command.  This command takes a volume group followed by the physical volumes to add.  You can pass in multiple devices at once if you&rsquo;d like:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo vgextend <span class="highlight">volume_group_name</span> /dev/<span class="highlight">sdb</span>
+</li></ul></code></pre>
+<p>The physical volume will be added to the volume group, expanding the available capacity of the storage pool.</p>
+
+<h3 id="creating-a-logical-volume-by-specifying-size">Creating a Logical Volume by Specifying Size</h3>
+
+<p>To a logical volume from a volume group storage pool, use the <code>lvcreate</code> command.  Specify the size of the logical volume with the <code>-L</code> option, specify a name with the <code>-n</code> option, and pass in the volume group to allocate the space from.</p>
+
+<p>For instance, to create a 10G logical volume named <code>test</code> from the <code>LVMVolGroup</code> volume group, type:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo lvcreate -L 10G -n test LVMVolGroup
+</li></ul></code></pre>
+<p>Provided that the volume group has enough free space to accommodate the volume capacity, the new logical volume will be created.</p>
+
+<h3 id="creating-a-logical-volume-from-all-remaining-free-space">Creating a Logical Volume From All Remaining Free Space</h3>
+
+<p>If you wish to create a volume using the remaining free space within a volume group, use the <code>vgcreate</code> command with the <code>-n</code> option to name and pass in the volume group as before.  Instead of passing in a size, use the <code>-l 100%FREE</code> option, which uses the remaining extents within the volume group to form the logical volume:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo lvcreate -l 100%FREE -n test2 LVMVolGroup
+</li></ul></code></pre>
+<p>This should use up the remaining space in the logical volume.</p>
+
+<h3 id="creating-logical-volumes-with-advanced-options">Creating Logical volumes with Advanced Options</h3>
+
+<p>Logical volumes can be created with some advanced options as well.  Some options that you may wish to consider are:</p>
+
+<ul>
+<li><strong>&ndash;type</strong>: This specifies the type of logical volume, which determines how the logical volume is allocated.  Some of the available types will not be available if there are not enough underlying physical volumes to correctly create the chosen topography.  Some of the most common types are:
+
+<ul>
+<li><strong>linear</strong>: The default type.  The underlying physical devices used (if more than one) will simply be appended to each other, one after the other.</li>
+<li><strong>striped</strong>: Similar to RAID 0, the striped topology divides data into chunks and spread in a round-robin fashion across the underlying physical volumes.  This can lead to performance improvements, but might lead to greater data vulnerability.  This requires the <code>-i</code> option described below and a minimum of two physical volumes.</li>
+<li><strong>raid1</strong>: Creates a mirrored RAID 1 volume.  By default, the mirror will have two copies, but more can be specified by the <code>-m</code> option described below.  Requires a minimum of two physical volumes.</li>
+<li><strong>raid5</strong>: Creates a RAID 5 volume.  Requires a minimum of three physical volumes.</li>
+<li><strong>raid6</strong>: Creates a RAID 6 volume.  Requires a minimum of four physical volumes.</li>
+</ul></li>
+<li><strong>-m</strong>: Specifies the number of additional copies of data to keep.  A value of &ldquo;1&rdquo; specifies that one additional copy is maintained, for a total of two sets of data.</li>
+<li><strong>-i</strong>: Specifies the number of stripes that should be maintained.  This is required for the <code>striped</code> type, and can modify the default behavior of some of the other RAID options.</li>
+<li><strong>-s</strong>: Specifies that the action should create a snapshot from an existing logical volume instead of a new independent logical volume.</li>
+</ul>
+
+<p>We&rsquo;ll provide a few examples of these options to demonstrate how they&rsquo;d typically be used.</p>
+
+<p>To create a striped volume, you must specify at least two stripes. This topology and stripe count requires a minimum of two physical volumes with available capacity:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo lvcreate --type striped -i <span class="highlight">2</span> -L 10G -n <span class="highlight">striped_vol</span> <span class="highlight">LVMVolGroup</span>
+</li></ul></code></pre>
+<p>To create a mirrored volume, use the <code>raid1</code> type.  If you want more than two sets of data, use the <code>-m</code> option.  This example uses <code>-m 2</code> to create a total of three sets of data (LVM counts this as one original data set with two mirrors).  You will need at least three physical volumes for this to succeed:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo lvcreate --type <span class="highlight">raid1</span> -m <span class="highlight">2</span> -L 20G -n <span class="highlight">mirrored_vol</span> <span class="highlight">LVMVolGroup</span>
+</li></ul></code></pre>
+<p>To create a snapshot of a volume, you must provide the original logical volume to snapshot instead of the volume group.  Snapshots do not take up much space initially, but grow in size as changes are made to the logical volume it is tracking.  The size used during this procedure is the maximum size that the snapshot can be (snapshots that grow past this size are broken and cannot be used; snapshots approaching their capacity can be extended however):</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo lvcreate -s -L 10G -n <span class="highlight">snap_test</span> <span class="highlight">LVMVolGroup</span>/<span class="highlight">test</span>
+</li></ul></code></pre>
+<span class='note'><p>
+<strong>Note</strong>: To revert a logical volume to the point-in-time of a snapshot, use the <code>lvconvert --merge</code> command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo lvconvert --merge <span class="highlight">LVMVolGroup</span>/<span class="highlight">snap_test</span>
+</li></ul></code></pre>
+<p>This will bring the origin of the snapshot back to the state when the snapshot was taken.<br></p></span>
+
+<p>As you can see, there are a number of options that can dramatically alter the way that your logical volumes function.</p>
+
+<h3 id="growing-the-size-of-a-logical-volume">Growing the Size of a Logical Volume</h3>
+
+<p>One of the main advantages of LVM is the flexibility it provides in provisioning logical volumes.  You can easily adjust the number or size of volumes on the fly without stopping the system.</p>
+
+<p>To grow the size of an existing logical volume, use the <code>lvresize</code> command.  Use the <code>-L</code> flag to specify a new size.  You can also use relative sizes by adding a &ldquo;+&rdquo; size.  In that case, LVM will increase the size of the logical volume by the amount specified.  To automatically resize the filesystem being used on the logical volume as well, pass in the <code>--resizefs</code> flag.</p>
+
+<p>To correctly provide the name of the logical volume to expand, you&rsquo;ll need to give the volume group, followed by a slash, followed by the logical volume:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo lvresize -L <span class="highlight">+5G</span> --resizefs <span class="highlight">LVMVolGroup</span>/<span class="highlight">test</span>
+</li></ul></code></pre>
+<p>In this example, the logical volume and the filesystem of the <code>test</code> logical volume on the <code>LVMVolGroup</code> volume group will both be increased by 5G.</p>
+
+<p>If you wish to handle the filesystem expansion manually, you can take out the <code>--resizefs</code> option and use the filesystem&rsquo;s native expansion utility afterwards.  For example, for an Ext4 filesystem, you could type:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo lvresize -L <span class="highlight">+5G</span> <span class="highlight">LVMVolGroup</span>/<span class="highlight">test</span>
+</li><li class="line" prefix="$">sudo resize2fs /dev/<span class="highlight">LVMVolGroup</span>/<span class="highlight">test</span>
+</li></ul></code></pre>
+<p>This would leave you with the same result.</p>
+
+<h2 id="remove-or-downsize-lvm-components">Remove or Downsize LVM Components</h2>
+
+<p>Since capacity reduction can result in data loss, the procedures to shrink the available capacity, either by reducing the size of or removing components are typically a bit more involved.</p>
+
+<h3 id="reducing-the-size-of-a-logical-volume">Reducing the Size of a Logical Volume</h3>
+
+<p>To shrink a logical volume, you should first <strong>back up your data</strong>.  Because this reduces the available capacity, mistakes can lead to data loss.</p>
+
+<p>When you are ready, check on how much space is currently being used:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">df -h
+</li></ul></code></pre><pre class="code-pre "><code langs=""><div class="secondary-code-label " title="Output">Output</div>Filesystem                         Size  Used Avail Use% Mounted on
+. . .
+/dev/mapper/LVMVolGroup-test       4.8G  521M  4.1G  12% /mnt/test
+</code></pre>
+<p>In this example, it looks like a little over 521M of the space is currently in use.  Use this to help you estimate the size that you can reduce the volume to.</p>
+
+<p>Next, unmount the filesystem.  Unlike expansions, filesystem shrinking should be performed when unmounted:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">cd ~
+</li><li class="line" prefix="$">sudo umount /dev/<span class="highlight">LVMVolGroup</span>/<span class="highlight">test</span>
+</li></ul></code></pre>
+<p>After unmounting, check the filesystem to ensure that everything is in working order.  Pass in the filesystem type with the <code>-t</code> option.  We&rsquo;ll use <code>-f</code> to check even when the filesystem appears okay:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo fsck -t <span class="highlight">ext4</span> -f /dev/<span class="highlight">LVMVolGroup</span>/<span class="highlight">test</span>
+</li></ul></code></pre>
+<p>After checking the filesystem, you can reduce the filesystem size using the filesystem&rsquo;s native tools.  For Ext4 filesystems, this would be the <code>resize2fs</code> command.  Pass in the final size for the filesystem:</p>
+
+<p><span class='warning'><strong>Warning</strong>: The safest option here is to choose a final size that is a fair amount larger than your current usage.  Give yourself some buffer room to avoid data loss and ensure that you have backups in place.<br></span></p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo resize2fs -p /dev/<span class="highlight">LVMVolGroup</span>/<span class="highlight">test</span> <span class="highlight">3G</span>
+</li></ul></code></pre>
+<p>Once the operation is complete, resize the logical volume by passing the same size to the <code>lvresize</code> command with the <code>-L</code> flag:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo lvresize -L <span class="highlight">3G</span> <span class="highlight">LVMVolGroup</span>/<span class="highlight">test</span>
+</li></ul></code></pre>
+<p>You will be warned about the possibility of data loss.  If you are ready, type <strong>y</strong> to proceed.</p>
+
+<p>After the logical volume has been reduced, check the filesystem again:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo fsck -t ext4 -f /dev/<span class="highlight">LVMVolGroup</span>/<span class="highlight">test</span>
+</li></ul></code></pre>
+<p>If everything is functioning correctly, you can remount the filesystem using your usual mount command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo mount /dev/<span class="highlight">LVMVolGroup</span>/<span class="highlight">test</span> /mnt/<span class="highlight">test</span>
+</li></ul></code></pre>
+<p>Your logical volume should now be reduced to the appropriate size.</p>
+
+<h3 id="removing-a-logical-volume">Removing a Logical Volume</h3>
+
+<p>If you no longer need a logical volume, you can remove it with the <code>lvremove</code> command.</p>
+
+<p>First, unmount the logical volume if it is currently mounted:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">cd ~
+</li><li class="line" prefix="$">sudo umount /dev/<span class="highlight">LVMVolGroup</span>/<span class="highlight">test</span>
+</li></ul></code></pre>
+<p>Afterwards, remove the logical volume by typing:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo lvremove <span class="highlight">LVMVolGroup</span>/<span class="highlight">test</span>
+</li></ul></code></pre>
+<p>You will be asked to confirm the procedure.  If you are certain you want to delete the logical volume, type <strong>y</strong>.</p>
+
+<h3 id="removing-a-volume-group">Removing a Volume Group</h3>
+
+<p>To remove an entire volume group, including all of the logical volumes within it, use the <code>vgremove</code> command.</p>
+
+<p>Before you remove a volume group, you should usually remove the logical volumes using the procedure above.  At the very least, you must make sure that you unmount any logical volumes that the volume group contains:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo umount /dev/<span class="highlight">LVMVolGroup</span>/<span class="highlight">www</span>
+</li><li class="line" prefix="$">sudo umount /dev/<span class="highlight">LVMVolGroup</span>/<span class="highlight">projects</span>
+</li><li class="line" prefix="$">sudo umount /dev/<span class="highlight">LVMVolGroup</span>/<span class="highlight">db</span>
+</li></ul></code></pre>
+<p>Afterwards, you can delete the entire volume group by passing the volume group name to the <code>vgremove</code> command:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo vgremove <span class="highlight">LVMVolGroup</span>
+</li></ul></code></pre>
+<p>You will be prompted to confirm that you wish to remove the volume group.  If you have any logical volumes still present, you will be given individual confirmation prompts for those before removing.</p>
+
+<h3 id="removing-a-physical-volume">Removing a Physical Volume</h3>
+
+<p>If you wish to remove a physical volume from LVM management, the procedure you will need depends on whether the device is currently being used by LVM.</p>
+
+<p>If the physical volume is in use, you will have to move the physical extents located on the device to a different location.  This requires the volume group to have enough other physical volumes to handle the physical extents.  If you are using more complex logical volume types, you might have to have additional physical volumes even when you have plenty of free space in order to accommodate the topology.</p>
+
+<p>When you have enough physical volumes in the volume group to handle the physical extents, move them off of the physical volume you wish to remove by typing:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo pvmove /dev/<span class="highlight">sda</span>
+</li></ul></code></pre>
+<p>This process can take awhile depending on the size of the volumes and the amount of data to transfer.</p>
+
+<p>Once the extents have been relocated to peer volumes, you can remove the physical volume from the volume group by typing:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo vgreduce <span class="highlight">LVMVolGroup</span> /dev/<span class="highlight">sda</span>
+</li></ul></code></pre>
+<p>This will remove the vacated physical volume from the volume group.  After this is complete, you can remove the physical volume marker from the storage device by typing:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo pvremove /dev/<span class="highlight">sda</span>
+</li></ul></code></pre>
+<p>You should now be able to use the removed storage device for other purposes or remove it from the system entirely.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>By now, you should have a working understanding of how to manage storage devices on Ubuntu 16.04 with LVM.  You should know how to get information about the state of existing LVM components, how to use LVM to compose your storage system, and how to modify volumes to meet your needs.  Feel free to test these concepts in a safe environment to get a better grasp of how they fit together.</p>
+
+    </div>
+</div>
+
+<div class="tutorial-footer">
+  
+<div class='tutorial-footer-details'>
+
+  <div class='postable-info-bar-container'>
+  <div class='postable-info-bar'>
+
+    <div class="author-byline">
+      <div class="component-collaborators-container">
+  <ul class="component-collaborators-content">
+        <li class="collaborator-byline-avatar">
+          <a href="/community/users/jellingwood">
+            <img alt="jellingwood" class="avatar avatar-large" src="https://secure.gravatar.com/avatar/60d901f61a6146e14a3e989bc1f4ef11?secure=true&d=identicon" width="80" height="80" />
+</a>        </li>
+
+    <li class="collaborators-byline-data">
+        <p class="names">By <a href="/community/users/jellingwood">Justin Ellingwood</a></p>
+
+      <p>
+      </p>
+    </li>
+  </ul>
+</div>
+
+    </div>
+  </div>
+</div>
+
+
+  <div class='section-content tutorial-contributors one'>
+    <div class="component-collaborators-container">
+      <ul class="component-collaborators-content">
+
+
+
+        <li class="collaborators-byline-data">
+        </li>
+      </ul>
+    </div>
+  </div>
+
+    
+<div class="hsb--content">
+  <div class="hsb--undo hsb--hide">
+    <span class="icon icon-helpfulness-upvoted"></span>
+    <span class="hsb--question">You rated this helpful.</span>
+    <button name="button" type="submit" class="hsb--button-down hsb--vote-down-js" data-upvotable-type="Tutorial">Undo</button>
+  </div>
+
+  <div class="hsb--flagging-undo hsb--hide">
+    <span class="icon icon-helpfulness-flag"></span>
+    <span class="hsb--question">You reported this tutorial.</span>
+    <button name="button" type="submit" class="hsb--button-down hsb--unflagging-js">Undo</button>
+  </div>
+
+  <div class="hsb--do">
+    <span class="hsb--question">Was this helpful?</span>
+    <button name="button" type="submit" class="hsb--button hsb--vote-up-js" data-upvotable-id="2041" data-upvotable-type="Tutorial">Yes</button>
+    <button name="button" type="submit" class="hsb--button hsb--flagging-js" data-url="/community/tutorials/how-to-use-lvm-to-manage-storage-devices-on-ubuntu-16-04/flag" data-flaggable-id="2041">No</button>
+  </div>
+
+  <div class="hsb--social-and-comments">
+    <div class="hsb--social-sharing">
+      <a target="_blank" class="share-popup" href="http://twitter.com/share?text=How To Use LVM To Manage Storage Devices on Ubuntu 16.04&amp;url=https://www.digitalocean.com/community/tutorials/how-to-use-lvm-to-manage-storage-devices-on-ubuntu-16-04?utm_content=how-to-use-lvm-to-manage-storage-devices-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=twshare">
+        <span class="icon icon-helpfulness-twitter"></span>
+</a>
+      <a target="_blank" class="share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/how-to-use-lvm-to-manage-storage-devices-on-ubuntu-16-04?utm_content=how-to-use-lvm-to-manage-storage-devices-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=fbshare">
+        <span class="icon icon-helpfulness-facebook"></span>
+</a>
+      <a target="_blank" class="share-popup" href="https://news.ycombinator.com/submitlink?t=How To Use LVM To Manage Storage Devices on Ubuntu 16.04&amp;u=https://www.digitalocean.com/community/tutorials/how-to-use-lvm-to-manage-storage-devices-on-ubuntu-16-04?utm_content=how-to-use-lvm-to-manage-storage-devices-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=hnshare">
+        <span class="icon icon-helpfulness-hacker-news"></span>
+</a>    </div>
+
+    <div class="hsb--comment">
+      <span class="icon icon-helpfulness-comment"></span>
+      <strong class="amount">3</strong>
+    </div>
+  </div>
+</div>
+
+
+</div>
+
+
+  
+    <div class='related-tutorials'>
+    <div class='section-content'>
+      <h2>Related</h2>
+
+      <ul>
+        <li title="How To Configure Collectd to Gather System Metrics for Graphite on Ubuntu 14.04">
+  <a class="panel" href="/community/tutorials/how-to-configure-collectd-to-gather-system-metrics-for-graphite-on-ubuntu-14-04">
+    <h6>Tutorial</h6>
+    <div class="panel-data">
+      <h5>How To Configure Collectd to Gather System Metrics for Graphite on Ubuntu 14.04</h5>
+      <p>Collectd is a daemon that can be configured to collect statistics about your server and common services.  In this guide, we will install and configure collectd to collect system statistics and send them to Graphite for visualization.  We will set this up using an Ubuntu 14.04 server.</p>
+    </div>
+  </a>
+</li>
+<li title="How To Install and Use Graphite on an Ubuntu 14.04 Server">
+  <a class="panel" href="/community/tutorials/how-to-install-and-use-graphite-on-an-ubuntu-14-04-server">
+    <h6>Tutorial</h6>
+    <div class="panel-data">
+      <h5>How To Install and Use Graphite on an Ubuntu 14.04 Server</h5>
+      <p>Tracking statistics is a great way to make informed decisions about your systems, servers, and applications.  Graphite is a graphing library that can be used to render customized graphs for any kind of data that is send to it.  In this guide, we&#39;ll talk about how to install and use Graphite on an Ubuntu 14.04 server.</p>
+    </div>
+  </a>
+</li>
+<li title="How To Install and Use Ack, a Grep Replacement for Developers, on Ubuntu 14.04">
+  <a class="panel" href="/community/tutorials/how-to-install-and-use-ack-a-grep-replacement-for-developers-on-ubuntu-14-04">
+    <h6>Tutorial</h6>
+    <div class="panel-data">
+      <h5>How To Install and Use Ack, a Grep Replacement for Developers, on Ubuntu 14.04</h5>
+      <p>Searching for files and searching through files are two activities that you probably do often when developing an application.  Ack is a search tool that is optimized for working on source files.  It can intelligently handle searches very fast and is a suitable replacement for grep in most situations.  In this guide, we&#39;ll show you how to install and use ack on an Ubuntu 14.04 server.</p>
+    </div>
+  </a>
+</li>
+<li title="How To Use kpcli To Manage KeePass2 Password Files on an Ubuntu 14.04 Server">
+  <a class="panel" href="/community/tutorials/how-to-use-kpcli-to-manage-keepass2-password-files-on-an-ubuntu-14-04-server">
+    <h6>Tutorial</h6>
+    <div class="panel-data">
+      <h5>How To Use kpcli To Manage KeePass2 Password Files on an Ubuntu 14.04 Server</h5>
+      <p>Using a password manager allows you to create and keep track of complex passwords for your various accounts, which allows you to implement better security practices easier.  KeePass2 is a piece of software that lets you create your own password database files for managing this information.  In this guide, we&#39;ll look at a tool called `kpcli` which will allow you to create and manipulate KeePass2 database files in a server environment from the command line.</p>
+    </div>
+  </a>
+</li>
+
+      </ul>
+    </div>
+  </div>
+
+
+  <div class='looking-for-an-answer'>
+  <div class='section-content'>
+    <h4>Still looking for an answer?</h4>
+
+    <div class="lfa--actions">
+      <a href="/community/questions/new?tags=Storage%2CSystem+Tools%2CLinux+Basics" class="lfa--action-box">
+        <span class="icon icon-look-for-answer-question"></span>
+        Ask a question
+      </a>
+      <a href="#q" class="lfa--action-box">
+        <span class="icon icon-look-for-answer-search-thin"></span>
+        Search for more help
+      </a>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="content-comments">
+  <div class="section-content">
+    <div class="tutorial commentable" id="tutorial_2041">
+
+  <div class="comments-header">
+    <h4 class="comments-count">
+        <span>3 Comments</span>
+    </h4>
+  </div>
+
+    <div class="response response-form no-avatar">
+  <div class="js-display-on-error flash error hidden"></div>
+
+
+  <form class="content-form disabled-form" id="new_comment" action="/community/tutorials/how-to-use-lvm-to-manage-storage-devices-on-ubuntu-16-04/comments" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="&#x2713;" />
+
+    <textarea name="comment[content]" id="comment_content" placeholder="Leave a comment..." class="js-comment-content tutorial-comment-field" data-markdown="true">
+</textarea>
+
+      <div class="log-in-notice "><a href="/community/auth/digitalocean">Log In to Comment</a></div>
+
+    <div class='clearfix'></div>
+</form>
+</div>
+
+
+  <div class="comments">
+    <ul class="response-list">
+          <a class="js-click-on-load hidden" rel="nofollow" data-remote="true" href="/community/tutorials/how-to-use-lvm-to-manage-storage-devices-on-ubuntu-16-04/comments">Load</a>
+    </ul>
+
+      <div class='comments-spinner'><div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+</div>
+  </div>
+
+  <div class='load-more-container'></div>
+</div>
+
+
+  </div>
+</div>
+
+<div class="creative-commons">
+  <a class="creative-commons-image" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><img rel="license" alt="Creative Commons License" src="/assets/community/creativecommons-08b32a9279fcd47fcd78ac6a26331389.png" /></a>
+    <div class="license-text">This work is licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.</div>
+</div>
+
+
+
+
+
+
+        <div class="clearfix"></div>
+      </div>
+
+            <footer>
+        <section>
+            <a href="https://www.digitalocean.com/write-for-donations/" class="panel">
+            <div class="photo_wrap">
+              <img class="photo" src="https://digitalocean.cdn.prismic.io/digitalocean/70910e9fdeb57be46aaa209ce8d9b4dc8e117fab_w4do2.jpg" alt="">
+            </div>
+            <span class="heading">Become a contributor</span>
+            <p>
+                You get paid; we donate to tech nonprofits.
+            </p>
+          </a>
+            <a href="https://www.meetup.com/pro/digitalocean" class="panel">
+            <div class="photo_wrap">
+              <img class="photo" src="https://digitalocean.cdn.prismic.io/digitalocean/2491485f96735e5982e330914d8a617f85395fab_meetups.jpg" alt="">
+            </div>
+            <span class="heading">Connect with other developers</span>
+            <p>
+                Find a DigitalOcean Meetup near you.
+            </p>
+          </a>
+            <a href="https://www.digitalocean.com/community/newsletter" class="panel">
+            <div class="photo_wrap">
+              <img class="photo" src="https://digitalocean.cdn.prismic.io/digitalocean/ca12c951cc76f33037f3384bba9942545d160d82_iaan_illo.jpg" alt="">
+            </div>
+            <span class="heading">Get our biweekly newsletter</span>
+            <p>
+                Sign up for Infrastructure as a Newsletter.
+            </p>
+          </a>
+      </section>
+      <section class="slim ">
+        <span class="heading">Featured on Community</span>
+            <a href="https://www.digitalocean.com/community/tutorials/an-introduction-to-kubernetes">Intro to Kubernetes</a>
+            <a href="https://www.digitalocean.com/community/tutorial_series/how-to-code-in-python-3">Learn Python 3</a>
+            <a href="https://www.digitalocean.com/community/tutorials/machine-learning-projects-python-a-digitalocean-ebook">Machine Learning in Python</a>
+            <a href="https://www.digitalocean.com/community/tutorials/how-to-write-your-first-program-in-go">Getting started with Go</a>
+            <a href="https://www.digitalocean.com/community/tutorial_series/from-containers-to-kubernetes-with-node-js">Migrate Node.js to Kubernetes</a>
+        <hr>
+        <span class="heading">DigitalOcean Products</span>
+            <a href="https://www.digitalocean.com/products/droplets/">Droplets</a>
+            <a href="https://www.digitalocean.com/products/managed-databases/">Managed Databases</a>
+            <a href="https://www.digitalocean.com/products/kubernetes/">Managed Kubernetes</a>
+            <a href="https://www.digitalocean.com/products/spaces/">Spaces Object Storage</a>
+            <a href="https://marketplace.digitalocean.com/">Marketplace</a>
+      </section>
+        <section class="product">
+          <a class="copy" href="/products">
+            <h3>Welcome to the developer cloud</h3>
+            <p>DigitalOcean makes it simple to launch in the cloud and scale up as you grow – whether you’re running one virtual machine or ten thousand.</p>
+            <span class="link_text">Learn More</a>
+          </div>
+          <div class="feature">
+            <a class="img_wrap" href="/products">
+              <img class="photo" src="https://digitalocean.cdn.prismic.io/digitalocean/95c1215227aa7f39f2bd23076de28feb969741c7_cloud.digitalocean.com_projects_63f9252f-652b-4645-9c0c-bee96f2bc503_resources_ic0ce81-2.png" alt="DigitalOcean Cloud Control Panel">
+            </a>
+          </div>
+        </section>
+        <section class="dark">
+          <div class="vlist grow">
+            <a href="https://www.digitalocean.com">
+              <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+                <title>DigitalOcean Homepage</title>
+                <g fill="#0080FF" fill-rule="evenodd">
+                  <path
+                    d="M24.9153 50v-9.661c10.226 0 18.1638-10.1413 14.2372-20.904-1.4406-3.983-4.6327-7.1751-8.6158-8.6158C19.774 6.921 9.6327 14.8305 9.6327 25.0565H0C0 8.7571 15.7627-3.9548 32.8531 1.3842c7.4576 2.3446 13.418 8.2768 15.7345 15.7344C53.9266 34.2373 41.2429 50 24.9153 50">
+                  </path>
+                  <path
+                    d="M15.339 40.3672h9.6045v-9.6045H15.339zM7.9379 47.7684h7.401v-7.4012H7.938zM1.7514 40.3672H7.938v-6.1864H1.7514z">
+                  </path>
+                </g>
+              </svg>
+            </a>
+            <br><br>
+            © <script type="text/javascript">
+              document.write(new Date().getFullYear());
+
+            </script> DigitalOcean, LLC. All rights reserved.
+          </div>
+
+              <div class="vlist">
+                <span class="heading">Company</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/about/">About</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/about/leadership/">Leadership</a>
+                    </li>
+                    <li>
+                      <a href="https://blog.digitalocean.com/">Blog</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/careers/">Careers</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/partners/">Partners</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/referral-program/">Referral Program</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/press/">Press</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/legal/">Legal &amp; Security</a>
+                    </li>
+                </ul>
+              </div>
+              <div class="vlist">
+                <span class="heading">Products</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/">Products Overview</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/pricing/">Pricing</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/droplets/">Droplets</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/kubernetes/">Kubernetes</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/managed-databases/">Managed Databases</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/spaces/">Spaces</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/marketplace/">Marketplace</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/load-balancer/">Load Balancers</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/block-storage/">Block Storage</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/tools-and-integrations/">Tools &amp; Integrations</a>
+                    </li>
+                    <li>
+                      <a href="https://developers.digitalocean.com/documentation/">API</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/docs">Documentation</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/docs/release-notes/">Release Notes</a>
+                    </li>
+                </ul>
+              </div>
+              <div class="vlist">
+                <span class="heading">Community</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/tutorials">Tutorials</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/questions">Q&amp;A</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/tools">Tools and Integrations</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/tags">Tags</a>
+                    </li>
+                    <li>
+                      <a href="https://ideas.digitalocean.com/">Product Ideas</a>
+                    </li>
+                    <li>
+                      <a href="https://www.meetup.com/pro/digitalocean/?utm_source=do_www">Meetups</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/write-for-donations/">Write for DOnations</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/droplets-for-demos/">Droplets for Demos</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/hatch/">Hatch Startup Program</a>
+                    </li>
+                    <li>
+                      <a href="http://store.digitalocean.com/">Shop Swag</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/research/">Research Program</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/currents/">Currents Research</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/open-source/">Open Source</a>
+                    </li>
+                </ul>
+              </div>
+              <div class="vlist">
+                <span class="heading">Contact</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/support/">Support</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/company/contact/sales/">Sales</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/company/contact/#abuse">Report Abuse</a>
+                    </li>
+                    <li>
+                      <a href="https://status.digitalocean.com/">System Status</a>
+                    </li>
+                </ul>
+              </div>
+        </section>
+      </footer>
+
+
+      <div id='sign-in-modal' class='modal fade mini-modal' style="display: none;">
+  <div class='modal-dialog'>
+    <div class='modal-content'>
+      <div class='modal-header'>
+        <h1>Almost there!</h1>
+        <a class='close-button' data-dismiss='modal' aria-label="close"  href=''><span class='icon icon-close-light'></span></a>
+      </div>
+      <div class='modal-body'>
+        <div class='sign-in-message'>Sign into your account, or create a new one, to start interacting.</div>
+
+        <div class='sign-in-modal-actions'>
+          <a class="sign-in-link button blue-button" data-default-url="/community/auth/digitalocean" href="/community/auth/digitalocean">Log In</a>
+          <a class="sign-up-link button blue-button" data-default-url="/community/auth/digitalocean?display=sessionless+register" href="/community/auth/digitalocean?display=sessionless+register">Sign Up</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+      <script>
+    $(function() {
+      var dropDownOptions = {};
+      
+
+      VTGNavigationDropdown($('[data-versioned-tutorial-group-navigation]'), dropDownOptions);
+      createTutorialRequest({
+        $tutorialRequestLinks: $("[data-tutorial-request]"),
+        tutorialRequestStatusSelector: "[data-tutorial-request-status-indicator]",
+        tutorialRequestUrl: "/community/api/tutorial_requests",
+      });
+    });
+  </script>
+  <script>
+    $(function() {
+      window.initHelpfulnessActions(2041);
+    });
+  </script>
+  <script>
+    $(function() {
+      var p, h5, panel, remainingSpace;
+      var lineHeight = 31, clamp = 1;
+
+      var panels = document.querySelectorAll('li .panel-data');
+
+      for (var i = 0, len = panels.length; i < len; i++) {
+        panel = panels[i];
+
+        p = panel.querySelector('p');
+        h5 = panel.querySelector('h5');
+        remainingSpace = panel.offsetHeight - h5.offsetHeight;
+
+        // Clamp text only when the remaining space isn't enought for p content.
+        if (remainingSpace < p.scrollHeight) {
+          clamp = parseInt(p.offsetHeight / lineHeight);
+
+          p.style.cssText = "-webkit-line-clamp:" + clamp +
+            "; display: -webkit-box; -webkit-box-orient: vertical;";
+        }
+      }
+    });
+  </script>
+
+  <script>
+    $(function() {
+      if (!!window.init_sharing) {
+        window.init_sharing();
+      }
+      new window.NewsletterSignup();
+      new window.GrowableMarkdown({ target: '[data-growable-markdown]' });
+    });
+  </script>
+  <script type="application/ld+json">
+    {"@context":"http://schema.org","@type":"Article","name":"How To Use LVM To Manage Storage Devices on Ubuntu 16.04","headline":"How To Use LVM To Manage Storage Devices on Ubuntu 16.04","alternativeHeadline":"How To Use LVM To Manage Storage Devices on Ubuntu 16.04","description":"LVM, or Logical Volume Management, is a storage device management technology that gives users the power to pool and abstract the physical layout of component storage devices for easier and flexible administration. Utilizing the device mapper Linux kernel framework, the...","keywords":"System Tools,Storage,Linux Basics","url":"https://www.digitalocean.com/community/tutorials/how-to-use-lvm-to-manage-storage-devices-on-ubuntu-16-04","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.digitalocean.com/community/tutorials/how-to-use-lvm-to-manage-storage-devices-on-ubuntu-16-04"},"dateModified":"2016-10-13T17:23:40Z","inLanguage":"en","accessMode":"textual","accessModeSufficient":"textual","isAccessibleForFree":true,"license":"https://creativecommons.org/licenses/by-nc-sa/4.0/","publishingPrinciples":"https://www.digitalocean.com/community/tutorials/technical-recommendations-and-best-practices-for-digitalocean-s-tutorials","author":[{"@type":"Person","name":"Justin Ellingwood","@id":"https://www.digitalocean.com/community/users/jellingwood"}],"datePublished":"2016-09-14T15:05:59Z","image":{"@type":"ImageObject","url":"https://www.digitalocean.com/assets/community/illustrations/DigitalOcean_Community-02cc36407e7a978ed4fc9ed98f3ed87c.jpg","height":375,"width":750},"interactionStatistic":[{"@type":"InteractionCounter","interactionType":"http://schema.org/LikeAction","userInteractionCount":"14"},{"@type":"InteractionCounter","interactionType":"http://schema.org/CommentAction","userInteractionCount":"3"}],"sourceOrganization":{"@type":"Organization","name":"DigitalOcean Community","url":"https://www.digitalocean.com/community"},"publisher":{"@type":"Organization","name":"DigitalOcean","url":"https://www.digitalocean.com","logo":{"@type":"ImageObject","url":"https://assets.digitalocean.com/logos/DO_Logo_horizontal_blue.png","width":351,"height":60}}}
+  </script>
+
+
+    
+  </body>
+</html>

@@ -5,7 +5,7 @@ setup:
     host: vagrant@127.0.0.1:2003
     privateKey: id_rsa
 
-../tutorials/204_ubuntu16_vultr.html:
+../tutorials/docable/204_ubuntu16_vultr.html:
   steps:
 
     # skipping target change

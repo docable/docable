@@ -4,7 +4,7 @@ setup:
     host: vagrant@127.0.0.1:2003
     privateKey: id_rsa
 
-../tutorials/96_ubuntu18_linuxize.html:
+../tutorials/docable/96_ubuntu18_linuxize.html:
   steps:
     - run: "To view the current hostname, enter the following command:"
 

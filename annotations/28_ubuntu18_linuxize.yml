@@ -4,7 +4,7 @@ setup:
     host: vagrant@127.0.0.1:2003
     privateKey: id_rsa
 
-../tutorials/28_ubuntu18_linuxize.html:
+../tutorials/docable/28_ubuntu18_linuxize.html:
   steps:
     - run: "Start by enabling the Multiverse repository which contains software that does not meet the Ubuntu license policy:"
     # skipping the expect block, because there is no text befor the code block

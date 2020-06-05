@@ -4,7 +4,7 @@ setup:
     host: vagrant@127.0.0.1:2003
     privateKey: id_rsa
 
-../tutorials/277_ubuntu16_vultr.html:
+../tutorials/docable/277_ubuntu16_vultr.html:
   steps:
     - run: 
         select: "First, update your local packages list and then install python setuptools."

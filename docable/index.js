@@ -80,7 +80,7 @@ async function testreport(mode, argv, options = {rendered: undefined, selector: 
     let exitCode = 0;
     if(results.filter(result => result.status == false).length > 0) exitCode = 1;
 
-    process.exit(exitCode);
+    // process.exit(exitCode);
 }
 
 module.exports = testreport;

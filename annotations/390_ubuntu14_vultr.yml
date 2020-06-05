@@ -4,7 +4,7 @@ setup:
     host: vagrant@127.0.0.1:2003
     privateKey: id_rsa
 
-../tutorials/390_ubuntu14_vultr.html:
+../tutorials/docable/390_ubuntu14_vultr.html:
   steps:
     - run: "This may be needed if you are downloading libraries from a version control system that is using one of those protocols."
 

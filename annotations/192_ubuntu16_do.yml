@@ -4,7 +4,7 @@ setup:
     host: vagrant@127.0.0.1:2002
     privateKey: id_rsa
 
-../tutorials/192_ubuntu16_do.html:
+../tutorials/docable/192_ubuntu16_do.html:
   steps:
     - run: "Remove the flag if you’d like the upgrade to stop for each prompt."
     - run: 

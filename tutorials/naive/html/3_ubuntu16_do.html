@@ -1,0 +1,1616 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Securing Communications in a Three-tier Rails Application Using SSH Tunnels | DigitalOcean</title>
+
+<meta name="description" content="Web applications are often architected with three distinct tiers: the presentation layer, which is what the user sees, the application layer, which provides the business logic of the application, and the data layer which stores the application&#39;s data.">
+<meta name="keywords" content="Security PostgreSQL Scaling Ruby on Rails Nginx Databases">
+
+<meta name="og:title" content="Securing Communications in a Three-tier Rails Application Using SSH Tunnels | DigitalOcean">
+<meta name="og:description" content="Web applications are often architected with three distinct tiers: the presentation layer, which is what the user sees, the application layer, which provides the business logic of the application, and the data layer which stores the application&#39;s data.">
+<meta name="og:site_name" content="DigitalOcean">
+<meta name="og:type" content="article">
+<meta name="og:image" content="https://www.digitalocean.com/assets/community/illustrations/DigitalOcean_Community-02cc36407e7a978ed4fc9ed98f3ed87c.jpg">
+
+<meta name="twitter:site" content="DigitalOcean">
+<meta name="twitter:title" content="Securing Communications in a Three-tier Rails Application Using SSH Tunnels | DigitalOcean">
+<meta name="twitter:description" content="Web applications are often architected with three distinct tiers: the presentation layer, which is what the user sees, the application layer, which provides the business logic of the application, and the data layer which stores the application&#39;s data.">
+<meta name="twitter:creator" content="DigitalOcean">
+<meta name="twitter:card" content="photo" />
+<meta name="twitter:url" content="https://www.digitalocean.com/community/tutorials/securing-communications-three-tier-rails-application-using-ssh-tunnels"/>
+<meta name="twitter:image" content="https://www.digitalocean.com/assets/community/illustrations/DigitalOcean_Community-02cc36407e7a978ed4fc9ed98f3ed87c.jpg">
+
+  <link rel='canonical' href='https://www.digitalocean.com/community/tutorials/securing-communications-three-tier-rails-application-using-ssh-tunnels'>
+
+<link rel="preconnect" href="https://digitalocean.cdn.prismic.io">
+<link rel="preconnect" href="https://hello.myfonts.net">
+
+
+    <link rel="stylesheet" media="all" href="/assets/community/application-b828e623bec3c41208f9f701850222a0.css" />
+
+    
+    <meta name="csrf-param" content="authenticity_token" />
+<meta name="csrf-token" content="WM9K0MLVhHcDOa1Yh1WD90egWaEr+bMw6otmpQNAr2ZveSKFw1fdJfPNwZ3pkuFGhjDZfDVLFxiyJ7d9pN190g==" />
+    <script src="/assets/community/prerequisites-9a51dfaadf0d3629cc636286133a958d.js"></script>
+    <script>
+//<![CDATA[
+
+  window.cookieDomain = '.digitalocean.com';
+
+//]]>
+</script><script src="https://assets.digitalocean.com/cookieConsent/cookieConsent.js"></script>
+<link rel="stylesheet" href="https://assets.digitalocean.com/cookieConsent/cookieConsent.css">
+
+    <script type="text/javascript">
+  if(window.analytics=window.analytics||[],window.analytics.included)window.console&&console.error&&console.error("analytics.js included twice");else{window.analytics.included=!0,window.analytics.methods=["identify","group","track","page","pageview","alias","ready","on","once","off","trackLink","trackForm","trackClick","trackSubmit"],window.analytics.factory=function(a){return function(){var n=Array.prototype.slice.call(arguments);return n.unshift(a),window.analytics.push(n),window.analytics}};for(var i=0;i<window.analytics.methods.length;i++){var key=window.analytics.methods[i];window.analytics[key]=window.analytics.factory(key)}window.analytics.load=function(a){var n=document.createElement("script");n.type="text/javascript",n.async=!0,n.src=("https:"===document.location.protocol?"https://":"http://")+"cdn.segment.com/analytics.js/v1/"+a+"/analytics.min.js";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(n,t)},window.analytics.SNIPPET_VERSION="2.0.9",window.analytics.load("puo3uv968t")}
+  window.analytics.page();
+</script>
+
+<!-- Google Tag Manager -->
+<script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-KHWBBT');
+</script>
+<!-- End Google Tag Manager -->
+
+<script src="/assets/community/internalCookies-d2a3579f6b37d00c8045b16853b90462.js"></script>
+
+      <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="/community/tutorials/feed">
+    <script>
+      window.comApp = {
+        prefix: '/community',
+        svgIconPath: 'https://www.digitalocean.com/assets/community/icon-sprite-d76eb75d70ccf8ffb4c0b47b7dbc88ca.svg',
+        railsEnv: 'production',
+        rootUrl: 'https://www.digitalocean.com/community',
+        algolia_application_id: '6ZHEUVKJ88',
+        algolia_api_key: 'c5470567eae7fa1177d43222e18ba086'
+      };
+    </script>
+      <script src="https://go.digitalocean.com/js/forms2/js/forms2.min.js"></script>
+
+    <script src="/assets/community/application-dd2f12c7d68945c016e67a784d8785fc.js"></script>
+  </head>
+  <body class="feature-filter-bar feature-upvotes tutorials-controller tutorial-single" data-env="production" data-prefix="/community" data-user-id="" data-facebook-app-id="694818843983011"   data-completed-tutorial-id="" data-tutorial-id="2651" data-js="tutorial"
+  data-upvote="null"
+  data-flagged=""
+>
+    
+
+    <div class='outside_viewport'>
+        <div id="contents-modal" class="modal fade mini-modal" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1>Contents</h1>
+          <button class="close-button icon icon-close-light" data-dismiss="modal" aria-label="close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="table-of-contents-modal"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="share-modal" class="modal fade mini-modal" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1>Share</h1>
+        <button type="button" class="close-button icon icon-close-light" aria-label="close" data-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="social-sharing social-sharing-container">
+          <ul class="top ">
+            <li class="shareBtn" id="sbTwitter">
+              <a href="http://twitter.com/share?text=Securing Communications in a Three-tier Rails Application Using SSH Tunnels&amp;url=https://www.digitalocean.com/community/tutorials/securing-communications-three-tier-rails-application-using-ssh-tunnels?utm_content=securing-communications-three-tier-rails-application-using-ssh-tunnels&amp;utm_medium=community&amp;utm_source=twshare" class="share-icon share-popup" title="Share on Twitter" target="_blank">
+                <span class="sIcon icon-bird"></span>
+              </a>
+              <a href="http://twitter.com/share?text=Securing Communications in a Three-tier Rails Application Using SSH Tunnels&amp;url=https://www.digitalocean.com/community/tutorials/securing-communications-three-tier-rails-application-using-ssh-tunnels?utm_content=securing-communications-three-tier-rails-application-using-ssh-tunnels&amp;utm_medium=community&amp;utm_source=twshare" class="share-link share-popup" title="Share on Twitter" target="_blank">
+                Twitter
+              </a>
+            </li>
+            <li class="shareBtn" id="sbFacebook">
+              <a class="share-icon share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/securing-communications-three-tier-rails-application-using-ssh-tunnels?utm_content=securing-communications-three-tier-rails-application-using-ssh-tunnels&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+                <span class="sIcon icon-facebook-B"></span>
+              </a>
+
+              <a class="share-link share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/securing-communications-three-tier-rails-application-using-ssh-tunnels?utm_content=securing-communications-three-tier-rails-application-using-ssh-tunnels&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+                Facebook
+              </a>
+            </li>
+            <li class="shareBtn" id="sbYC">
+              <a href="https://news.ycombinator.com/submitlink?t=Securing Communications in a Three-tier Rails Application Using SSH Tunnels&amp;u=https://www.digitalocean.com/community/tutorials/securing-communications-three-tier-rails-application-using-ssh-tunnels?utm_content=securing-communications-three-tier-rails-application-using-ssh-tunnels&amp;utm_medium=community&amp;utm_source=hnshare" class="share-icon share-popup" target="_blank" title="Submit to Hacker News">
+                <span class="sIcon icon-hacker-news"></span>
+              </a>
+              <a href="https://news.ycombinator.com/submitlink?t=Securing Communications in a Three-tier Rails Application Using SSH Tunnels&amp;u=https://www.digitalocean.com/community/tutorials/securing-communications-three-tier-rails-application-using-ssh-tunnels?utm_content=securing-communications-three-tier-rails-application-using-ssh-tunnels&amp;utm_medium=community&amp;utm_source=hnshare" class="share-link share-popup" target="_blank" title="Submit to Hacker News">
+                Hacker News
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <div class="table-of-contents">
+    <div data-js="tableOfContentsDesktop"></div>
+  </div>
+  
+  
+  
+  <div id="share-modal" class="modal fade mini-modal" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1>Share</h1>
+        <button type="button" class="close-button icon icon-close-light" aria-label="close" data-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="social-sharing social-sharing-container">
+          <ul class="bottom ">
+            <li class="shareBtn" id="sbTwitter">
+              <a href="http://twitter.com/share?text=Securing Communications in a Three-tier Rails Application Using SSH Tunnels&amp;url=https://www.digitalocean.com/community/tutorials/securing-communications-three-tier-rails-application-using-ssh-tunnels?utm_content=securing-communications-three-tier-rails-application-using-ssh-tunnels&amp;utm_medium=community&amp;utm_source=twshare" class="share-icon share-popup" title="Share on Twitter" target="_blank">
+                <span class="sIcon icon-bird"></span>
+              </a>
+              <a href="http://twitter.com/share?text=Securing Communications in a Three-tier Rails Application Using SSH Tunnels&amp;url=https://www.digitalocean.com/community/tutorials/securing-communications-three-tier-rails-application-using-ssh-tunnels?utm_content=securing-communications-three-tier-rails-application-using-ssh-tunnels&amp;utm_medium=community&amp;utm_source=twshare" class="share-link share-popup" title="Share on Twitter" target="_blank">
+                Twitter
+              </a>
+            </li>
+            <li class="shareBtn" id="sbFacebook">
+              <a class="share-icon share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/securing-communications-three-tier-rails-application-using-ssh-tunnels?utm_content=securing-communications-three-tier-rails-application-using-ssh-tunnels&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+                <span class="sIcon icon-facebook-B"></span>
+              </a>
+
+              <a class="share-link share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/securing-communications-three-tier-rails-application-using-ssh-tunnels?utm_content=securing-communications-three-tier-rails-application-using-ssh-tunnels&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+                Facebook
+              </a>
+            </li>
+            <li class="shareBtn" id="sbYC">
+              <a href="https://news.ycombinator.com/submitlink?t=Securing Communications in a Three-tier Rails Application Using SSH Tunnels&amp;u=https://www.digitalocean.com/community/tutorials/securing-communications-three-tier-rails-application-using-ssh-tunnels?utm_content=securing-communications-three-tier-rails-application-using-ssh-tunnels&amp;utm_medium=community&amp;utm_source=hnshare" class="share-icon share-popup" target="_blank" title="Submit to Hacker News">
+                <span class="sIcon icon-hacker-news"></span>
+              </a>
+              <a href="https://news.ycombinator.com/submitlink?t=Securing Communications in a Three-tier Rails Application Using SSH Tunnels&amp;u=https://www.digitalocean.com/community/tutorials/securing-communications-three-tier-rails-application-using-ssh-tunnels?utm_content=securing-communications-three-tier-rails-application-using-ssh-tunnels&amp;utm_medium=community&amp;utm_source=hnshare" class="share-link share-popup" target="_blank" title="Submit to Hacker News">
+                Hacker News
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div id="newsletter-signup-dialog" class="newsletter-signups-dialog" data-newsletter-signup-dialog data-article-target=".content-body">
+  <div class="form-message">
+  <div class="pull-right">
+    <a href="javascript:;" class="newsletter-signups-dialog-dismiss" data-newsletter-signup-dismiss>&times;</a>
+
+  </div>
+  <h4 class="newsletter-signups-dialog-title">
+    Sign up for our newsletter.
+  </h4>
+  <p class="newsletter-signups-dialog-description">
+    Get the latest tutorials on SysAdmin and open source topics.
+  </p>
+  <form class="newsletter-signup" id="new_newsletter_signup" data-newsletter-signup="true" action="/community/newsletter" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="&#x2713;" />
+
+  <input data-newsletter-signup-field="url" type="hidden" name="newsletter_signup[url]" id="newsletter_signup_url" />
+  <input data-newsletter-signup-field="title" type="hidden" name="newsletter_signup[title]" id="newsletter_signup_title" />
+
+  <div class="newsletter-signup-ajax-error" data-newsletter-signup-ajax-error></div>
+
+
+  <div class="form-group">
+    <input placeholder="Enter your email address" required="required" class="field" type="email" name="newsletter_signup[email]" id="newsletter_signup_email" />
+  </div>
+
+  <button data-disable-with="Sign Up" class="button blue-button">
+    Sign Up
+  </button>
+
+</form>
+
+</div>
+
+<div class="thanks-message hidden" data-newsletter-signup-successful> 
+  <div class='pull-right'> 
+    <a href='javascript:;' class='newsletter-signups-dialog-dismiss icon icon-close-light' data-newsletter-signup-dismiss></a> 
+  </div> 
+
+  <span class='newsletter-signups-dialog-success'> 
+    Thanks for signing up! 
+  </span> 
+</div>
+
+</div>
+
+
+      
+    </div>
+
+      
+      
+<div style="display: none;">
+  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <symbol id="do_nav-logo" xmlns="http://www.w3.org/2000/svg"> <title>DigitalOcean home</title> <g fill="currentColor" fill-rule="evenodd"> <path d="M14.4942 29v-5.5674c5.9572 0 10.5633-5.8478 8.2892-12.059-.8425-2.3006-2.693-4.1355-5.0126-4.9706-6.262-2.2534-12.1564 2.3135-12.1573 8.2207 0 0-.0006.0014-.0014.0014H0C0 5.2123 9.1687-2.1167 19.1138.9624c4.3459 1.3457 7.7993 4.7708 9.1561 9.081C31.3742 19.9068 23.985 29 14.4942 29"></path> <path d="M14.507 23.4468H8.9103v-5.549s.0005-.0011.0011-.0011h5.5949c.0006 0 .0009.0006.0009.0006v5.5495M8.9093 27.7118H4.6105l-.0012-.0012v-4.2638h4.3009v4.2638l-.0009.0012M4.6125 23.4468H1.0088c-.0015 0-.0026-.0012-.0026-.0012v-3.5724s.0011-.0025.0026-.0025h3.601c.0015 0 .0027.0011.0027.0011v3.575M43.2806 9.6357h1.649c1.8346 0 3.345.358 4.49 1.0647 1.2714.7603 1.9164 2.2069 1.9164 4.2991 0 2.1554-.6465 3.6671-1.9207 4.4942h-.0008c-1.0971.7196-2.5981 1.0846-4.462 1.0846h-1.6719V9.6357zm8.324-1.0736c-1.6598-1.142-3.7252-1.721-6.1387-1.721h-5.2537V23.373h5.2537c2.4074 0 4.4737-.6113 6.1407-1.8157.907-.6382 1.6197-1.5304 2.1185-2.651.4962-1.1144.7479-2.4288.7479-3.9067 0-1.4605-.2517-2.758-.7482-3.857-.4988-1.104-1.212-1.972-2.1202-2.5804zM58.1303 6.6376c-.5051 0-.9403.1777-1.2906.5254-.3546.335-.5346.7597-.5346 1.2618 0 .501.1791.9322.532 1.2825.3529.35.788.528 1.2932.528.5042 0 .9394-.178 1.2928-.528.3535-.3508.5324-.7821.5324-1.2825 0-.5015-.18-.926-.5324-1.2592-.3534-.3503-.7886-.528-1.2928-.528M56.6247 23.3729h2.9538V11.7294h-2.9538zM69.5321 19.5787c-.5162.5814-1.1793.8635-2.0264.8635-.8471 0-1.5064-.282-2.015-.863-.5065-.5777-.7637-1.3439-.7637-2.2773 0-.9479.2572-1.7238.764-2.3058.502-.576 1.1796-.8683 2.0147-.8683.8465 0 1.5096.284 2.0262.8695.5142.582.7751 1.3573.7751 2.3046 0 .9328-.2609 1.6988-.7749 2.2768zm.775-6.8767c-.8908-.7858-1.8858-1.2444-2.9614-1.2444-1.6305 0-2.9859.5598-4.0276 1.662-1.0555 1.0932-1.5907 2.5006-1.5907 4.1823 0 1.644.5269 3.0464 1.568 4.1709 1.0498 1.088 2.4123 1.6396 4.0503 1.6396 1.139 0 2.1182-.3144 2.9157-.9356v.268c0 .9662-.2608 1.7176-.7751 2.234-.5137.5154-1.226.7764-2.1173.7764-1.3637 0-2.2183-.5314-3.2589-1.9262l-2.0115 1.917.0542.0754c.4346.605 1.1 1.197 1.9785 1.7594.8787.5603 1.9832.8447 3.2832.8447 1.7536 0 3.1726-.5363 4.2172-1.5933 1.0506-1.0628 1.5835-2.486 1.5835-4.2286V11.7294H70.307v.9726zM75.7434 23.3729h2.9541V11.7294h-2.9541zM77.249 6.6376c-.5052 0-.94.1777-1.2906.5254-.3547.335-.5344.7597-.5344 1.2618 0 .501.1789.9322.532 1.2825.353.35.7878.528 1.293.528.5045 0 .9396-.178 1.2928-.528.3535-.3508.5323-.7821.5323-1.2825 0-.5015-.1797-.926-.5323-1.2592-.3532-.3503-.7883-.528-1.2929-.528M85.1724 8.5831h-2.9082v3.1463h-1.6888v2.6702h1.6888v4.8365c0 1.5134.3047 2.5964.9064 3.2181.6031.6247 1.6741.9414 3.1831.9414.48 0 .963-.0156 1.4354-.0463l.133-.0088v-2.6683l-1.013.0526c-.7033 0-1.1728-.1226-1.3961-.3637-.226-.245-.3406-.7636-.3406-1.5404v-4.421h2.7497v-2.6703h-2.7497V8.583M101.7735 23.3729h2.9544V6.8412h-2.9544zM134.5728 19.2094c-.5286.5874-1.0693 1.0966-1.4855 1.3613v.0005c-.4085.2599-.924.3918-1.532.3918-.8703 0-1.5703-.3144-2.1405-.9621-.567-.644-.8545-1.4716-.8545-2.4613s.2838-1.8162.8436-2.4556c.5625-.6434 1.2588-.9562 2.1285-.9562.9515 0 1.9548.5869 2.8145 1.5947l1.9525-1.8568c-1.273-1.6433-2.897-2.4081-4.8352-2.4081-1.622 0-3.028.5862-4.1788 1.7411-1.1446 1.147-1.7251 2.6074-1.7251 4.3409 0 1.7335.58 3.1977 1.7234 4.352 1.1447 1.1557 2.5514 1.7417 4.1805 1.7417 2.139 0 3.8651-.9158 5.029-2.5935l-1.9204-1.8304M140.2405 16.0973c.1422-.5567.401-1.0207.7714-1.381.4005-.3906.9214-.5885 1.5489-.5885.716 0 1.2702.2019 1.6474.6014.3495.3696.5467.8296.588 1.368h-4.5557zm6.4569-2.7414c-.4191-.5788-.9896-1.0448-1.6965-1.3854-.7047-.3404-1.526-.513-2.441-.513-1.6489 0-2.9982.6037-4.0113 1.7946-.9836 1.182-1.4818 2.651-1.4818 4.3665 0 1.7648.547 3.2253 1.6254 4.341 1.0727 1.1105 2.5083 1.6737 4.267 1.6737 1.992 0 3.627-.799 4.8587-2.3752l.0666-.0847-1.9273-1.837c-.1789.2139-.4317.4561-.6628.6722-.2918.273-.5659.4842-.8588.6289-.4415.218-.9369.3255-1.4907.3255-.8187 0-1.4964-.2388-2.0147-.71-.4847-.4403-.768-1.0345-.843-1.7683h7.8265l.0264-1.0693c0-.7569-.1038-1.4862-.3088-2.1677a6.312 6.312 0 0 0-.934-1.8918zM152.797 18.9234c.3352-.2318.8085-.3483 1.4073-.3483.7112 0 1.4654.1413 2.2426.421v1.1421c-.6421.592-1.4996.8922-2.5499.8922-.5114 0-.909-.1126-1.1822-.3355-.2683-.218-.3985-.4955-.3985-.847 0-.3994.1571-.7022.4808-.9245zm5.2452-6.3229h-.0003c-.8952-.758-2.1328-1.143-3.678-1.143-.9829 0-1.902.2144-2.7336.6324-.7691.387-1.5245 1.0275-2.0043 1.8662l.0298.0358 1.8917 1.796c.7791-1.2322 1.6454-1.66 2.7941-1.66.6172 0 1.1298.1643 1.5234.4881.3916.3216.5819.7304.5819 1.249v.5652c-.7324-.221-1.4629-.333-2.1738-.333-1.47 0-2.6663.3432-3.555 1.0193-.9.6852-1.3562 1.665-1.3562 2.9125 0 1.094.3847 1.9829 1.1461 2.6433.7677.6372 1.7275.961 2.8524.961 1.1246 0 2.177-.4495 3.132-1.2191v.9587h2.9089v-7.4852c0-1.4173-.4572-2.523-1.3591-3.2872zM170.7656 12.8285c-.8227-.9092-1.9791-1.371-3.4371-1.371-1.172 0-2.1236.3338-2.8357.9926v-.7207h-2.897v11.6435h2.954v-6.4215c0-.8823.2119-1.5828.6293-2.0826.4162-.4987.989-.741 1.75-.741.6691 0 1.1765.2167 1.5506.662.3759.4474.5662 1.0638.5662 1.8335v6.7496H172v-6.7496c0-1.6127-.415-2.889-1.2344-3.7948M92.8158 18.9234c.3351-.2318.8087-.3483 1.4075-.3483.7112 0 1.4652.1413 2.2426.421v1.1421c-.6421.592-1.4998.8922-2.5502.8922-.5114 0-.9087-.1126-1.1819-.3355-.2683-.218-.3988-.4955-.3988-.847 0-.3994.1574-.7022.4808-.9245zm5.2451-6.3229h-.0003c-.8952-.758-2.1328-1.143-3.6776-1.143-.983 0-1.902.2144-2.7337.6324-.7694.387-1.5247 1.0275-2.0043 1.8662l.0295.0358 1.8917 1.796c.7792-1.2322 1.6458-1.66 2.7941-1.66.6172 0 1.1298.1643 1.5234.4881.3916.3216.5822.7304.5822 1.249v.5652c-.7327-.221-1.4631-.333-2.174-.333-1.47 0-2.6664.3432-3.555 1.0193-.8999.6852-1.3562 1.665-1.3562 2.9125 0 1.094.3847 1.9829 1.1463 2.6433.7677.6372 1.7272.961 2.8524.961 1.1246 0 2.1766-.4495 3.1318-1.2191v.9587H99.42v-7.4852c0-1.4173-.457-2.523-1.359-3.2872zM115.4464 9.5808c-3.0682 0-5.5645 2.4755-5.5645 5.5188s2.4963 5.5188 5.5645 5.5188c3.0682 0 5.5645-2.4755 5.5645-5.5188s-2.4963-5.5188-5.5645-5.5188zm0 14.0408c-4.7383 0-8.5928-3.8228-8.5928-8.522 0-4.6994 3.8545-8.5223 8.5928-8.5223 4.738 0 8.5925 3.8229 8.5925 8.5223 0 4.6992-3.8545 8.522-8.5925 8.522z"></path> </g> </symbol>
+    <symbol id="do_nav-community_logo" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 532.2 99.8" fill="currentColor"> <path class="st0" d="M98.5,23c15.5,0,27.7,12.1,27.7,28.2c0,16.1-12.3,28.1-27.7,28.1c-15.6,0-27.7-11.9-27.7-28.1 C70.8,35.1,82.9,23,98.5,23z M98.5,67.9c8.7,0,14.9-7,14.9-16.8c0-9.8-6.2-16.8-14.9-16.8c-8.8,0-15,7-15,16.8 C83.5,60.9,89.7,67.9,98.5,67.9z"/> <path class="st0" d="M166.8,45.9c0-7-3.5-11.6-9.9-11.6c-7.2,0-11.1,5.3-11.1,13.1V78h-12.5V24.3h12.3V29c2.4-2.8,7-6,13.9-6 c7.3,0,12.2,3.1,15,7c4.4-4.9,10-7,16.8-7c14.4,0,21.4,8.5,21.4,23.8V78h-12.5V45.9c0-7-3.5-11.6-9.9-11.6 c-7.2,0-11.2,5.3-11.2,13.1V78h-12.4V45.9z"/> <path class="st0" d="M255.5,45.9c0-7-3.5-11.6-9.9-11.6c-7.2,0-11.1,5.3-11.1,13.1V78h-12.5V24.3h12.3V29c2.4-2.8,7-6,13.9-6 c7.3,0,12.2,3.1,15,7c4.4-4.9,10-7,16.8-7c14.4,0,21.4,8.5,21.4,23.8V78h-12.5V45.9c0-7-3.5-11.6-9.9-11.6 c-7.2,0-11.2,5.3-11.2,13.1V78h-12.4V45.9z"/> <path class="st0" d="M322.5,56.4c0,7,3.6,11.6,10.1,11.6c7.2,0,11.2-5.6,11.2-13.5V24.3h12.5V78h-12.3v-4.4 c-3.4,3.7-8.1,5.6-13.9,5.6c-11.9,0-20.1-8.4-20.1-23.7V24.3h12.5V56.4z"/> <path class="st0" d="M378.2,78h-12.5V24.3h12.3v4.4c2.7-3.1,7.7-5.7,13.9-5.7c13.1,0,21.3,8.5,21.3,23.8V78h-12.5V46.8 c0-7.5-3.7-12.5-10.6-12.5c-7.8,0-11.8,5.6-11.8,14V78z"/> <path class="st0" d="M427.8,0.2c4.4,0,7.9,3.4,7.9,7.8s-3.5,7.9-7.9,7.9c-4.4,0-7.9-3.5-7.9-7.9S423.4,0.2,427.8,0.2z M421.4,24.3 h12.5V78h-12.5V24.3z"/> <path class="st0" d="M446.7,59.1V35.5h-6.5V24.3h6.5v-15H459v15h12.2v11.2H459v21.7c0,7.8,1.8,9.8,8.8,9.8c1.2,0,4.1-0.2,4.1-0.2 v11.2c0,0-2.4,0.2-6.7,0.2C451.2,78.1,446.7,72.7,446.7,59.1z"/> <path class="st0" d="M497.3,78.7l-21.3-54.4h14.2l14,38.8l14.2-38.8h13.6l-24.1,60.2c-3.7,9.4-7.2,15.3-21.3,15.3 c-2.5,0-4.8-0.1-4.8-0.1V88c0,0,1.5,0.1,2.8,0.1c7.6,0,9.8-2.3,11.8-7.8L497.3,78.7z"/> <path class="st0" d="M62.4,55.9c-5.3,7-12.2,11.4-22.1,11.4c-15.6,0-27-11.7-27-27.5c0-16.1,11.4-27.8,26.5-27.8 c10,0,16.8,4.8,21.3,11.3l8.4-8.8C63.1,5.7,53.3,0,39.7,0C17.1,0,0,15.9,0,39.8c0,23.4,17.1,39.4,40.1,39.4c13.1,0,22-4.9,28.6-12.2 L62.4,55.9z"/> </symbol>
+    <symbol id="do_nav-control_panel_icon" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M19.6875 23.4862C19.6885 23.9722 19.4965 24.4388 19.1537 24.7833C18.8109 25.1279 18.3454 25.3222 17.8594 25.3237H3.23438C2.99366 25.3232 2.75539 25.2753 2.53321 25.1827C2.31102 25.09 2.10927 24.9545 1.93949 24.7839C1.7697 24.6132 1.63522 24.4108 1.54373 24.1881C1.45223 23.9655 1.40552 23.727 1.40626 23.4862V3.25498C1.40577 3.01417 1.45271 2.77562 1.54441 2.55295C1.63611 2.33028 1.77077 2.12785 1.9407 1.95722C2.11063 1.7866 2.31251 1.65111 2.5348 1.5585C2.75709 1.46589 2.99545 1.41797 3.23626 1.41748L17.8613 1.44186C18.347 1.44384 18.812 1.63843 19.1544 1.98292C19.4968 2.32741 19.6885 2.79366 19.6875 3.27936V23.4862Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M43.5863 12.27C43.5828 12.7516 43.3883 13.212 43.0456 13.5503C42.7028 13.8885 42.2397 14.0768 41.7582 14.0738H27.1332C26.8947 14.0755 26.6582 14.0302 26.4372 13.9405C26.2162 13.8507 26.015 13.7183 25.8453 13.5508C25.6755 13.3833 25.5404 13.1839 25.4477 12.9642C25.355 12.7444 25.3065 12.5085 25.3051 12.27V3.24565C25.308 2.76461 25.5019 2.30442 25.8439 1.96621C26.186 1.62799 26.6484 1.43941 27.1294 1.4419L41.7544 1.41753C42.2365 1.41403 42.7002 1.60205 43.0437 1.94027C43.3872 2.27849 43.5823 2.73924 43.5863 3.22128V12.27Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M19.6875 41.7956C19.686 42.0347 19.6375 42.2712 19.5446 42.4915C19.4518 42.7118 19.3164 42.9117 19.1463 43.0797C18.9762 43.2477 18.7747 43.3806 18.5532 43.4707C18.3318 43.5609 18.0947 43.6065 17.8556 43.605L3.23063 43.5806C2.74908 43.5826 2.28644 43.3934 1.94436 43.0545C1.60228 42.7155 1.40873 42.2547 1.40625 41.7731V32.7563C1.40748 32.5175 1.45575 32.2813 1.54831 32.0612C1.64087 31.8412 1.7759 31.6415 1.94569 31.4736C2.11547 31.3057 2.31667 31.173 2.53779 31.0829C2.75892 30.9929 2.99562 30.9473 3.23438 30.9488H17.8594C18.3414 30.9463 18.8047 31.1352 19.1475 31.4742C19.4903 31.8131 19.6845 32.2742 19.6875 32.7563V41.7956Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M27.1349 43.605C26.894 43.6045 26.6555 43.5565 26.433 43.4638C26.2106 43.3711 26.0087 43.2354 25.8387 43.0646C25.6688 42.8937 25.5341 42.6911 25.4426 42.4682C25.351 42.2453 25.3042 42.0066 25.3049 41.7656V21.5381C25.3042 21.2973 25.3509 21.0587 25.4424 20.8359C25.5338 20.6132 25.6683 20.4106 25.8381 20.2398C26.0078 20.069 26.2095 19.9333 26.4317 19.8405C26.6539 19.7476 26.8923 19.6995 27.1331 19.6987H41.7581C41.9989 19.6995 42.2372 19.7476 42.4594 19.8405C42.6816 19.9333 42.8833 20.069 43.0531 20.2398C43.2228 20.4106 43.3573 20.6132 43.4488 20.8359C43.5402 21.0587 43.5869 21.2973 43.5862 21.5381V41.7412C43.5872 42.2271 43.3955 42.6935 43.0532 43.0383C42.7109 43.3831 42.2458 43.5781 41.7599 43.5806L27.1349 43.605Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+    <symbol id="do_nav-community_icon" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#clip0)"> <path d="M12.6562 10.5469C12.6562 9.85155 12.8624 9.17184 13.2487 8.5937C13.635 8.01556 14.1841 7.56495 14.8265 7.29886C15.4689 7.03277 16.1758 6.96315 16.8577 7.0988C17.5397 7.23445 18.1661 7.56929 18.6578 8.06095C19.1495 8.55262 19.4843 9.17905 19.6199 9.86101C19.7556 10.543 19.686 11.2499 19.4199 11.8922C19.1538 12.5346 18.7032 13.0837 18.1251 13.47C17.5469 13.8563 16.8672 14.0625 16.1719 14.0625" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M16.1719 18.2812C16.0328 18.2812 15.8969 18.3225 15.7812 18.3997C15.6656 18.477 15.5755 18.5868 15.5223 18.7153C15.4691 18.8438 15.4551 18.9852 15.4823 19.1215C15.5094 19.2579 15.5764 19.3832 15.6747 19.4816C15.773 19.5799 15.8983 19.6469 16.0347 19.674C16.1711 19.7011 16.3125 19.6872 16.4409 19.634C16.5694 19.5808 16.6792 19.4906 16.7565 19.375C16.8338 19.2594 16.875 19.1234 16.875 18.9844C16.875 18.7979 16.8009 18.6191 16.6691 18.4872C16.5372 18.3553 16.3584 18.2812 16.1719 18.2812Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M32.3438 4.21875V12.6562" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M29.5312 1.40625C30.2772 1.40625 30.9925 1.70257 31.52 2.23001C32.0474 2.75746 32.3438 3.47283 32.3438 4.21875" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M4.21875 1.40625H29.5312" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M1.40625 4.21875C1.40625 3.47283 1.70257 2.75746 2.23001 2.23001C2.75746 1.70257 3.47283 1.40625 4.21875 1.40625" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M1.40625 23.9062V4.21875" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M4.21875 26.7188C3.47283 26.7187 2.75746 26.4224 2.23001 25.895C1.70257 25.3675 1.40625 24.6522 1.40625 23.9062" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M9.84375 26.7188H4.21875" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M9.84375 35.1562V26.7188" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M15.4688 30.9375L9.84375 35.1562" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M43.5938 35.1562H37.9688V43.5938L29.5312 35.1562H21.0938V18.2812H43.5938V35.1562Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M32.3438 23.9062V29.5312" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </g> <defs> <clipPath id="clip0"> <rect width="45" height="45" fill="white"/> </clipPath> </defs> </symbol>
+    <symbol id="do_nav-search" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M15.7 13.3l-3.81-3.83A5.93 5.93 0 0 0 13 6c0-3.31-2.69-6-6-6S1 2.69 1 6s2.69 6 6 6c1.3 0 2.48-.41 3.47-1.11l3.83 3.81c.19.2.45.3.7.3.25 0 .52-.09.7-.3a.996.996 0 0 0 0-1.41v.01zM7 10.7c-2.59 0-4.7-2.11-4.7-4.7 0-2.59 2.11-4.7 4.7-4.7 2.59 0 4.7 2.11 4.7 4.7 0 2.59-2.11 4.7-4.7 4.7z"></path></symbol>
+    <symbol id="do_nav-logomark" x="0px" y="0px" viewBox="65.2 173.5 180 180" fill="currentColor"><path d="M155.2,351.7v-34.2c36.2,0,64.3-35.9,50.4-74c-5.1-14.1-16.4-25.4-30.5-30.5c-38.1-13.8-74,14.2-74,50.4l0,0H67c0-57.7,55.8-102.7,116.3-83.8c26.4,8.3,47.5,29.3,55.7,55.7C257.9,295.9,213,351.7,155.2,351.7z"/> <polygon points="155.3,317.6 121.3,317.6 121.3,283.6 121.3,283.6 155.3,283.6 155.3,283.6"/> <polygon points="121.3,343.8 95.1,343.8 95.1,343.8 95.1,317.6 121.3,317.6"/> <path d="M95.1,317.6H73.2l0,0v-21.9l0,0h21.9l0,0V317.6z"/></symbol>
+    <symbol id="do_nav-write4do" viewBox="0 0 30 30" fill="none" stroke="currentColor"> <path d="M16.3063 17.67L11.6663 18.3338L12.3288 13.6925L24.2613 1.76002C24.7887 1.23257 25.5041 0.936249 26.25 0.936249C26.6194 0.936249 26.9851 1.009 27.3263 1.15034C27.6675 1.29168 27.9776 1.49885 28.2388 1.76002C28.4999 2.02118 28.7071 2.33123 28.8484 2.67246C28.9898 3.01369 29.0625 3.37942 29.0625 3.74877C29.0625 4.11811 28.9898 4.48384 28.8484 4.82507C28.7071 5.1663 28.4999 5.47635 28.2388 5.73752L16.3063 17.67Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M22.935 3.08624L26.9125 7.06374"  stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M23.4375 17.8125V27.1875C23.4375 27.6848 23.24 28.1617 22.8883 28.5133C22.5367 28.865 22.0598 29.0625 21.5625 29.0625H2.8125C2.31522 29.0625 1.83831 28.865 1.48667 28.5133C1.13504 28.1617 0.9375 27.6848 0.9375 27.1875V8.4375C0.9375 7.94022 1.13504 7.46331 1.48667 7.11167C1.83831 6.76004 2.31522 6.5625 2.8125 6.5625H12.1875" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+    <symbol id="do_nav-meetups" viewBox="0 0 30 30" fill="none" stroke="currentColor"> <path d="M27.1901 4.6875H2.81506C1.77953 4.6875 0.940063 5.52697 0.940063 6.5625V27.1875C0.940063 28.223 1.77953 29.0625 2.81506 29.0625H27.1901C28.2256 29.0625 29.0651 28.223 29.0651 27.1875V6.5625C29.0651 5.52697 28.2256 4.6875 27.1901 4.6875Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M0.940063 12.1875H29.0651" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M8.44006 7.5V0.9375" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M21.5651 7.5V0.9375" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+    <symbol id="do_nav-hacktoberfest" viewBox="0 0 30 30" fill="none" stroke="currentColor"> <path d="M19.2063 24.9918L16.5714 22.3569V14.4854L13.986 17.0708V23.5755L12.5615 25L11.1371 23.5591V8.44175L10.7419 8.04652L8.93042 9.8662L8 8.94401L11.9358 5.00823L11.944 5.01647L12.1005 5.16468L13.9778 7.04199V13.8431L16.5632 11.2577V8.42528L15.2705 7.12433L17.3948 5L19.4286 7.03376V20.9572L20.4249 21.9535L21.6352 20.7431L22.5492 21.6571L19.2063 24.9918Z" fill="currentcolor"/> <rect x="0.75" y="0.75" width="28.5" height="28.5" rx="2.25" stroke-width="1.5" stroke="currentColor"/> </symbol>
+    <symbol id="do_nav-build" viewBox="0 0 16 16" fill="none" stroke="currentColor"> <path d="M1.5 14.5C1.23478 14.5 0.98043 14.3946 0.792893 14.2071C0.605357 14.0196 0.5 13.7652 0.5 13.5V2.57667C0.500879 2.29139 0.614596 2.01804 0.81632 1.81632C1.01804 1.6146 1.29139 1.50088 1.57667 1.5H14.4287C14.7125 1.50088 14.9845 1.61403 15.1852 1.81476C15.386 2.01548 15.4991 2.28747 15.5 2.57133V13.4233C15.4991 13.7086 15.3854 13.982 15.1837 14.1837C14.982 14.3854 14.7086 14.4991 14.4233 14.5H1.5Z" stroke-linecap="round" stroke-linejoin="round"/> <path d="M15.5 4.5H0.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M11 7.5L13 9.5L11 11.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M5 7.5L3 9.5L5 11.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M9 7.5L7 11.5" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+  </svg>
+</div>
+
+<nav class="do_nav" role="navigation" aria-label="Navigation">
+  <ul role="menubar" class="utility">
+    <li role="banner" data-flex="grow" data-show="always">
+    </li>
+    <li role="menuitem">
+      <a href="/products/">Products</a>
+    </li>
+    <li role="menuitem">
+      <a href="/pricing/">Pricing</a>
+    </li>
+    <li role="menuitem" aria-haspopup="true" tabindex="0">
+      <span class="expander">Docs</span>
+      <div class="mini" aria-expanded="false">
+        <ul role="menu">
+          <li role="menuitem">
+            <a href="/docs/">Product Docs</a>
+          </li>
+          <li role="menuitem">
+            <a href="https://developers.digitalocean.com/documentation/">API Docs</a>
+          </li>
+        </ul>
+      </div>
+    </li>
+      <li role="menuitem" aria-haspopup="true" tabindex="0">
+      <span class="expander">Log in</span>
+        <div class="mini" aria-expanded="false">
+          <header>Log in to</header>
+          <ul role="menu">
+            <li role="menuitem">
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <use xlink:href="#do_nav-community_icon"></use>
+              </svg>
+              <a id="log-in" href="/community/auth/digitalocean">Community</a>
+            </li>
+            <li role="menuitem">
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <use xlink:href="#do_nav-control_panel_icon"></use>
+              </svg>
+              <a href="https://cloud.digitalocean.com/registrations/new">Control Panel</a>
+            </li>
+          </ul>
+        </div>
+      </li>
+  </ul>
+
+  <ul role="menubar" class="primary">
+    <li role="menuitem" data-show="always">
+      <a href="https://www.digitalocean.com/">
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" shape-rendering="auto">
+          <use xlink:href="#do_nav-logomark"></use>
+        </svg>
+      </a>
+    </li>
+    <li role="menuitem" data-show="always">
+      <a role="home" title="DigitalOcean Community Home" href="/community">
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="120px" height="24px"
+             shape-rendering="auto">
+          <use xlink:href="#do_nav-community_logo"></use>
+        </svg>
+</a>    </li>
+    <li role="menuitem">
+      <a data-activatable="true" href="/community/tutorials">Tutorials</a>
+    </li>
+    <li role="menuitem">
+      <a data-activatable="true" href="/community/questions">Questions</a>
+    </li>
+    <li role="menuitem" aria-haspopup="true" class="mega_parent" tabindex="0">
+      <span class="expander">Get Involved</span>
+      <div class="mega" aria-expanded="false">
+        <div class="section column">
+          <header>Participate</header>
+          <ul role="menu">
+            <li role="menuitem">
+              <a href="https://www.digitalocean.com/write-for-donations/" class="with_image">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <use xlink:href="#do_nav-write4do"></use>
+                </svg>
+                <p>
+                  <strong>Write for DigitalOcean</strong>
+                  You get paid, we donate to tech non-profits.
+                </p>
+              </a>
+            </li>
+            <li role="menuitem">
+              <a href="https://www.meetup.com/pro/digitalocean" class="with_image">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <use xlink:href="#do_nav-meetups"></use>
+                </svg>
+                <p>
+                  <strong>DigitalOcean Meetups</strong>
+                  Find and meet other developers in your city.
+                </p>
+              </a>
+            </li>
+            <li role="menuitem">
+              <a href="https://hacktoberfest.digitalocean.com" class="with_image">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <use xlink:href="#do_nav-hacktoberfest"></use>
+                </svg>
+                <p>
+                  <strong>Hacktoberfest</strong>
+                  Contribute to Open Source
+                </p>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="section column">
+          <header>
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+              <use xlink:href="#do_nav-build"></use>
+            </svg>
+            Build with DigitalOcean
+          </header>
+          <ul role="menu" class="indent">
+            <li role="menuitem">
+              <a title="Community-built tools and integrations that use the DigitalOcean API" href="/community/tools">Community Tools and Integrations</a>
+            </li>
+            <li role="menuitem"><a href="https://www.digitalocean.com/hatch/" title="Build your startup on DigitalOcean.">Hatch Startup Program</a></li>
+            <li role="menuitem"><a href="https://marketplace.digitalocean.com/vendors/" title="List your open source One-Click Application in the DigitalOcean Marketplace">Marketplace Partner Program</a></li>
+            <li role="menuitem"><a href="https://www.digitalocean.com/droplets-for-demos/" title="DigitalOcean credits to fund research for conference and meetup presentations">Presentation Grants</a></li>
+            <li role="menuitem"><a href="https://github.com/digitalocean">DigitalOcean on GitHub</a></li>
+          </ul>
+        </div>
+      </div>
+    </li>
+    <li role="menuitem" data-show="mobile" data-flex="grow" class="right">
+      <a href="javascript:void(0);" data-js="modal_toggle">
+        <span class="icon-menu-thin"></span>
+      </a>
+    </li>
+    <li role="menuitem" aria-haspopup="true" data-flex="grow">
+      <form name="do_nav-search" method="GET" action="https://www.digitalocean.com/community/search">
+        <label for="q">
+          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" shape-rendering="auto"
+               width="14px" height="14px">
+            <use xlink:href="#do_nav-search"></use>
+          </svg>
+        </label>
+        <input type="text" name="q" id="q" title="Search" placeholder="Search DigitalOcean" autocomplete="off" spellcheck="false" class="search" />
+        </form>
+        <div class="mini search-results-dropdown" aria-expanded="false">
+            <div class="header-search-results-list"></div>
+            <div id="btn-wrap">
+              <a class="more-search-results" data-search-path="/community/search" href="/community/search">
+                View All Results
+              </a>
+            </div>
+        </div>
+        <script type='text/template' id='autocomplete-hits-template'>
+          <div class="inner-search">
+            <ul>
+              <li class="section">
+                <p>{{section}}</p>
+              </li>
+
+              {{#hits}}
+                <li>
+                  <span class='icon icon-{{css_name}}'></span>
+                  <a href='{{url}}'>{{title}}</a>
+                </li>
+              {{/hits}}
+            </ul>
+
+            {{#hasMoreResults}}
+              <a href="/community/search?q={{query}}">View All Results</a>
+            {{/hasMoreResults}}
+          </div>
+        </script>
+    </li>
+    <li role="menuitem">
+      <a class="button primary" href="/community/auth/digitalocean?display=sessionless+register">Sign Up</a>
+    </li>
+  </ul>
+
+  <div class="mobile_nav_bg" data-js="modal_toggle"></div>
+  <div class="mobile_nav">
+    <a data-dismiss='modal' aria-label="close" href="javascript:void(0);" data-js="modal_toggle"><span class="icon-close"></span></a>
+    <div class="mobile_nav_content">
+      <header>Community</header>
+      <ul role="menu">
+        <li role="menuitem">
+          <a data-activatable="true" href="/community/tutorials">Tutorials</a>
+        </li>
+        <li role="menuitem">
+          <a data-activatable="true" href="/community/questions">Questions</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.meetup.com/pro/digitalocean">Meetups</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/write-for-donations/">Write for us</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://hacktoberfest.digitalocean.com">Hacktoberfest</a>
+        </li>
+        <li role="menuitem">
+          <a href="/community/tools">Community Projects</a>
+        </li>
+      </ul>
+      <header>Products</header>
+      <ul role="menu">
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/">Homepage</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/pricing">Pricing</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/products">Product Overview</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://marketplace.digitalocean.com/">Marketplace</a>
+        </li>
+      </ul>
+      <header>Customers</header>
+      <ul role="menu">
+        <li role="menuitem">
+          <a href="https://cloud.digitalocean.com/login">Control panel</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/docs/">Documentation</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/company/contact/#support">Contact Support</a>
+        </li>
+        <li role="menuitem">
+          <a href="https://www.digitalocean.com/company/contact/sales/">Contact Sales</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<header>
+  <div class="legacy-header ">
+    <div class="flash-container">
+      
+    </div>
+
+    <div class="wrapper">
+      
+    </div>
+  </div>
+</header>
+
+
+
+      
+
+      <div class='wrapper layout-wrapper'>
+
+        
+
+
+
+
+
+
+
+
+
+
+<div class="section-content section-content-growable content Tutorial-content">
+  <div class='postable-info-bar-container'>
+  <div class='postable-info-bar'>
+    <div class="author-byline">
+      
+    </div>
+
+    <div class='right-section'>
+      
+
+
+        <div class='section-item table-of-contents-triggers'><div class="toc-trigger-mobile" data-toggle="modal" data-target="#contents-modal">
+  <a href="javascript:void(0);">
+    <span class="icon icon-contents"></span>
+    <span class="title">Contents</span>
+    <span class="icon icon-arrow-down"></span>
+  </a>
+</div>
+
+</div>
+
+    </div>
+  </div>
+</div>
+
+
+
+  <div class="container tutorial-header">
+    
+
+      <div class="featured-items-right-bar">
+        <h3>Related</h3>
+          <a href="https://www.digitalocean.com/products/managed-databases/">
+            <div class="featured-item-highlight">
+                  <span class="featured-item-highlight-image"><img width="45" height="45" alt="Product" src="https://digitalocean.cdn.prismic.io/digitalocean%2F1428caea-c011-469a-959e-fec58da0a926_databases.svg" /></span>
+                Now Available: Managed PostgreSQL Databases
+                <span class="featured-item-category">
+                  
+                  Product
+                </span>
+              </div>
+</a>          <a href="https://www.digitalocean.com/products/managed-databases/">
+            <div class="featured-item-regular">
+                Managed MySQL, Redis, Postgres on DigitalOcean
+                <span class="featured-item-category">
+                  <img width="14" height="14" src="https://digitalocean.cdn.prismic.io/digitalocean%2F1428caea-c011-469a-959e-fec58da0a926_databases.svg" alt="Digitalocean%2f1428caea c011 469a 959e fec58da0a926 databases" />
+                  Product
+                </span>
+              </div>
+</a>          <a href="/community/tutorials/initial-server-setup-with-ubuntu-16-04">
+            <div class="featured-item-regular">
+                  Initial Server Setup with Ubuntu 16.04
+                  <span class="featured-item-category">
+                    <img width="14" height="14" alt="Tutorial" src="/assets/community/tutorials/featured-item-tutorial-icon-2150ccbef202144a53cea261312af267.png" />
+                    Tutorial
+                  </span>
+                </div>
+</a>          <a href="/community/tutorials/how-to-install-and-configure-openldap-and-phpldapadmin-on-an-ubuntu-14-04-server">
+            <div class="featured-item-regular">
+                  How To Install and Configure OpenLDAP and phpLDAPadmin on an Ubuntu 14.04 Server
+                  <span class="featured-item-category">
+                    <img width="14" height="14" alt="Tutorial" src="/assets/community/tutorials/featured-item-tutorial-icon-2150ccbef202144a53cea261312af267.png" />
+                    Tutorial
+                  </span>
+                </div>
+</a>      </div>
+
+
+
+    <h1 class="content-title Tutorial-header">Securing Communications in a Three-tier Rails Application Using SSH Tunnels</h1>
+
+    <span class="meta-section timestamp"><span class="tutorial-date-text">Posted</span><span class="tutorial-date">June  8, 2018</span></span>
+
+    <span class="meta-section pageviews"><span class="icon icon-eye v-mid"></span><span class="views-count v-mid">5.9k</span><span class="sr-only"> views</span></span>
+
+    <span class="meta-section tags">
+      <a class="tag" href="/community/tags/ruby-on-rails?type=tutorials">Ruby on Rails</a> <a class="tag" href="/community/tags/security?type=tutorials">Security</a> <a class="tag" href="/community/tags/scaling?type=tutorials">Scaling</a> <a class="tag" href="/community/tags/databases?type=tutorials">Databases</a> <a class="tag" href="/community/tags/nginx?type=tutorials">Nginx</a> <a class="tag" href="/community/tags/postgresql?type=tutorials">PostgreSQL</a>
+      <a class="tag" href="/community/tags/ubuntu-16-04?type=tutorials">Ubuntu 16.04</a>
+    </span>
+  </div>
+
+  <div class="tutorial-authors">
+    <div class="component-collaborators-container">
+  <ul class="component-collaborators-content">
+
+    <li class="collaborators-byline-data">
+        <p class="names">By <span>Li Heng Fong</span></p>
+
+      <p>
+          <a class="advice" href="https://www.digitalocean.com/community/write-for-digitalocean">Become an author</a>
+      </p>
+    </li>
+  </ul>
+</div>
+
+  </div>
+
+
+    <div class="content-body tutorial-content" data-growable-markdown>
+      
+      <h3 id="introduction">Introduction</h3>
+
+<p>Web applications are often architected with three distinct tiers:</p>
+
+<ul>
+<li>The first tier is the <em>presentation layer</em>, which is what the user sees.</li>
+<li>Next comes the <em>application layer</em>, which provides the <a href="https://en.wikipedia.org/wiki/Business_logic">business logic</a> of the application.</li>
+<li>Finally, the <em>data layer</em> stores the data needed by the application.</li>
+</ul>
+
+<p>In a <a href="https://rubyonrails.org/">Ruby on Rails</a> application, this maps loosely to a web server for the presentation layer, a Rails server for the application layer, and a database for the data layer. In this setup, the application layer communicates with the data layer to retrieve data for the application which is then displayed to the user through the presentation layer.</p>
+
+<p>While it is possible to install all these applications on a single server, putting each layer onto its own server makes it easier to scale the application. For instance, if the Rails server were to become a bottleneck, you could add more application servers without affecting the other two layers.</p>
+
+<p>In this tutorial, you will deploy a Rails app in a three-tier configuration by installing a unique set of software on three separate servers, configuring each server and its components to communicate and function together, and securing the connections between them with SSH tunnels. For the software stack, you will use <a href="https://www.nginx.com/">Nginx</a> as the web server on the presentation layer, <a href="http://puma.io/">Puma</a> as the Rails application server on the application layer, and <a href="https://www.postgresql.org/">PostgreSQL</a> as the database on the data layer.</p>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<p>In order to complete this tutorial, you will need to spin up three Ubuntu 16.04 servers. Name these <strong>web-server</strong>, <strong>app-server</strong>, and <strong>database-server</strong>, and each should have Private Networking enabled.</p>
+
+<p>Each of the three servers should have a non-root user with <code>sudo</code> privileges as well as a firewall configured to allow SSH ocnnections (which you can configure using our <a href="https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-16-04">Initial Server Setup guide</a>). In the context of this tutorial, the <code>sudo</code> user on each server is named <strong>sammy</strong>.</p>
+
+<p>Additionally, each of the three servers have their own unique configuration requirements:</p>
+
+<ul>
+<li><p>On the <strong>web-server</strong>:</p>
+
+<ul>
+<li>Install and configure the Nginx web server. To do this, follow our tutorial on <a href="https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-16-04">How to Install Nginx on Ubuntu 16.04</a>.</li>
+</ul></li>
+<li><p>On the <strong>app-server</strong>:</p>
+
+<ul>
+<li>Install Node.js using the official PPA, as explained in <a href="https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-16-04#how-to-install-using-a-ppa">How To Install Node.js on Ubuntu 16.04</a>. A few Rails features, such as the Asset Pipeline, depend on a JavaScript Runtime and Node.js provides this functionality.</li>
+<li>Install the Ruby on Rails framework. To do this, follow our guide on <a href="https://www.digitalocean.com/community/tutorials/how-to-install-ruby-on-rails-with-rbenv-on-ubuntu-16-04">How to Install Ruby on Rails with rbenv on Ubuntu 16.04</a>. As you follow this tutorial, be sure to install the latest version of Ruby which, at the time of this writing, is Ruby 2.5.1.</li>
+<li>Install PostgreSQL, as shown in the first section of our tutorial <a href="https://www.digitalocean.com/community/tutorials/how-to-use-postgresql-with-your-ruby-on-rails-application-on-ubuntu-14-04#install-postgresql">How To Use PostgreSQL with Your Ruby on Rails Application on Ubuntu 14.04</a>. This section also describes how to install <code>libpq-dev</code>, another package required for this three-tier setup.</li>
+<li>Deploy a Rails app using Puma. If you don&rsquo;t have an app of your own to deploy, follow our guide on <a href="https://www.digitalocean.com/community/tutorials/how-to-deploy-a-rails-app-with-puma-and-nginx-on-ubuntu-14-04">How To Deploy a Rails App with Puma and Nginx</a> to deploy a sample app. Note that in the &ldquo;Install rbenv-vars Plugin&rdquo; section of this prerequisite, you must set the database user and password to reflect the values you use when you install PostgreSQL on the <strong>database-server</strong>. Also, you must allow port <code>3000</code> through your firewall for the &ldquo;Create Production Database&rdquo; section to work. Lastly, you do not need to complete the final two steps of this prerequisite tutorial, &ldquo;Create Puma Upstart Script&rdquo; and &ldquo;Install and Configure Nginx&rdquo;.</li>
+</ul></li>
+<li><p>On the <strong>database-server</strong>:</p>
+
+<ul>
+<li>Install and configure the PostgreSQL database software. Follow our guide on <a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-16-04">How To Install and Use PostgreSQL on Ubuntu 16.04</a> for instructions on how to do this. As you follow this prerequisite tutorial, create a PostgreSQL role for your Rails app with <code>superuser</code> permissions as well as a database with the same name as the PostgreSQL role. Throughout this tutorial, the PostgreSQL role and database are both called <strong>sammy</strong>.</li>
+<li>Set a password for the newly created PostgreSQL role. Skip the first command in the &ldquo;<a href="https://www.digitalocean.com/community/tutorials/how-to-deploy-a-rails-app-with-puma-and-nginx-on-ubuntu-14-04#create-production-database-user">Create Production Database User</a>&rdquo; section of the Puma tutorial (which you also used to set up the <strong>app-server</strong>), and follow the remaining commands in that section to change the password of the database user. Note that the name of the PostgreSQL role and the password you set for the <strong>database-server</strong> should be identical to those that you set on the <strong>app-server</strong>&rsquo;s PostgreSQL installation.</li>
+</ul></li>
+</ul>
+
+<h2 id="step-1-—-creating-a-user-for-the-ssh-tunnels">Step 1 — Creating a User for the SSH Tunnels</h2>
+
+<p><em>SSH tunnels</em> are encrypted connections that can send data from a port on one server to a port on another server, making it look as though a listening program on the second server is running on the first one. Having a dedicated user for the SSH tunnels helps to improve the security of your setup: should an intruder gain access to the <strong>sammy</strong> user on one of your servers, they will not be able to access the other servers in the three-tier setup. Likewise, if an intruder were to gain access to the <strong>tunnel</strong> user, they will neither be able to edit files in the Rails app directory nor could they use the <code>sudo</code> command.</p>
+
+<p>On each server, create an additional user named <strong>tunnel</strong>. The <strong>tunnel</strong> user&rsquo;s only function is to create SSH tunnels to facilitate communication between the servers, so, unlike <strong>sammy</strong>, do not give <strong>tunnel</strong> <code>sudo</code> privileges. Also, the <strong>tunnel</strong> user should not have write access to the Rails app directory. Run the following command on each server to add the <strong>tunnel</strong> user:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo adduser tunnel
+</li></ul></code></pre>
+<p>On the <strong>web-server</strong> machine, switch to the <strong>tunnel</strong> user.</p>
+<pre class="code-pre custom_prefix second-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="sammy@web-server$">sudo su tunnel
+</li></ul></code></pre>
+<p>As the <strong>tunnel</strong> user, generate an SSH key pair:</p>
+<pre class="code-pre custom_prefix second-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="tunnel@web-server$">ssh-keygen
+</li></ul></code></pre>
+<p>Save the key in the default location and do not create a passphrase for the keys, as doing so could complicate authentication later on when you create SSH tunnels between the servers.</p>
+
+<p>After creating the key pair, return to the <strong>sammy</strong> user:</p>
+<pre class="code-pre custom_prefix second-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="tunnel@web-server$">exit
+</li></ul></code></pre>
+<p>Now switch to the <strong>app-server</strong> and execute the same commands again:</p>
+<pre class="code-pre command third-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo su tunnel
+</li><li class="line" prefix="$">ssh-keygen
+</li><li class="line" prefix="$">exit
+</li></ul></code></pre>
+<p>You have now configured all the users you will need for the rest of the tutorial. Net, you&rsquo;ll make some changes to the the <code>/etc/hosts</code> file for each <strong>tunnel</strong> user in order to streamline the process of creating the SSH tunnels.</p>
+
+<h2 id="step-2-—-configuring-the-hosts-file">Step 2 — Configuring the Hosts File</h2>
+
+<p>Throughout this tutorial, there are many times when you must refer to the IP addresses of either the <strong>app-server</strong> or the <strong>database-server</strong> in a command. Rather than having to remember and type out these IP addresses each time, you can add the <strong>app-server</strong> and <strong>database-server</strong>&rsquo;s private IPs to each server&rsquo;s <code>/etc/hosts</code> file. This will allow you to use their names in subsequent commands in place of their addresses, and will make the process of setting up SSH tunnels much smoother.</p>
+
+<p>Please note that, in order to keep things simple, this tutorial instructs you to add both the <strong>app-server</strong> and <strong>database-server</strong>&rsquo;s private IP addresses to the <code>/etc/hosts</code> file on each of the three servers. While it technically isn&rsquo;t necessary to add either the <strong>app-server</strong> or <strong>database-server</strong>&rsquo;s private IP addresses to their own <code>hosts</code> files, doing so won&rsquo;t cause any issues. The method described here was chosen simply for speed and convenience.</p>
+
+<p>First, find your <strong>app-server</strong> and <strong>database-server</strong>&rsquo;s private IP addresses. If you&rsquo;re using DigitalOcean Droplets, navigate to your Control Panel and click on these Droplets&rsquo; names. On any of their Droplet-specific pages, both the public and private IP addresses are displayed near the top of the page.</p>
+
+<p>Then on each server, open the <code>/etc/hosts</code> file with your favorite text editor and append the following lines:</p>
+<pre class="code-pre command"><code langs=""><ul class="prefixed"><li class="line" prefix="$">sudo nano /etc/hosts
+</li></ul></code></pre><div class="code-label " title="/etc/hosts">/etc/hosts</div><pre class="code-pre "><code langs="">. . .
+<span class="highlight">app-server_private_ip</span> app-server
+<span class="highlight">database-server_private_ip</span> database-server
+</code></pre>
+<p>By adding these lines to this file on each server, you can use the names <strong>app-server</strong> and <strong>database-server</strong> in commands that would typically require you to use these servers&rsquo; IP addresses. You will use this functionality to set up the SSH keys so each of your <strong>tunnel</strong> users can connect to your other servers.</p>
+
+<h2 id="step-3-—-setting-up-ssh-logins">Step 3 — Setting up SSH Logins</h2>
+
+<p>Now that you have a <strong>tunnel</strong> user and an updated <code>/etc/hosts</code> file on all three of your servers, you&rsquo;re ready to begin creating SSH connections between them.</p>
+
+<p>As you go through this step, think of the three tiers like a pyramid, with the <strong>database-server</strong> at the bottom, the <strong>app-server</strong> in the middle, and the <strong>web-server</strong> at the top. The <strong>app-server</strong> must be able to connect to the <strong>database-server</strong> in order to access the data needed for the Rails app, and the <strong>web-server</strong> must be able to connect to the <strong>app-server</strong> so it has something to present to users.</p>
+
+<p>Thus, you only need to add each <strong>tunnel</strong> user&rsquo;s SSH public key to the server &ldquo;underneath&rdquo; it, meaning that you must add the <strong>web-server</strong> <strong>tunnel</strong> user&rsquo;s public key to the <strong>app-server</strong> and add the <strong>app-server</strong> <strong>tunnel</strong> user&rsquo;s public key to the <strong>database-server</strong>. This will allow you to establish encrypted SSH tunnels between the tiers and prevent any eavesdroppers on the network from reading the traffic passing between them.</p>
+
+<p>To begin this process, copy the public key of the <strong>tunnel</strong> user on the <strong>web-server</strong>, located at <code>/home/tunnel/.ssh/id_rsa.pub</code>, into the <code>/home/tunnel/.ssh/authorized_keys</code> file on the <strong>app-server</strong>.</p>
+
+<p>On the <strong>web-server</strong>, display the <strong>tunnel</strong> user&rsquo;s public key in the terminal with the following command:</p>
+<pre class="code-pre custom_prefix second-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="sammy@web-server$">sudo cat /home/tunnel/.ssh/id_rsa.pub
+</li></ul></code></pre>
+<p>Select the text output and copy it to your system&rsquo;s clipboard.</p>
+
+<p>SSH into the <strong>app-server</strong> in a separate terminal session, and switch to the tunnel user:</p>
+<pre class="code-pre custom_prefix third-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="sammy@app-server$">sudo su tunnel
+</li></ul></code></pre>
+<p>Append the key in your system&rsquo;s clipboard to the <code>authorized_keys</code> file on the <strong>app-server</strong>. You can use the following command to do so in one step. Remember to replace <code>tunnel_ssh_publickey_copied_from_web_server</code> with the public key in your system&rsquo;s clipboard:</p>
+<pre class="code-pre custom_prefix third-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="tunnel@app-server$">echo "<span class="highlight">tunnel_ssh_publickey_copied_from_web-server</span>" &gt;&gt; /home/tunnel/.ssh/authorized_keys
+</li></ul></code></pre>
+<p>After that, modify the permissions  on the <code>authorized_keys</code> file to prevent unauthorized access to it:</p>
+<pre class="code-pre custom_prefix third-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="tunnel@app-server$">chmod 600 /home/tunnel/.ssh/authorized_keys
+</li></ul></code></pre>
+<p>Then return to the <strong>sammy</strong> user:</p>
+<pre class="code-pre custom_prefix third-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="tunnel@app-server$">exit
+</li></ul></code></pre>
+<p>Next, display the public key of the <strong>tunnel</strong> user on the <strong>app-server</strong> — located at <code>/home/tunnel/.ssh/id_rsa.pub</code> — and paste it into the <code>/home/tunnel/.ssh/authorized_keys</code> file on the <strong>database-server</strong>:</p>
+<pre class="code-pre custom_prefix third-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="sammy@app-server$">sudo cat /home/tunnel/.ssh/id_rsa.pub
+</li></ul></code></pre><pre class="code-pre custom_prefix fourth-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="sammy@database-server$">sudo su tunnel
+</li></ul></code></pre>
+<p>Because you did not generate a SSH key pair on the <strong>database-server</strong>, you&rsquo;ll have to create the <code>/home/tunnel/.ssh</code> folder and adjust its permissions:</p>
+<pre class="code-pre custom_prefix fourth-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="tunnel@database-server$">mkdir /home/tunnel/.ssh
+</li><li class="line" prefix="tunnel@database-server$">chmod 700 /home/tunnel/.ssh
+</li></ul></code></pre>
+<p>Then add the <strong>app-server</strong>&rsquo;s public key to the <code>authorized_keys</code> file and adjust its permissions:</p>
+<pre class="code-pre custom_prefix fourth-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="tunnel@database-server$">echo "<span class="highlight">tunnel_ssh_publickey_copied_from_app-server</span>" &gt;&gt; /home/tunnel/.ssh/authorized_keys
+</li><li class="line" prefix="tunnel@database-server$">chmod 600 /home/tunnel/.ssh/authorized_keys
+</li></ul></code></pre>
+<p>Then return to the <strong>sammy</strong> user:</p>
+<pre class="code-pre custom_prefix fourth-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="tunnel@database-server$">exit
+</li></ul></code></pre>
+<p>Next, test the first connection by using SSH to connect to the <strong>app-server</strong> from your <strong>web-server</strong> as the <strong>tunnel</strong> user:</p>
+<pre class="code-pre custom_prefix second-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="sammy@web-server$">sudo su tunnel
+</li></ul></code></pre><pre class="code-pre custom_prefix second-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="tunnel@web-server">ssh tunnel@app-server
+</li></ul></code></pre>
+<p>The first time you connect from the <strong>web-server</strong> to the <strong>app-server</strong>, you will see a message asking you to confirm that the machine you&rsquo;re connecting to can be trusted. Type &ldquo;yes&rdquo; to accept the authenticity of the <strong>app-server</strong>:</p>
+<pre class="code-pre  second-environment"><code langs=""><div class="secondary-code-label " title="Output">Output</div>The authenticity of host '111.111.11.111 (111.111.11.111)' can't be established.
+ECDSA key fingerprint is fd:fd:d4:f9:77:fe:73:84:e1:55:00:ad:d6:6d:22:fe.
+Are you sure you want to continue connecting (yes/no)? <span class="highlight">yes</span>
+</code></pre>
+<p>You will see the welcome banner from the <strong>app-server</strong> and the command prompt will show that you are logged in to the <strong>app-server</strong>. This confirms that the SSH connection from the <strong>web-server</strong> to the <strong>app-server</strong> is functioning correctly.</p>
+
+<p>Exit from the SSH connection to the <strong>app-server</strong>, and then exit from the <strong>tunnel</strong> user to return to your <strong>web-server</strong>&rsquo;s <strong>sammy</strong> user:</p>
+<pre class="code-pre custom_prefix second-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="web-server$">exit
+</li><li class="line" prefix="web-server$">exit
+</li></ul></code></pre>
+<p>Next, follow these same steps to test the SSH connection from the <strong>app-server</strong> to the <strong>database-server</strong>:</p>
+<pre class="code-pre custom_prefix third-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="sammy@app-server$">sudo su tunnel
+</li></ul></code></pre><pre class="code-pre custom_prefix third-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="tunnel@app-server">ssh tunnel@database-server
+</li></ul></code></pre>
+<p>Accept the authenticity of the <strong>database-server</strong> as well. When you see the welcome banner and command prompt from the <strong>database-server</strong>, you will know that the SSH connection from the <strong>app-server</strong> to the <strong>database-server</strong> is working as expected.</p>
+
+<p>Exit from the SSH connection to the <strong>database-server</strong>, and then exit from the <strong>tunnel</strong> user:</p>
+<pre class="code-pre custom_prefix third-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="app-server$">exit
+</li><li class="line" prefix="app-server$">exit
+</li></ul></code></pre>
+<p>The SSH connections you&rsquo;ve set up in the step form the basis of the SSH tunnels that will enable secure communications between your three server tiers. However, in their current form, these connections are vulnerable to crashing and therefore they aren&rsquo;t as reliable as they could be. By installing some additional software and configuring the tunnel to function as a service, though, you can mitigate these vulnerabilities.</p>
+
+<h2 id="step-4-—-setting-up-a-persistent-ssh-tunnel-to-the-database-server">Step 4 — Setting up a Persistent SSH Tunnel to the Database Server</h2>
+
+<p>In the last step, you accessed the command prompt on a remote server from a local one. An SSH tunnel allows you to do much more than this by tunneling traffic from ports on the local host to ports on the remote one. Here, you will use an SSH tunnel to encrypt the connection between your <strong>app-server</strong> and the <strong>database-server</strong>.</p>
+
+<p>If you followed along with all the prerequisites for this tutorial, you will have installed PostgreSQL on both the <strong>app-server</strong> and the <strong>database-server</strong>. To prevent a clash in port numbers, you must configure the SSH tunnel between these servers to forward connections from port <code>5433</code> of the <strong>app-server</strong> to port <code>5432</code> on the <strong>database-server</strong>. Later on, you will reconfigure your Rails application (hosted on your <strong>app-server</strong>) to use the instance of PostgreSQL running on the <strong>database-server</strong>.</p>
+
+<p>Starting as the <strong>sammy</strong> user on the <strong>app-server</strong>, switch to the <strong>tunnel</strong> user you created in Step 1:</p>
+<pre class="code-pre custom_prefix third-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="sammy@app-server$">sudo su tunnel
+</li></ul></code></pre>
+<p>Run the <code>ssh</code> command with the following flags and options to create the tunnel between the <strong>app-server</strong> and <strong>database-server</strong>:</p>
+<pre class="code-pre custom_prefix third-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="tunnel@app-server$">ssh -f -N -L 5433:localhost:5432 tunnel@database-server
+</li></ul></code></pre>
+<ul>
+<li>The <code>-f</code> option sends <code>ssh</code> to the background. This allows you to run new commands in your existing prompt while the tunnel continues running as a background process.</li>
+<li>The <code>-N</code> option tells <code>ssh</code> not to execute a remote command. This is used here as you only want to forward ports.</li>
+<li>The <code>-L</code> option is followed by the configuration value <code>5433:localhost:5432</code>. This specifies that traffic from port <code>5433</code> on the local side (the <strong>app-server</strong>) is forwarded to <strong>localhost</strong>&rsquo;s port <code>5432</code> on the remote server (the <strong>database-server</strong>). Note that <strong>localhost</strong> here is from the point of view of the remote server.</li>
+<li>The final part of the command, <code>tunnel@database-server</code>, specifies the user and remote server to connect to.</li>
+</ul>
+
+<p>After establishing the SSH tunnel, return to the <strong>sammy</strong> user:</p>
+<pre class="code-pre custom_prefix third-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="tunnel@app-server$">exit
+</li></ul></code></pre>
+<p>At this point, the tunnel is running, but there is nothing watching it to ensure that it stays up. If the process crashes, the tunnel will go down, the Rails app will no longer be able to communicate with its database, and you will start seeing errors.</p>
+
+<p>Kill the tunnel you have created for now as we are going to make a more reliable setup. Since the connection is in the background, you will have to find its process ID to kill it. Because every tunnel is created by the <strong>tunnel</strong> user, you can find its proccess ID by listing the current processes and filtering the output for the keyword &lsquo;tunnel&rsquo;:</p>
+<pre class="code-pre custom_prefix third-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="sammy@app-server$">ps axu | grep tunnel
+</li></ul></code></pre>
+<p>This will return something like the output below:</p>
+<pre class="code-pre  third-environment"><code langs=""><div class="secondary-code-label " title="Output">Output</div>tunnel   <span class="highlight">21814</span>  0.0  0.1  44920   692 ?        Ss   14:12   0:00 ssh -f -N -L 5433:localhost:5432 tunnel@database-server
+sammy    21816  0.0  0.2  12916  1092 pts/0    S+   14:12   0:00 grep --color=auto tunnel
+</code></pre>
+<p>Stop the process by running the <code>kill</code> command followed by its process ID:</p>
+<pre class="code-pre custom_prefix third-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="sammy@app-server$">sudo kill <span class="highlight">21814</span>
+</li></ul></code></pre>
+<p>To maintain a persistent SSH connection between the application server and the database, install <code>autossh</code>. <code>autossh</code> is a program that starts and monitors an SSH connection, and restarts it should the connection die or stop passing traffic:</p>
+<pre class="code-pre custom_prefix third-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="sammy@app-server$">sudo apt-get install autossh
+</li></ul></code></pre>
+<p><a href="https://www.digitalocean.com/community/tutorials/understanding-systemd-units-and-unit-files"><code>systemd</code> is the default <em>init system</em> on Ubuntu</a>, meaning that it manages processes after the system boots. You can use <code>systemd</code> to create a service that will manage and automatically start your SSH tunnel when the server restarts. To do this, create a file called <code>db-tunnel.service</code> within the <code>/lib/systemd/system/</code> directory, the standard location where <code>systemd</code> unit files are stored:</p>
+<pre class="code-pre custom_prefix third-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="sammy@app-server$">sudo nano /lib/systemd/system/db-tunnel.service
+</li></ul></code></pre>
+<p>Add the following content to the new file to configure a service for <code>systemd</code> to manage:</p>
+<div class="code-label " title="/lib/systemd/system/db-tunnel.service">/lib/systemd/system/db-tunnel.service</div><pre class="code-pre "><code langs="">
+[Unit]
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=tunnel
+WorkingDirectory=/home/tunnel
+ExecStart=/bin/bash -lc 'autossh -N -L 5433:localhost:5432 tunnel@database-server'
+Restart=always
+StandardInput=null
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=%n
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
+</code></pre>
+<p>The key line here is <code>ExecStart</code>. This specifies the full path to the command and the arguments it needs to execute in order to start the process. Here, it starts a new <code>bash</code> shell and then runs the <code>autossh</code> program.</p>
+
+<p>Save and close the file, and then reload the <code>systemd</code> configuration to make sure that it picks up the new service file:</p>
+<pre class="code-pre custom_prefix third-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="sammy@app-server$">sudo systemctl daemon-reload
+</li></ul></code></pre>
+<p>Enable the <code>db-tunnel</code> service so the tunnel to the <strong>database-server</strong> starts automatically whenever the server boots up:</p>
+<pre class="code-pre custom_prefix third-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="sammy@app-server$">sudo systemctl enable db-tunnel.service
+</li></ul></code></pre>
+<p>Then, start the service:</p>
+<pre class="code-pre custom_prefix third-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="sammy@app-server$">sudo systemctl start db-tunnel.service
+</li></ul></code></pre>
+<p>Run the following command again to check whether the tunnel is up:</p>
+<pre class="code-pre custom_prefix third-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="sammy@app-server$">ps axu | grep tunnel
+</li></ul></code></pre>
+<p>In the output, you will see that there are more processes running this time because <code>autossh</code> is now monitoring the tunnel:</p>
+<pre class="code-pre  third-environment"><code langs=""><div class="secondary-code-label " title="Output">Output</div>tunnel   25925  0.0  0.1   4376   704 ?        Ss   14:45   0:00 /usr/lib/autossh/autossh -N -L 5432:localhost:5432 tunnel@database-server
+tunnel   25939  0.2  1.0  44920  5332 ?        S    14:45   0:00 /usr/bin/ssh -L 61371:127.0.0.1:61371 -R 61371:127.0.0.1:61372 -N -L 5432:localhost:5432 tunnel@database-server
+sammy    25941  0.0  0.2  12916  1020 pts/0    S+   14:45   0:00 grep --color=auto tunnel
+</code></pre>
+<p>Now that the tunnel is up and running, you can test the connection to the <strong>database-server</strong> with <code>psql</code> to ensure that it is working correctly.</p>
+
+<p>Start the <code>psql</code> client and tell it to connect to <code>localhost</code>. You must also specify port <code>5433</code> to connect through the SSH tunnel to the PostgreSQL instance on the <strong>database-server</strong>. Specify the database name you created earlier, and key in the password you created for the database user when prompted:</p>
+<pre class="code-pre custom_prefix third-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="sammy@app-server$">psql -hlocalhost -p5433 <span class="highlight">sammy</span>
+</li></ul></code></pre>
+<p>If you see something like the following output, the database connection has been set up correctly:</p>
+<pre class="code-pre  third-environment"><code langs=""><div class="secondary-code-label " title="Output">Output</div>psql (9.5.10)
+SSL connection (protocol: TLSv1.2, cipher: ECDHE-RSA-AES256-GCM-SHA384, bits: 256, compression: off)
+Type "help" for help.
+
+sammy=#
+</code></pre>
+<p>To close the PostgreSQL prompt, type <code>\q</code> and then press <code>ENTER</code>.</p>
+
+<p>At last, you have a persistent, reliable SSH tunnel that encrypts traffic between your <strong>app-server</strong> and <strong>database-server</strong>. The tunnel&rsquo;s security features are key, because it is over this tunnel that the Rails app on your <strong>app-server</strong> will communicate with the PostgreSQL instance on your <strong>database-server</strong>.</p>
+
+<h2 id="step-5-—-configuring-rails-to-use-a-remote-database">Step 5 — Configuring Rails to Use a Remote Database</h2>
+
+<p>Now that the tunnel from the <strong>app-server</strong> to the <strong>database-server</strong> is set up, you can use it as a secure channel for your Rails app to connect through the tunnel to the PostgreSQL instance on the <strong>database-server</strong>.</p>
+
+<p>Open the application&rsquo;s database configuration file:</p>
+<pre class="code-pre custom_prefix third-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="sammy@app-server$">nano /home/sammy/<span class="highlight">appname</span>/config/database.yml
+</li></ul></code></pre>
+<p>Update the <code>production</code> section so the port number is specified as an environment variable. It should now look something like this:</p>
+<div class="code-label " title="/home/sammy/appname/config/database.yml">/home/sammy/appname/config/database.yml</div><pre class="code-pre "><code langs="">. . .
+production:
+  &lt;&lt;: *default
+  host: localhost
+  adapter: postgresql
+  encoding: utf8
+  database: appname_production
+  pool: 5
+  username: &lt;%= ENV['APPNAME_DATABASE_USER'] %&gt;
+  password: &lt;%= ENV['APPNAME_DATABASE_PASSWORD'] %&gt;
+  <span class="highlight">port: &lt;%= ENV['APPNAME_DATABASE_PORT'] %&gt;</span>
+</code></pre>
+<p>Save and close this file, then open the <code>.rbenv-vars</code> file in the application directory and edit the environment variables:</p>
+<pre class="code-pre custom_prefix third-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="sammy@app-server$">nano /home/sammy/<span class="highlight">appname</span>/.rbenv-vars
+</li></ul></code></pre>
+<p>If you set a different name and password for the PostgreSQL role on the <strong>database-server</strong>, replace them now (in the example below, the PostgreSQL role is named <strong>sammy</strong>). Also, add a new line to specify the database port. After making these changes, your <code>.rbenv-vars</code> file should look like this:</p>
+<div class="code-label " title="/home/sammy/appname/.rbenv-vars">/home/sammy/appname/.rbenv-vars</div><pre class="code-pre "><code langs="">
+SECRET_KEY_BASE=<span class="highlight">secret_key_base</span>
+<span class="highlight">APPNAME</span>_DATABASE_USER=<span class="highlight">sammy</span>
+<span class="highlight">APPNAME</span>_DATABASE_PASSWORD=<span class="highlight">database_password</span>
+<span class="highlight">APPNAME</span>_DATABASE_PORT=5433
+</code></pre>
+<p>Save and close this file when finished.</p>
+
+<p>Because you are now using the PostgreSQL instance on the <strong>database-server</strong> instead of the one on the <strong>app-server</strong> where you deployed your Rails app, you will have to set up the database again.</p>
+
+<p>On the <strong>app-server</strong>, navigate to your app&rsquo;s directory and run the <code>rake</code> command to set up the database:</p>
+
+<p><span class='note'><strong>Note:</strong> This command will <strong>not</strong> migrate any data from the existing database to the new one. If you have important data on your database already, you should back it up and then restore it later.<br></span></p>
+<pre class="code-pre custom_prefix third-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="sammy@app-server$">cd /home/sammy/<span class="highlight">appname</span>
+</li><li class="line" prefix="sammy@app-server$">rake db:setup
+</li></ul></code></pre>
+<p>Once this command completes, your Rails app will begin communicating with the PostgreSQL instance on the <strong>database-server</strong> over an encrypted SSH tunnel. The next thing to do is configure Puma as a <code>systemd</code> service to make it easier to manage.</p>
+
+<h2 id="step-6-—-configuring-and-starting-puma">Step 6 — Configuring and Starting Puma</h2>
+
+<p>Similar to how you set up the <code>db-tunnel</code> service in Step 4, you will configure <code>systemd</code> to run Puma (the server software you installed on the <strong>app-server</strong> as part of the prerequisites) as a service. Running Puma as a service allows it to start automatically when the server boots or restart automatically if it crashes, helping to make your deployment more robust.</p>
+
+<p>Create a new file called <code>puma.service</code> within the <code>/lib/systemd/system/</code> directory:</p>
+<pre class="code-pre custom_prefix third-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="sammy@app-server$">sudo nano /lib/systemd/system/puma.service
+</li></ul></code></pre>
+<p>Add the following content, which was adapted from <a href="https://github.com/puma/puma/blob/master/docs/systemd.md">Puma&rsquo;s <code>systemd</code> documentation</a>, to the new file. Be sure to update the highlighted values in the <code>User</code>, <code>WorkingDirectory</code>, and <code>ExecStart</code> directives to reflect your own configuration:</p>
+<div class="code-label " title="/lib/systemd/system/puma.service">/lib/systemd/system/puma.service</div><pre class="code-pre "><code langs="">
+[Unit]
+Description=Puma HTTP Server
+After=network.target
+
+[Service]
+# Foreground process (do not use --daemon in ExecStart or config.rb)
+Type=simple
+
+# Preferably configure a non-privileged user
+User=<span class="highlight">sammy</span>
+
+# The path to the puma application root
+# Also replace the "&lt;WD&gt;" place holders below with this path.
+WorkingDirectory=/home/<span class="highlight">sammy</span>/<span class="highlight">appname</span>
+
+# Helpful for debugging socket activation, etc.
+# Environment=PUMA_DEBUG=1
+
+Environment=RAILS_ENV=production
+
+# The command to start Puma.
+ExecStart=/home/<span class="highlight">sammy</span>/.rbenv/bin/rbenv exec bundle exec puma -b tcp://127.0.0.1:9292
+
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+</code></pre>
+<p>Save and close the file. Then reload <code>systemd</code>, enable the Puma service, and start Puma:</p>
+<pre class="code-pre custom_prefix third-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="sammy@app-server$">sudo systemctl daemon-reload
+</li><li class="line" prefix="sammy@app-server$">sudo systemctl enable puma.service
+</li><li class="line" prefix="sammy@app-server$">sudo systemctl start puma.service
+</li></ul></code></pre>
+<p>After this, confirm that Puma is running by checking the service&rsquo;s status:</p>
+<pre class="code-pre custom_prefix third-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="sammy@app-server$">sudo systemctl status puma.service
+</li></ul></code></pre>
+<p>If it is running, you will see an output similar to this:</p>
+<pre class="code-pre  third-environment"><code langs=""><div class="secondary-code-label " title="Output">Output</div>puma.service - Puma HTTP Server
+   Loaded: loaded (/lib/systemd/system/puma.service; enabled; vendor preset: enabled)
+   Active: active (running) since Tue 2017-12-26 05:35:50 UTC; 1s ago
+ Main PID: 15051 (bundle)
+    Tasks: 2
+   Memory: 31.4M
+      CPU: 1.685s
+   CGroup: /system.slice/puma.service
+           └─15051 puma 3.11.0 (tcp://127.0.0.1:9292) [<span class="highlight">appname</span>]
+
+Dec 26 05:35:50 app systemd[1]: Stopped Puma HTTP Server.
+Dec 26 05:35:50 app systemd[1]: Started Puma HTTP Server.
+Dec 26 05:35:51 app rbenv[15051]: Puma starting in single mode&hellip;
+Dec 26 05:35:51 app rbenv[15051]: * Version 3.11.0 (ruby 2.4.3-p205), codename: Love Song
+Dec 26 05:35:51 app rbenv[15051]: * Min threads: 5, max threads: 5
+Dec 26 05:35:51 app rbenv[15051]: * Environment: production
+</code></pre>
+<p>Next, use <code>curl</code> to access and print the contents of the web page so you can check that it is being served correctly. The following command tells <code>curl</code> to visit the the Puma server you just started on <strong>app-server</strong> on port <code>9292</code>:</p>
+<pre class="code-pre custom_prefix third-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="sammy@app-server$">curl localhost:9292/tasks
+</li></ul></code></pre>
+<p>If you see something like the code below, then it confirms that both Puma and the database connection are working correctly:</p>
+<pre class="code-pre  third-environment"><code langs=""><div class="secondary-code-label " title="Output">Output</div>&hellip;
+
+&lt;h1&gt;Tasks&lt;/h1&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Title&lt;/th&gt;
+      &lt;th&gt;Note&lt;/th&gt;
+      &lt;th colspan="3"&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+
+  &lt;tbody&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&hellip;
+</code></pre>
+<p>Once you can confirm that your Rails app is being served by Puma and is correctly configured to use a remote PostgreSQL instance on the <strong>database-server</strong>, you can move on to setting up the SSH tunnel between the <strong>web-server</strong> and the <strong>app-server</strong>.</p>
+
+<h2 id="step-7-—-setting-up-and-persisting-the-ssh-tunnel-to-the-app-server">Step 7 — Setting up and Persisting the SSH Tunnel to the App Server</h2>
+
+<p>Now that the <strong>app-server</strong> is up and running, you can connect it to the <strong>web-server</strong>. Similarly to the process you went through in Step 4, you will do this by setting up another SSH tunnel. This tunnel will allow Nginx on the <strong>web-server</strong> to connect securely over an encrypted connection to Puma on the <strong>app-server</strong>.</p>
+
+<p>Start by installing <code>autossh</code> on the <strong>web-server</strong>:</p>
+<pre class="code-pre custom_prefix second-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="sammy@web-server$">sudo apt-get install autossh
+</li></ul></code></pre>
+<p>Create a new file called <code>app-tunnel.service</code> in the <code>/lib/systemd/system/</code> directory:</p>
+<pre class="code-pre custom_prefix second-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="sammy@web-server$">sudo nano /lib/systemd/system/app-tunnel.service
+</li></ul></code></pre>
+<p>Add the following content to this file. Again, the key line is the one that begins with <code>ExecStart</code>. Here, this line forwards port <code>9292</code> on the <strong>web-server</strong> to port <code>9292</code> on the <strong>app-server</strong> where Puma is listening:</p>
+<div class="code-label " title="/lib/systemd/system/app-tunnel.service">/lib/systemd/system/app-tunnel.service</div><pre class="code-pre "><code langs="">
+[Unit]
+StopWhenUnneeded=true
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=tunnel
+WorkingDirectory=/home/tunnel
+ExecStart=/bin/bash -lc 'autossh -N -L 9292:localhost:9292 tunnel@app-server'
+Restart=always
+StandardInput=null
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=%n
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
+</code></pre>
+<p><span class='note'><strong>Note:</strong> The port number in the <code>ExecStart</code> line is the same as the one configured for Puma in the previous step.<br></span></p>
+
+<p>Reload <code>systemd</code> so it reads the new service file, then enable and start the <code>app-tunnel</code> service:</p>
+<pre class="code-pre custom_prefix second-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="sammy@web-server$">sudo systemctl daemon-reload
+</li><li class="line" prefix="sammy@web-server$">sudo systemctl enable app-tunnel.service
+</li><li class="line" prefix="sammy@web-server$">sudo systemctl start app-tunnel.service
+</li></ul></code></pre>
+<p>Check that the tunnel is up:</p>
+<pre class="code-pre custom_prefix second-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="sammy@web-server$">ps axu | grep tunnel
+</li></ul></code></pre>
+<p>You should see something resembling the output below:</p>
+<pre class="code-pre  second-environment"><code langs=""><div class="secondary-code-label " title="Output">Output</div>tunnel   19469  0.0  0.1   4376   752 ?        Ss   05:45   0:00 /usr/lib/autossh/autossh -N -L 9292:localhost:9292 tunnel@app-server
+tunnel   19482  0.5  1.1  44920  5568 ?        S    05:45   0:00 /usr/bin/ssh -L 54907:127.0.0.1:54907 -R 54907:127.0.0.1:54908 -N -L 9292:localhost:9292 tunnel@app-server
+sammy    19484  0.0  0.1  12916   932 pts/0    S+   05:45   0:00 grep --color=auto tunnel
+</code></pre>
+<p>This filtered process listing shows that <code>autossh</code> is running and it has started another <code>ssh</code> process which creates the actual encrypted tunnel between <strong>web-server</strong> and <strong>app-server</strong>.</p>
+
+<p>Your second tunnel is now up and encrypting communication between your <strong>web-server</strong> and <strong>app-server</strong>. All that&rsquo;s left for you to do in order to get your three-tier Rails app up and running is to configure Nginx to pass requests to Puma.</p>
+
+<h2 id="step-8-—-configuring-nginx">Step 8 — Configuring Nginx</h2>
+
+<p>At this point, all the required SSH connections and tunnels have been set up and each of your three server tiers are able to communicate with one another. The final piece of this puzzle is for you to configure Nginx to send requests to Puma to make the setup fully functional.</p>
+
+<p>On the <strong>web-server</strong>, create a new Nginx configuration file at <code>/etc/nginx/sites-available/<span class="highlight">appname</span></code>:</p>
+<pre class="code-pre custom_prefix second-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="sammy@web-server$">sudo nano /etc/nginx/sites-available/<span class="highlight">appname</span>
+</li></ul></code></pre>
+<p>Add the following content into the file. This Nginx configuration file is similar to the one you used if you followed our guide on <a href="https://www.digitalocean.com/community/tutorials/how-to-deploy-a-rails-app-with-puma-and-nginx-on-ubuntu-14-04#install-and-configure-nginx">How To Deploy a Rails App with Puma and Nginx</a>. The main difference is the location of the upstream app; instead of using the local socket file, this configuration points Nginx to the SSH tunnel listening on port <code>9292</code>:</p>
+<div class="code-label " title="/etc/nginx/sites-available/appname">/etc/nginx/sites-available/appname</div><pre class="code-pre "><code langs="">upstream app {
+    server 127.0.0.1:9292;
+}
+
+server {
+    listen 80;
+    server_name localhost;
+
+    root /home/sammy/<span class="highlight">appname</span>/public;
+
+    try_files $uri/index.html $uri @app;
+
+    location @app {
+        proxy_pass http://app;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+        proxy_redirect off;
+    }
+
+    error_page 500 502 503 504 /500.html;
+    client_max_body_size 4G;
+    keepalive_timeout 10;
+}
+</code></pre>
+<p>Save and close this file, then enable the site and make the changes active.</p>
+
+<p>First, remove the default site:</p>
+<pre class="code-pre custom_prefix second-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="sammy@web-server$">sudo rm /etc/nginx/sites-enabled/default
+</li></ul></code></pre>
+<p>Change to the Nginx <code>sites-enabled</code> directory:</p>
+<pre class="code-pre custom_prefix second-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="sammy@web-server$">cd /etc/nginx/sites-enabled
+</li></ul></code></pre>
+<p>Create a <em>symbolic link</em> in the <code>sites-enabled</code> directory to the file you created just now in the <code>sites-available</code> directory:</p>
+<pre class="code-pre custom_prefix second-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="sammy@web-server$">sudo ln -s /etc/nginx/sites-available/<span class="highlight">appname</span> <span class="highlight">appname</span>
+</li></ul></code></pre>
+<p>Test your Nginx configuration for syntax errors:</p>
+<pre class="code-pre custom_prefix second-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="sammy@web-server$">sudo nginx -t
+</li></ul></code></pre>
+<p>If any errors are reported, go back and check your file before continuing.</p>
+
+<p>When you&rsquo;re ready, restart Nginx so it reads your new configuration:</p>
+<pre class="code-pre custom_prefix second-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="sammy@web-server$">sudo systemctl restart nginx
+</li></ul></code></pre>
+<p>If you followed the Puma tutorial in the prerequisites, you would have installed Nginx and PostgreSQL on the <strong>app-server</strong>. Both were replaced by separate instances running on the other two servers, so these programs are redundant. Therefore, you should remove these packages from the <strong>app-server</strong>:</p>
+<pre class="code-pre custom_prefix third-environment"><code langs=""><ul class="prefixed"><li class="line" prefix="sammy@app-server$">sudo apt remove nginx
+</li><li class="line" prefix="sammy@app-server$">sudo apt remove postgresql
+</li></ul></code></pre>
+<p>After removing these packages, be sure to update your firewall rules to prevent any unwanted traffic from accessing these ports.</p>
+
+<p>Your Rails app is now in production. Visit your <strong>web-server</strong>&rsquo;s public IP in a web browser to see it in action:</p>
+<pre class="code-pre "><code langs="">http://<span class="highlight">web-server_public_IP</span>/tasks
+</code></pre>
+<h2 id="conclusion">Conclusion</h2>
+
+<p>By following this tutorial, you have deployed your Rails application on a three-tiered architecture and secured the connections from your <strong>web-server</strong> to the <strong>app-server</strong>, and from the <strong>app-server</strong> to the <strong>database-server</strong> with encrypted SSH tunnels.</p>
+
+<p>With the various components of your application on separate servers, you can pick the optimal specifications for each server based on the amount of traffic your site receives. The first step to doing this is to monitor the resources the server is consuming. See <a href="https://www.digitalocean.com/community/tutorials/how-to-monitor-cpu-use-on-digitalocean-droplets">our guide on CPU monitoring</a> for instructions on how to monitor your servers&rsquo; CPU usage. If you see that CPU or memory usage on one tier is very high, you can resize the server on that tier alone. For more advice on picking a server size, see our guide on <a href="https://www.digitalocean.com/community/tutorials/choosing-the-right-droplet-for-your-application">Choosing the Right Droplet for Your Application</a>.</p>
+
+<p>As an immediate next step, you should also secure the connection from your users to the <strong>web-server</strong> by installing an SSL certificate on the <strong>web-server</strong>. Check out the <a href="https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-16-04">Nginx Let&rsquo;s Encrypt tutorial</a> for instructions. Also, if you&rsquo;d like to learn more about using SSH tunnels check out <a href="https://www.digitalocean.com/community/tutorials/ssh-essentials-working-with-ssh-servers-clients-and-keys#setting-up-ssh-tunnels">this guide</a>.</p>
+
+    </div>
+</div>
+
+<div class="tutorial-footer">
+  
+<div class='tutorial-footer-details'>
+
+  <div class='postable-info-bar-container'>
+  <div class='postable-info-bar'>
+
+    <div class="author-byline">
+      <div class="component-collaborators-container">
+  <ul class="component-collaborators-content">
+
+    <li class="collaborators-byline-data">
+        <p class="names">By <span>Li Heng Fong</span></p>
+
+      <p>
+      </p>
+    </li>
+  </ul>
+</div>
+
+    </div>
+  </div>
+</div>
+
+
+  <div class='section-content tutorial-contributors two'>
+    <div class="component-collaborators-container">
+      <ul class="component-collaborators-content">
+
+          <li class="collaborator-byline-avatar">
+            <a href="/community/users/mdrake">
+                <div class="mod-avatar mod-avatar-large"><img class="avatar avatar-large" src="https://community-cdn-digitalocean-com.global.ssl.fastly.net/assets/users/avatars/large/3072b0699d3add2e0d0f31b97397dd68302c8842.jpg?1509387385" alt="3072b0699d3add2e0d0f31b97397dd68302c8842" /><span class="mod-star" title="MOD" data-toggle="tooltip" data-container="body"><span class="mod-star-icon" /></span></div>
+</a>          </li>
+
+
+        <li class="collaborators-byline-data">
+            <p class="names">Editor: <a href="/community/users/mdrake">Mark Drake</a></p>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+    
+<div class="hsb--content">
+  <div class="hsb--undo hsb--hide">
+    <span class="icon icon-helpfulness-upvoted"></span>
+    <span class="hsb--question">You rated this helpful.</span>
+    <button name="button" type="submit" class="hsb--button-down hsb--vote-down-js" data-upvotable-type="Tutorial">Undo</button>
+  </div>
+
+  <div class="hsb--flagging-undo hsb--hide">
+    <span class="icon icon-helpfulness-flag"></span>
+    <span class="hsb--question">You reported this tutorial.</span>
+    <button name="button" type="submit" class="hsb--button-down hsb--unflagging-js">Undo</button>
+  </div>
+
+  <div class="hsb--do">
+    <span class="hsb--question">Was this helpful?</span>
+    <button name="button" type="submit" class="hsb--button hsb--vote-up-js" data-upvotable-id="2651" data-upvotable-type="Tutorial">Yes</button>
+    <button name="button" type="submit" class="hsb--button hsb--flagging-js" data-url="/community/tutorials/securing-communications-three-tier-rails-application-using-ssh-tunnels/flag" data-flaggable-id="2651">No</button>
+  </div>
+
+  <div class="hsb--social-and-comments">
+    <div class="hsb--social-sharing">
+      <a target="_blank" class="share-popup" href="http://twitter.com/share?text=Securing Communications in a Three-tier Rails Application Using SSH Tunnels&amp;url=https://www.digitalocean.com/community/tutorials/securing-communications-three-tier-rails-application-using-ssh-tunnels?utm_content=securing-communications-three-tier-rails-application-using-ssh-tunnels&amp;utm_medium=community&amp;utm_source=twshare">
+        <span class="icon icon-helpfulness-twitter"></span>
+</a>
+      <a target="_blank" class="share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/securing-communications-three-tier-rails-application-using-ssh-tunnels?utm_content=securing-communications-three-tier-rails-application-using-ssh-tunnels&amp;utm_medium=community&amp;utm_source=fbshare">
+        <span class="icon icon-helpfulness-facebook"></span>
+</a>
+      <a target="_blank" class="share-popup" href="https://news.ycombinator.com/submitlink?t=Securing Communications in a Three-tier Rails Application Using SSH Tunnels&amp;u=https://www.digitalocean.com/community/tutorials/securing-communications-three-tier-rails-application-using-ssh-tunnels?utm_content=securing-communications-three-tier-rails-application-using-ssh-tunnels&amp;utm_medium=community&amp;utm_source=hnshare">
+        <span class="icon icon-helpfulness-hacker-news"></span>
+</a>    </div>
+
+    <div class="hsb--comment">
+      <span class="icon icon-helpfulness-comment"></span>
+      <strong class="amount">1</strong>
+    </div>
+  </div>
+</div>
+
+
+</div>
+
+
+  
+    <div class='related-tutorials'>
+    <div class='section-content'>
+      <h2>Related</h2>
+
+      <ul>
+        <li title="Initial Server Setup with Ubuntu 16.04">
+  <a class="panel" href="/community/tutorials/initial-server-setup-with-ubuntu-16-04">
+    <h6>Tutorial</h6>
+    <div class="panel-data">
+      <h5>Initial Server Setup with Ubuntu 16.04</h5>
+      <p>When you start a new server, there are a few steps that you should take every time to add some basic security and give you a solid foundation.  In this guide, we&#39;ll walk you through the basic steps necessary to hit the ground running with Ubuntu 16.04.</p>
+    </div>
+  </a>
+</li>
+<li title="How To Install and Configure OpenLDAP and phpLDAPadmin on an Ubuntu 14.04 Server">
+  <a class="panel" href="/community/tutorials/how-to-install-and-configure-openldap-and-phpldapadmin-on-an-ubuntu-14-04-server">
+    <h6>Tutorial</h6>
+    <div class="panel-data">
+      <h5>How To Install and Configure OpenLDAP and phpLDAPadmin on an Ubuntu 14.04 Server</h5>
+      <p>In this guide, we&#39;ll focus on how to install and configure OpenLDAP on an Ubuntu 14.04 server.  We will then install and configure phpLDAPadmin on the server, allowing us to manage our units and groups through an easy to use web interface.</p>
+    </div>
+  </a>
+</li>
+<li title="How To Use the DigitalOcean One-Click to Install Redmine on Ubuntu 14.04 Image">
+  <a class="panel" href="/community/tutorials/how-to-use-the-digitalocean-one-click-to-install-redmine-on-ubuntu-14-04-image">
+    <h6>Tutorial</h6>
+    <div class="panel-data">
+      <h5>How To Use the DigitalOcean One-Click to Install Redmine on Ubuntu 14.04 Image</h5>
+      <p>ARCHIVED: We have created a one-click Redmine 2.5 installation that uses Nginx/MySQL/Ruby on Rails on Ubuntu 14.04 x64. Redmine is a free and open source project management software to assist with projects, bug-tracking. It supports a variety of version control system. Using the one click image, you will be able to get redmine up and running quickly and painlessly.</p>
+    </div>
+  </a>
+</li>
+<li title="How To Isolate Servers Within A Private Network Using Iptables">
+  <a class="panel" href="/community/tutorials/how-to-isolate-servers-within-a-private-network-using-iptables">
+    <h6>Tutorial</h6>
+    <div class="panel-data">
+      <h5>How To Isolate Servers Within A Private Network Using Iptables</h5>
+      <p>In this tutorial, we will teach you how to use a Iptables with shared private networking to simulate the network traffic isolation that a true private network can provide. We will also cover why you would want to do this, and provide an example of how to implement this in your own environment. The example should explain the concept well enough that you should be able to adapt the configuration to your own needs.</p>
+    </div>
+  </a>
+</li>
+
+      </ul>
+    </div>
+  </div>
+
+
+  <div class='looking-for-an-answer'>
+  <div class='section-content'>
+    <h4>Still looking for an answer?</h4>
+
+    <div class="lfa--actions">
+      <a href="/community/questions/new?tags=Security%2CPostgreSQL%2CScaling%2CRuby+on+Rails%2CNginx%2CDatabases" class="lfa--action-box">
+        <span class="icon icon-look-for-answer-question"></span>
+        Ask a question
+      </a>
+      <a href="#q" class="lfa--action-box">
+        <span class="icon icon-look-for-answer-search-thin"></span>
+        Search for more help
+      </a>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="content-comments">
+  <div class="section-content">
+    <div class="tutorial commentable" id="tutorial_2651">
+
+  <div class="comments-header">
+    <h4 class="comments-count">
+        <span>1 Comment</span>
+    </h4>
+  </div>
+
+    <div class="response response-form no-avatar">
+  <div class="js-display-on-error flash error hidden"></div>
+
+
+  <form class="content-form disabled-form" id="new_comment" action="/community/tutorials/securing-communications-three-tier-rails-application-using-ssh-tunnels/comments" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="&#x2713;" />
+
+    <textarea name="comment[content]" id="comment_content" placeholder="Leave a comment..." class="js-comment-content tutorial-comment-field" data-markdown="true">
+</textarea>
+
+      <div class="log-in-notice "><a href="/community/auth/digitalocean">Log In to Comment</a></div>
+
+    <div class='clearfix'></div>
+</form>
+</div>
+
+
+  <div class="comments">
+    <ul class="response-list">
+          <a class="js-click-on-load hidden" rel="nofollow" data-remote="true" href="/community/tutorials/securing-communications-three-tier-rails-application-using-ssh-tunnels/comments">Load</a>
+    </ul>
+
+      <div class='comments-spinner'><div class="spinner spinner-large">
+  <div class="bounce1"></div>
+  <div class="bounce2"></div>
+  <div class="bounce3"></div>
+  
+</div>
+</div>
+  </div>
+
+  <div class='load-more-container'></div>
+</div>
+
+
+  </div>
+</div>
+
+<div class="creative-commons">
+  <a class="creative-commons-image" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><img rel="license" alt="Creative Commons License" src="/assets/community/creativecommons-08b32a9279fcd47fcd78ac6a26331389.png" /></a>
+    <div class="license-text">This work is licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.</div>
+</div>
+
+
+
+
+
+
+        <div class="clearfix"></div>
+      </div>
+
+            <footer>
+        <section>
+            <a href="https://www.digitalocean.com/write-for-donations/" class="panel">
+            <div class="photo_wrap">
+              <img class="photo" src="https://digitalocean.cdn.prismic.io/digitalocean/70910e9fdeb57be46aaa209ce8d9b4dc8e117fab_w4do2.jpg" alt="">
+            </div>
+            <span class="heading">Become a contributor</span>
+            <p>
+                You get paid; we donate to tech nonprofits.
+            </p>
+          </a>
+            <a href="https://www.meetup.com/pro/digitalocean" class="panel">
+            <div class="photo_wrap">
+              <img class="photo" src="https://digitalocean.cdn.prismic.io/digitalocean/2491485f96735e5982e330914d8a617f85395fab_meetups.jpg" alt="">
+            </div>
+            <span class="heading">Connect with other developers</span>
+            <p>
+                Find a DigitalOcean Meetup near you.
+            </p>
+          </a>
+            <a href="https://www.digitalocean.com/community/newsletter" class="panel">
+            <div class="photo_wrap">
+              <img class="photo" src="https://digitalocean.cdn.prismic.io/digitalocean/ca12c951cc76f33037f3384bba9942545d160d82_iaan_illo.jpg" alt="">
+            </div>
+            <span class="heading">Get our biweekly newsletter</span>
+            <p>
+                Sign up for Infrastructure as a Newsletter.
+            </p>
+          </a>
+      </section>
+      <section class="slim ">
+        <span class="heading">Featured on Community</span>
+            <a href="https://www.digitalocean.com/community/tutorials/an-introduction-to-kubernetes">Intro to Kubernetes</a>
+            <a href="https://www.digitalocean.com/community/tutorial_series/how-to-code-in-python-3">Learn Python 3</a>
+            <a href="https://www.digitalocean.com/community/tutorials/machine-learning-projects-python-a-digitalocean-ebook">Machine Learning in Python</a>
+            <a href="https://www.digitalocean.com/community/tutorials/how-to-write-your-first-program-in-go">Getting started with Go</a>
+            <a href="https://www.digitalocean.com/community/tutorial_series/from-containers-to-kubernetes-with-node-js">Migrate Node.js to Kubernetes</a>
+        <hr>
+        <span class="heading">DigitalOcean Products</span>
+            <a href="https://www.digitalocean.com/products/droplets/">Droplets</a>
+            <a href="https://www.digitalocean.com/products/managed-databases/">Managed Databases</a>
+            <a href="https://www.digitalocean.com/products/kubernetes/">Managed Kubernetes</a>
+            <a href="https://www.digitalocean.com/products/spaces/">Spaces Object Storage</a>
+            <a href="https://marketplace.digitalocean.com/">Marketplace</a>
+      </section>
+        <section class="product">
+          <a class="copy" href="/products">
+            <h3>Welcome to the developer cloud</h3>
+            <p>DigitalOcean makes it simple to launch in the cloud and scale up as you grow – whether you’re running one virtual machine or ten thousand.</p>
+            <span class="link_text">Learn More</a>
+          </div>
+          <div class="feature">
+            <a class="img_wrap" href="/products">
+              <img class="photo" src="https://digitalocean.cdn.prismic.io/digitalocean/95c1215227aa7f39f2bd23076de28feb969741c7_cloud.digitalocean.com_projects_63f9252f-652b-4645-9c0c-bee96f2bc503_resources_ic0ce81-2.png" alt="DigitalOcean Cloud Control Panel">
+            </a>
+          </div>
+        </section>
+        <section class="dark">
+          <div class="vlist grow">
+            <a href="https://www.digitalocean.com">
+              <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+                <title>DigitalOcean Homepage</title>
+                <g fill="#0080FF" fill-rule="evenodd">
+                  <path
+                    d="M24.9153 50v-9.661c10.226 0 18.1638-10.1413 14.2372-20.904-1.4406-3.983-4.6327-7.1751-8.6158-8.6158C19.774 6.921 9.6327 14.8305 9.6327 25.0565H0C0 8.7571 15.7627-3.9548 32.8531 1.3842c7.4576 2.3446 13.418 8.2768 15.7345 15.7344C53.9266 34.2373 41.2429 50 24.9153 50">
+                  </path>
+                  <path
+                    d="M15.339 40.3672h9.6045v-9.6045H15.339zM7.9379 47.7684h7.401v-7.4012H7.938zM1.7514 40.3672H7.938v-6.1864H1.7514z">
+                  </path>
+                </g>
+              </svg>
+            </a>
+            <br><br>
+            © <script type="text/javascript">
+              document.write(new Date().getFullYear());
+
+            </script> DigitalOcean, LLC. All rights reserved.
+          </div>
+
+              <div class="vlist">
+                <span class="heading">Company</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/about/">About</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/about/leadership/">Leadership</a>
+                    </li>
+                    <li>
+                      <a href="https://blog.digitalocean.com/">Blog</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/careers/">Careers</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/partners/">Partners</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/referral-program/">Referral Program</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/press/">Press</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/legal/">Legal &amp; Security</a>
+                    </li>
+                </ul>
+              </div>
+              <div class="vlist">
+                <span class="heading">Products</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/">Products Overview</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/pricing/">Pricing</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/droplets/">Droplets</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/kubernetes/">Kubernetes</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/managed-databases/">Managed Databases</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/spaces/">Spaces</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/marketplace/">Marketplace</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/load-balancer/">Load Balancers</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/block-storage/">Block Storage</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/tools-and-integrations/">Tools &amp; Integrations</a>
+                    </li>
+                    <li>
+                      <a href="https://developers.digitalocean.com/documentation/">API</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/docs">Documentation</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/docs/release-notes/">Release Notes</a>
+                    </li>
+                </ul>
+              </div>
+              <div class="vlist">
+                <span class="heading">Community</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/tutorials">Tutorials</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/questions">Q&amp;A</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/tools">Tools and Integrations</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/tags">Tags</a>
+                    </li>
+                    <li>
+                      <a href="https://ideas.digitalocean.com/">Product Ideas</a>
+                    </li>
+                    <li>
+                      <a href="https://www.meetup.com/pro/digitalocean/?utm_source=do_www">Meetups</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/write-for-donations/">Write for DOnations</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/droplets-for-demos/">Droplets for Demos</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/hatch/">Hatch Startup Program</a>
+                    </li>
+                    <li>
+                      <a href="http://store.digitalocean.com/">Shop Swag</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/research/">Research Program</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/currents/">Currents Research</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/open-source/">Open Source</a>
+                    </li>
+                </ul>
+              </div>
+              <div class="vlist">
+                <span class="heading">Contact</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/support/">Support</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/company/contact/sales/">Sales</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/company/contact/#abuse">Report Abuse</a>
+                    </li>
+                    <li>
+                      <a href="https://status.digitalocean.com/">System Status</a>
+                    </li>
+                </ul>
+              </div>
+        </section>
+      </footer>
+
+
+      <div id='sign-in-modal' class='modal fade mini-modal' style="display: none;">
+  <div class='modal-dialog'>
+    <div class='modal-content'>
+      <div class='modal-header'>
+        <h1>Almost there!</h1>
+        <a class='close-button' data-dismiss='modal' aria-label="close"  href=''><span class='icon icon-close-light'></span></a>
+      </div>
+      <div class='modal-body'>
+        <div class='sign-in-message'>Sign into your account, or create a new one, to start interacting.</div>
+
+        <div class='sign-in-modal-actions'>
+          <a class="sign-in-link button blue-button" data-default-url="/community/auth/digitalocean" href="/community/auth/digitalocean">Log In</a>
+          <a class="sign-up-link button blue-button" data-default-url="/community/auth/digitalocean?display=sessionless+register" href="/community/auth/digitalocean?display=sessionless+register">Sign Up</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+      <script>
+    $(function() {
+      window.initHelpfulnessActions(2651);
+    });
+  </script>
+  <script>
+    $(function() {
+      var p, h5, panel, remainingSpace;
+      var lineHeight = 31, clamp = 1;
+
+      var panels = document.querySelectorAll('li .panel-data');
+
+      for (var i = 0, len = panels.length; i < len; i++) {
+        panel = panels[i];
+
+        p = panel.querySelector('p');
+        h5 = panel.querySelector('h5');
+        remainingSpace = panel.offsetHeight - h5.offsetHeight;
+
+        // Clamp text only when the remaining space isn't enought for p content.
+        if (remainingSpace < p.scrollHeight) {
+          clamp = parseInt(p.offsetHeight / lineHeight);
+
+          p.style.cssText = "-webkit-line-clamp:" + clamp +
+            "; display: -webkit-box; -webkit-box-orient: vertical;";
+        }
+      }
+    });
+  </script>
+
+  <script>
+    $(function() {
+      if (!!window.init_sharing) {
+        window.init_sharing();
+      }
+      new window.NewsletterSignup();
+      new window.GrowableMarkdown({ target: '[data-growable-markdown]' });
+    });
+  </script>
+  <script type="application/ld+json">
+    {"@context":"http://schema.org","@type":"Article","name":"Securing Communications in a Three-tier Rails Application Using SSH Tunnels","headline":"Securing Communications in a Three-tier Rails Application Using SSH Tunnels","alternativeHeadline":"Securing Communications in a Three-tier Rails Application Using SSH Tunnels","description":"Web applications are often architected with three distinct tiers: the presentation layer, which is what the user sees, the application layer, which provides the business logic of the application, and the data layer which stores the application's data. In this tutorial, you will deploy a Rails app in a three-tier configuration by installing a unique set of software on three separate servers, configuring each server and their components to communicate and function securely and effectively.","keywords":"Ruby on Rails,Security,Scaling,Databases,Nginx,PostgreSQL,June 2018","url":"https://www.digitalocean.com/community/tutorials/securing-communications-three-tier-rails-application-using-ssh-tunnels","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.digitalocean.com/community/tutorials/securing-communications-three-tier-rails-application-using-ssh-tunnels"},"dateModified":"2018-10-22T21:36:20Z","inLanguage":"en","accessMode":"textual","accessModeSufficient":"textual","isAccessibleForFree":true,"license":"https://creativecommons.org/licenses/by-nc-sa/4.0/","publishingPrinciples":"https://www.digitalocean.com/community/tutorials/technical-recommendations-and-best-practices-for-digitalocean-s-tutorials","author":[{"@type":"Person","name":"Li Heng Fong"}],"datePublished":"2018-06-08T14:48:06Z","editor":{"@type":"Person","name":"Mark Drake","@id":"mdrake"},"image":{"@type":"ImageObject","url":"https://www.digitalocean.com/assets/community/illustrations/DigitalOcean_Community-02cc36407e7a978ed4fc9ed98f3ed87c.jpg","height":375,"width":750},"interactionStatistic":[{"@type":"InteractionCounter","interactionType":"http://schema.org/LikeAction","userInteractionCount":"5"},{"@type":"InteractionCounter","interactionType":"http://schema.org/CommentAction","userInteractionCount":"1"}],"sourceOrganization":{"@type":"Organization","name":"DigitalOcean Community","url":"https://www.digitalocean.com/community"},"publisher":{"@type":"Organization","name":"DigitalOcean","url":"https://www.digitalocean.com","logo":{"@type":"ImageObject","url":"https://assets.digitalocean.com/logos/DO_Logo_horizontal_blue.png","width":351,"height":60}}}
+  </script>
+
+
+    
+  </body>
+</html>

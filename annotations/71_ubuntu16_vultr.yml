@@ -4,7 +4,7 @@ setup:
     host: vagrant@127.0.0.1:2003
     privateKey: id_rsa
 
-../tutorials/71_ubuntu16_vultr.html:
+../tutorials/docable/71_ubuntu16_vultr.html:
   steps:
     - run: "You can install all of them by running the following command:"
     - run: "update your system to the latest version by running the following command:"

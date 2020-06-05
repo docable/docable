@@ -4,7 +4,7 @@ setup:
     host: vagrant@127.0.0.1:2003
     privateKey: id_rsa
 
-../tutorials/164_ubuntu16_vultr.html:
+../tutorials/docable/164_ubuntu16_vultr.html:
   steps:
     - run: "you will need to update your system to the latest stable version by running the following commands:"
 
